@@ -15,7 +15,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/;
 
 #################################################################
 #NAME: parameter($mgr).						#
@@ -59,6 +59,8 @@ elsif ($method eq 'create_text'){ $self->show_text_new($mgr);}
 elsif ( ($method eq 'trans_desc') || ($method eq 'text_trans') ){ $self->show_trans_desc($mgr);}
 
 elsif ($method eq 'text_trans_contents'){ $self->show_trans_contents($mgr);}
+
+elsif ($method eq 'text_show'){ $self->show_text_see($mgr);}
 
 return 1;
 }
@@ -105,8 +107,8 @@ if (defined $submit){
 $mgr->{TmplData}{TEXT_TITLE}=$title;
 $mgr->{TmplData}{TEXT_DESCRIPTION}=$text_desc;
 
-$mgr->{TmplData}{PAGE_LANG_002017} = $mgr->{Func}->get_text($mgr, 2017); 
-$mgr->{TmplData}{PAGE_LANG_002018} = $mgr->{Func}->get_text($mgr, 2018); 
+$mgr->{TmplData}{PAGE_LANG_002017} = $mgr->{Func}->get_text($mgr, 2017);
+$mgr->{TmplData}{PAGE_LANG_002018} = $mgr->{Func}->get_text($mgr, 2018);
 $mgr->{TmplData}{PAGE_LANG_002019} = $mgr->{Func}->get_text($mgr, 2019); 
 $mgr->{TmplData}{PAGE_LANG_002021} = $mgr->{Func}->get_text($mgr, 2021); 
 $mgr->{TmplData}{PAGE_LANG_002023} = $mgr->{Func}->get_text($mgr, 2023); 
@@ -1070,6 +1072,158 @@ SQL
 
 
 
+#################################################################
+#CALL: $self->show_text($mgr).					#
+#								#
+#RETURN: 							#
+#								#
+#DESC: See SQL Statement. 					#
+#								#
+#Author: Hendrik Erler(erler@cs.tu-berlin.de)			#
+#################################################################
+
+sub show_text_see {
+  my ($self, $mgr) = @_;
+  my $text_id = $mgr->{CGI}->param('text_id') || undef;
+
+  $mgr->{Template} = $mgr->{TmplFiles}->{Text_Show};
+  $mgr->{TmplData}{PAGE_LANG_002023} = $mgr->{Func}->get_text($mgr, 2023);
+  $mgr->{TmplData}{PAGE_LANG_002100} = $mgr->{Func}->get_text($mgr, 2100);
+  $mgr->{TmplData}{PAGE_LANG_002012} = $mgr->{Func}->get_text($mgr, 2012);
+  $mgr->{TmplData}{PAGE_LANG_002033} = $mgr->{Func}->get_text($mgr, 2033);
+
+
+
+
+  #length of Text#############
+  my $table = $mgr->{Tables}->{TEXT_ORIG};
+
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+SELECT  original_id, original_text, num_words, lang_id, submit_time, user_id, category_id, status, avg_rating, num_ratings
+FROM   $table
+WHERE  original_id = ?
+
+SQL
+
+  unless ($sth->execute($text_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+  my @row = $sth->fetchrow_array();
+  my $original_id   = @row[0];
+  my $original_text = @row[1];
+  my $num_words     = @row[2];
+  my $lang_id       = @row[3];
+  my $submit_time   = @row[4];
+  my $user_id       = @row[5];
+  my $category_id   = @row[6];
+  my $status        = @row[7];
+  my $avg_rating    = @row[8];
+  my $num_ratings   = @row[9];
+
+  $sth->finish();
+
+  $mgr->{TmplData}{TEXT_LENGTH} = $num_words;
+
+
+
+  #Title################################
+  my $table = $mgr->{Tables}->{TEXT_TITLE};
+
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+SELECT  header_id, header_text, lang_id, text_id, user_id, submit_time
+FROM   $table
+WHERE  text_id = ?
+
+SQL
+
+  unless ($sth->execute($text_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+  my @row = $sth->fetchrow_array();
+  my $header_id   = @row[0];
+  my $header_text = @row[1];
+  my $lang_id     = @row[2];
+  my $text_id     = @row[3];
+  my $user_id     = @row[4];
+  my $submit_time = @row[5];
+
+  $sth->finish();
+
+  $mgr->{TmplData}{TEXT_TITLE} = $header_text;
+
+
+
+  #Description#####################
+  my $table = $mgr->{Tables}->{TEXT_DESC};
+
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+SELECT desc_id, desc_text, lang_id, text_id, user_id, submit_time
+FROM   $table
+WHERE  text_id = ?
+
+SQL
+
+  unless ($sth->execute($text_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+  my @row = $sth->fetchrow_array();
+  my $desc_id     = @row[0];
+  my $desc_text   = @row[1];
+  my $lang_id     = @row[2];
+  my $text_id     = @row[3];
+  my $user_id     = @row[4];
+  my $submit_time = @row[5];
+
+  $sth->finish();
+
+  $mgr->{TmplData}{TEXT_DESCRIPTION} = $desc_text;
+
+  #Author#####################
+  my $table = $mgr->{Tables}->{USER};
+
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+SELECT user_id, username, lastname, firstname, email
+FROM   $table
+WHERE  user_id = ?
+
+SQL
+
+  unless ($sth->execute($user_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+  my @row = $sth->fetchrow_array();
+  my $username  = @row[1];
+  my $lastname  = @row[2];
+  my $firstname = @row[3];
+  my $email     = @row[4];
+
+  $sth->finish();
+
+  $mgr->{TmplData}{TEXT_AUTOR} = $firstname . " " . $lastname;
+
+
+  #return $langs_id;
+}
 
 1;
 

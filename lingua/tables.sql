@@ -286,9 +286,9 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 
 
 ##### Text_Confirm_Save.tmpl (2037 -> 20)######################################
-INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 	(2037, 'Confirm Save','Text Speichern','Enregistrer le Texte');
-INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 	(2038, 'Change Something','Änderungen vornehmen','Changer le Texte');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
 	(2039, 'Title:','Überschrift:','Titre:');
@@ -304,7 +304,13 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 	(2044, 'Punct after Save:','neuer Punktestand:','Points apres enregistrement:');
 
 
+##### Text_description.tmpl ((2008 -> 2016) + 2026 + 2027)######################################
 
+
+
+##### Text_Confirm_Save.tmpl (2100 -> 2101)######################################
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	(2100, 'Author','Autor','Autorfr');
 
 DROP TABLE IF EXISTS lingua_user;
 

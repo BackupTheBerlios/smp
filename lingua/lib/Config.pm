@@ -72,7 +72,8 @@ $TMPL = {
  	 Text_Upload => 'lingua_text_upload.tmpl',
 	 Text_Description => 'lingua_text_description.tmpl',
 	 Text_Message => 'lingua_text_message.tmpl',
-	 Text_Conf_Save => 'lingua_text_confirm_save.tmpl'
+	 Text_Conf_Save => 'lingua_text_confirm_save.tmpl',
+	 Text_Show => 'lingua_text_show.tmpl'
 };
 
 1;

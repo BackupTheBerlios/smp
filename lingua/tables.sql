@@ -57,7 +57,7 @@ INSERT INTO lingua_dictionary (en, de) VALUES ('Register here', 'Hier Registrier
 
 INSERT INTO lingua_dictionary (en, de) VALUES ('Title', 'Überschrift');
 INSERT INTO lingua_dictionary (en, de) VALUES ('Description', 'Beschreibung');
-INSERT INTO lingua_dictionary (en, de) VALUES ('Languages', 'Sprachen');
+INSERT INTO lingua_dictionary (en, de) VALUES ('Source language', 'Quellsprache');
 INSERT INTO lingua_dictionary (en, de) VALUES ('Degree of interest', 'Interessengrad');
 
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES (4001, 'History, Politics', 'Geschichte, Politik', 'Histoire et Politique');

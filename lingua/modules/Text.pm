@@ -6,7 +6,7 @@ use vars qw($VERSION);
 use strict;
 
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.26 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.27 $ =~ /(\d+)\.(\d+)/;
 
 
 #-----------------------------------------------------------------------------#
@@ -621,29 +621,34 @@ $mgr->{TmplData}{PAGE_TITLE}  = $mgr->{Func}->get_text($mgr, 8005);
 # RETURN: none.                                                               #
 #-----------------------------------------------------------------------------#
 sub show_texts {
-  my ($self, $mgr) = @_;
+    my ($self, $mgr) = @_;
 
-  my $cat_id  = $mgr->{CGI}->param('cat_id') || '0';
-  my $page_id = $mgr->{CGI}->param('page') || '0';
-  $self->fill_text_header($mgr, $cat_id);
+    my $cat_id  = $mgr->{CGI}->param('cat_id') || '0';
+    my $page_id = $mgr->{CGI}->param('page') || '0';
+    $self->fill_text_header($mgr, $cat_id);
 
-  my @texts = $mgr->{Func}->get_cat_texts($mgr, $cat_id);
-  my $count = 0;
-  my @result;
+    my @texts = $mgr->{Func}->get_cat_texts($mgr, $cat_id);
+    my $count = 0;
+    my @result;
 
-  # Fill the text loop.
-  # TODO: Links, Paging ...
-  foreach my $text (@texts) {
-    $result[$count]{TEXT_HEADER}  = $text->[1];
-    $result[$count]{TEXT_DESC}    = $text->[2];
-    $result[$count]{TEXT_LANG}    = $mgr->{Func}->get_lang($mgr, $text->[3]);
-    $result[$count]{TEXT_AVG_RAT} = $text->[5];
-    $result[$count]{TEXT_NUM_RAT} = $text->[6];
-    $count++;
-  }
-
-  $mgr->{TmplData}{LOOP_CAT_TEXTS} = \@result;
-  $mgr->{Template}                 = $mgr->{TmplFiles}->{Text_Cat_Show};
+    # Fill the text loop.
+    # TODO: Links, Paging ...
+    foreach my $text (@texts) {
+	$result[$count]{TEXT_SHOW_LINK} = sprintf("%s&text_id=%s", 
+						  $mgr->my_url(ACTION => "text",
+							       METHOD => "text_show"),
+						  $text->[0]
+						  );
+	$result[$count]{TEXT_HEADER}    = $text->[1];
+	$result[$count]{TEXT_DESC}      = $text->[2];
+	$result[$count]{TEXT_LANG}      = $mgr->{Func}->get_lang($mgr, $text->[3]);
+	$result[$count]{TEXT_AVG_RAT}   = $text->[5];
+	$result[$count]{TEXT_NUM_RAT}   = $text->[6];
+	$count++;
+    }
+    
+    $mgr->{TmplData}{LOOP_CAT_TEXTS} = \@result;
+    $mgr->{Template}                 = $mgr->{TmplFiles}->{Text_Cat_Show};
 }
 
 #-----------------------------------------------------------------------------#

@@ -171,30 +171,34 @@ sub cost_trans {
 #                 (inaktiv)                                                   #
 #-----------------------------------------------------------------------------#
 sub receive_trans {
+    my ($self, $mgr, $user_id, $words, $trans_id) = @_;
 
-  my ($self, $mgr, $user_id, $words, $trans_id) = @_;
+    my $dbh = $mgr->connect();
 
-  my $dbh = $mgr->connect();
-  unless ($dbh->do("LOCK TABLES $mgr->{Tables}->{POINTS_INACTIV} WRITE")) {
-    warn sprintf("[Error]: Trouble locking table [%s]. Reason: [%s].",$mgr->{Tables}->{POINTS_INACTIV}, $dbh->ersstr);
-  };
+    unless ($dbh->do("LOCK TABLES $mgr->{Tables}->{POINTS_INACTIV} WRITE")) {
+	warn sprintf("[Error]: Trouble locking table [%s]. Reason: [%s].",
+		     $mgr->{Tables}->{POINTS_INACTIV}, 
+		     $dbh->ersstr);
+    };
 
-  my $now = sprintf("%04d-%02d-%02d %02d:%02d:%02d",
-            sub {($_[0]+1900, $_[1]+1),@_[2..5]}->((localtime)[5,4,3,2,1,0]));
+#    my $now = sprintf("%04d-%02d-%02d %02d:%02d:%02d",
+#		      sub {($_[0]+1900, $_[1]+1),@_[2..5]}->((localtime)[5,4,3,2,1,0]));
 
-  my $sth = $dbh->prepare(qq{INSERT INTO $mgr->{Tables}->{POINTS_INACTIV} (userid, insert_date, translation_id, points) VALUES
-                            ($user_id, NOW(), $trans_id, (($mgr->{TransPoints}) * $words)) });
-
-  unless ($sth->execute()) {
-    warn sprintf("[Error:] Trouble selecting data from [%s] and [%s].".
-	         "Reason: [%s].", $mgr->{Tables}->{POINTS_INACTIV}, $dbh->errstr());
-    $mgr->fatal_error("Database error.");
-  };
-
-  $sth->finish();
-  $dbh->do("UNLOCK TABLES");
-
-  return ($mgr->{TransPoints} * $words);
+    my $sth = $dbh->prepare(sprintf("INSERT INTO %s (userid, insert_date, translation_id, points) VALUES".
+				    "(?, NOW(), ?, ?)", $mgr->{Tables}->{POINTS_INACTIV}));
+    
+    my $calc = $mgr->{TransPoints} * $words;
+    
+    unless ($sth->execute($user_id, $trans_id, $calc)) {
+	warn sprintf("[Error:] Trouble inserting data into [%s].".
+		     "Reason: [%s].", $mgr->{Tables}->{POINTS_INACTIV}, $dbh->errstr());
+	$mgr->fatal_error("Database error.");
+    };
+    
+    $sth->finish();
+    $dbh->do("UNLOCK TABLES");
+    
+    return ($mgr->{TransPoints} * $words);
 };
 
 #-----------------------------------------------------------------------------#

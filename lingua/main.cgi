@@ -46,7 +46,7 @@ use fields (
 use vars qw(%FIELDS $VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.7 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.8 $ =~ /(\d+)\.(\d+)/;
 
 &handler();
 
@@ -61,6 +61,7 @@ sub handler {
 			       DefaultModule       => $lib::Config::CONFIG->{DefaultModule}->{script},
 			       Func                => lib::Func->new(),
 			       InactivPoints       => $lib::Config::CONFIG->{InactivPoints},
+			       InactivTime         => $lib::Config::CONFIG->{InactivTime},
 			       Language            => 1,
 			       LoginOk             => 0,
 			       ModuleDir           => $lib::Config::CONFIG->{ModuleDir},

@@ -13,110 +13,62 @@
     <TMPL_INCLUDE lingua_left.tmpl>
   </td>
   <td bgcolor="#ababab" width="600">
-    <table cellspacing="5" cellpadding="0" border="0" width="100%">
+    <table cellspacing="5" cellpadding="0" border="0">
     <tr>
-      <td colspan="2">
-        <TMPL_IF PAGE_CAT_START_LINK>
-          <a class="normal" href="<TMPL_VAR PAGE_CAT_START_LINK>"><TMPL_VAR PAGE_CAT_START_NAME></a>
-        <TMPL_ELSE>
-          <span class="normal">
-            <TMPL_VAR PAGE_CAT_START_NAME>
-          </span>
+      <td>
+        <TMPL_IF PAGE_CAT_ADMIN>
+          <TMPL_VAR PAGE_LANG_000015>
         </TMPL_IF>
+        <ul> 
+        <TMPL_LOOP PAGE_LOOP_CATS>
+          <TMPL_IF PAGE_OPEN_CAT>
+            <ul>
+          </TMPL_IF>
 
-        <TMPL_LOOP PAGE_CAT_LIST>
-          <span class="normal">-></span>
+          <li>
+            <TMPL_IF PAGE_BUTTON>
+              <TMPL_IF PAGE_OPEN_BUTTON>
+                [<a class="normal" href="<TMPL_VAR PAGE_OPEN_LINK>">+</a>]
+              </TMPL_IF>
 
-          <TMPL_IF PAGE_CAT_LIST_LINK>
-            <a class="normal" href="<TMPL_VAR PAGE_CAT_LIST_LINK>"><TMPL_VAR PAGE_CAT_LIST_NAME></a>
-          <TMPL_ELSE>
+              <TMPL_IF PAGE_CLOSE_BUTTON>
+                [<a class="normal" href="<TMPL_VAR PAGE_CLOSE_LINK>">-</a>]
+              </TMPL_IF>
+            <TMPL_ELSE>
+              &nbsp;&nbsp;&nbsp;
+            </TMPL_IF>
+
             <span class="normal">
-              <TMPL_VAR PAGE_CAT_LIST_NAME>
+              <TMPL_IF PAGE_CAT_ADMIN>
+                <TMPL_VAR PAGE_CAT_NAME>
+              <TMPL_ELSE>
+
+                <TMPL_IF PAGE_CAT_TEXT>
+                  <a class="normal" href="<TMPL_VAR PAGE_CAT_LINK>"><TMPL_VAR PAGE_CAT_NAME></a>
+                <TMPL_ELSE>
+                  <TMPL_VAR PAGE_CAT_NAME>
+                </TMPL_IF>
+
+                <TMPL_IF PAGE_CAT_NEW_TEXT>
+                  (<a class="normal" href="<TMPL_VAR PAGE_CAT_NEW_TEXT_LINK>"><TMPL_VAR PAGE_LANG_006000></a>)
+                </TMPL_IF>
+              </TMPL_IF>
             </span>
+          </li>
+ 
+          <TMPL_IF PAGE_CLOSE_CAT>
+            </ul>
           </TMPL_IF>
         </TMPL_LOOP>
-        <br>
-        <hr noshade>
+        </ul>
       </td>
     </tr>
-    </table>
-    
-    <table cellspacing="5" cellpadding="0" border="0" width="100%">
-    <TMPL_LOOP PAGE_LOOP_CATS>
-  
-      <TMPL_IF PAGE_CAT_OPEN_TR> 
-      <tr valign="top">
-      </TMPL_IF>
- 
-        <td <TMPL_IF PAGE_CAT_COLSPAN>colspan="2"</TMPL_IF>>
-
-          <TMPL_IF PAGE_CAT_LINK>
-            <a class="normal" href="<TMPL_VAR PAGE_CAT_LINK>"><b><TMPL_VAR PAGE_CAT_NAME></b><a>
-          <TMPL_ELSE>
-            <b><span class="normal"><TMPL_VAR PAGE_CAT_NAME></span></b>
-          </TMPL_IF>
-          (<TMPL_VAR PAGE_CAT_TEXT_COUNT>)
-          <br>
-          <font color="#000000">
-          <TMPL_LOOP PAGE_LOOP_P_CAT>
-            <TMPL_IF PAGE_P_CAT_LINK>
-              <a class="small" href="<TMPL_VAR PAGE_P_CAT_LINK>"><TMPL_VAR PAGE_P_CAT_NAME></a>
-            <TMPL_ELSE>
-              <span class="small"><TMPL_VAR PAGE_P_CAT_NAME></small>
-            </TMPL_IF>
-            <span class="small"> 
-            (<TMPL_VAR PAGE_P_CAT_TEXT_COUNT>)
-            <TMPL_IF __INNER__>,</TMPL_IF>
-            </span>
-          </TMPL_LOOP>
-          </font>
-
-        </td>
-     
-      <TMPL_IF PAGE_CAT_CLOSE_TR>
-      </tr>
-      </TMPL_IF>
-
-    </TMPL_LOOP>
     <table>
   </td>
 </tr>
 <tr>
   <td colspan="2">
 
-    <table cellspacing="5" cellpadding="0" border="0" width="100%">
-    <tr>
-      <td>
-        <TMPL_VAR PAGE_LANG_000024>
-      </td>
-      <td>
-        <TMPL_VAR PAGE_LANG_000025>
-      </td>
-      <td>
-        <TMPL_VAR PAGE_LANG_000026>
-      </td>
-      <td>
-        <TMPL_VAR PAGE_LANG_000027>
-      </td>
-    </tr>
-    <TMPL_LOOP PAGE_LOOP_TEXT>
-    <tr>
-      <td width="25%">
-        <TMPL_VAR PAGE_TEXT_TITLE>
-      </td>
-      <td width="25%">
-        <TMPL_VAR PAGE_TEXT_DESC>
-      </td>
-      <td width="25%">
-        <TMPL_VAR PAGE_TEXT_LANGS>
-      </td>
-      <td width="25%">
-        <TMPL_VAR PAGE_TEXT_INTRE>
-      </td>
-    </tr>
-    </TMPL_LOOP>
-    </table> 
- 
   <td>
 </tr>
 </table>

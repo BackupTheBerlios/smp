@@ -6,7 +6,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.17 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.18 $ =~ /(\d+)\.(\d+)/;
 
 # "constants" (don't change later on)
 my $status_ok      = 1;
@@ -878,6 +878,9 @@ sub show_mypage
     $mgr->{TmplData}{USER_LINK_TRANS}  = $mgr->my_url(ACTION => "text",
 						      METHOD => "trans") 
                                          . "&user_id=$user_id";
+    $mgr->{TmplData}{USER_LINK_RESERV} = $mgr->my_url(ACTION => "text",
+						  METHOD => "text_message_user")
+                                         . "&user_id=$user_id";
 
     #--- mode-dependent settings ----------------------------------------------#
     if (defined($mode) and $mode eq 'other')
@@ -897,6 +900,7 @@ sub show_mypage
 	# text links
 	$mgr->{TmplData}{PAGE_LANG_001071} = $mgr->{Func}->get_text($mgr, 1072);
 	$mgr->{TmplData}{PAGE_LANG_001073} = $mgr->{Func}->get_text($mgr, 1074);
+	$mgr->{TmplData}{PAGE_LANG_001232} = $mgr->{Func}->get_text($mgr, 1233);
     }
     else
     {
@@ -929,6 +933,7 @@ sub show_mypage
 	# text links
 	$mgr->{TmplData}{PAGE_LANG_001071} = $mgr->{Func}->get_text($mgr, 1071);
 	$mgr->{TmplData}{PAGE_LANG_001073} = $mgr->{Func}->get_text($mgr, 1073);
+	$mgr->{TmplData}{PAGE_LANG_001232} = $mgr->{Func}->get_text($mgr, 1232);
     }	
 }    
 

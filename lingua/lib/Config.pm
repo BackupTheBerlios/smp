@@ -14,6 +14,11 @@ $CONFIG = {
 			      script  => 'Home',
 			      session => '0'
 			     },
+                             {
+                              action  => 'text',
+                              script  => 'Text',
+                              session => '0'
+                             },
 			     {
 			      action  => 'user',
 			      script  => 'User',

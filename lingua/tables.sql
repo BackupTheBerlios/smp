@@ -67,6 +67,47 @@ INSERT INTO lingua_dictionary (de) VALUES ('Software');
 INSERT INTO lingua_dictionary (en, de) VALUES ('Logout', 'Abmelden');
 INSERT INTO lingua_dictionary (en, de) VALUES 
 	('Wrong username or password.', 'Falscher Benutzername oder Passwort.');
+#
+# user module
+#
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1001', 'Personal Page', 'Pers&ouml;liche Seite');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1002', 'This is not a valid email address', 'Das ist keine korrekte email-Adresse');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1003', 'Username', 'Benutzername');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1004', 'First Name', 'Vorname');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1005', 'Last Name', 'Nachname');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1006', 'Email Address', 'Email-Adresse');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1007', 'Points', 'Punkte');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1008', 'Spoken Language', 'Beherrschte Sprache');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1009', 'Preferred Language on LINGUA', 'Bevorzugte Sprache in LINGUA');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1010', 'Add Language', 'Sprache hinzuf&uuml;gen');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1011', 'Your personal description', 'Ihre pers&ouml;liche Beschreibung');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1012', 'Add description in new Language', 'Beschreibung in neuer Sprache hinzuf&uuml;gen');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1013', 'Update!', '&Auml;ndern');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1014', 'Mother tongue', 'Muttersprache');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1015', 'Fluent', 'Flie&szlig;end');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1016', 'Good', 'Gut');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1017', 'Mediocre', 'Mittelm&auml;&szlig;ig');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1018', 'Base Knowledge', 'Grundkenntnisse');
+
+
 
 DROP TABLE IF EXISTS lingua_user;
 
@@ -118,8 +159,11 @@ CREATE TABLE lingua_user_lang (
 	user_id INT(10)     UNSIGNED      NOT NULL,
 	lang_id SMALLINT(3) UNSIGNED      NOT NULL,
 	level   ENUM('0','1','2','3','4') NOT NULL,
-	PRIMARY KEY(user_id)
 );
+
+INSERT INTO lingua_user_lang (user_id, lang_id, level) VALUES ('1', '1', '0');
+INSERT INTO lingua_user_lang (user_id, lang_id, level) VALUES ('1', '2', '2');
+
 
 DROP TABLE IF EXISTS lingua_categories;
 

@@ -525,6 +525,9 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('1079', 'This user has been blocked by an admin!', 'Dieser Benutzer ist von einem Admin gesperrt worden!', 'Cet utilisateur a ete bloque par l un des administrateurs du system');
 
+# ! personal page continued at 1232 !
+
+
 # Sprachlevel (1080 - 1085)
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('1080', 'Mother tongue', 'Muttersprache', 'Langue maternelle');
@@ -784,6 +787,13 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('1228', 'Reason for the block', 'Begründung für die Sperre', 'Reason du blocage');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('1229', 'Change', 'Wechseln', 'Changer');
+
+# personale page (continued) (1232 - 1233)
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('1232', 'To your translation-reservations', 'Ihre reservierten Übersetzungen finden Sie hier', 'To your translation-reservations [francais]');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('1233', 'To this user\'s translation-reservations', 'Die reservierten Übersetzungen dieses Benutzers finden Sie hier', 'To your translation-reservations [francais]');
+
 
 
 #

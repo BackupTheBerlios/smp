@@ -93,6 +93,36 @@ INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Surveying', 'Vermessungswese
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Hardware', 'Hardware', 'Hardware');
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Software', 'Software', 'Software');
 
+# 
+# menu 
+#
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('501', 'Site Language','Sprache von LINGUA', 'Langue de LINGUA');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('502', 'Change', 'Wechseln','Changer');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('503', 'Navigation', 'Navigation', 'Navigation');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('504', 'To the texts', 'Zu den Texten','Texts');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('505', 'Personal Page','Persönliche Seite', 'Page personnelle');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('506', 'Category admin', 'Kategorien verwalten', 'Gestion de Categories');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('507', 'User admin', 'Benutzer verwalten', 'Admin de l utilisateur');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('508', 'Help/Info', 'Help/Info','Help/Info');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('509', 'Contact', 'Kontakt','Contact');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('510', 'Search the Archive', 'Texte durchsuchen', 'Search');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('511', 'Language of text', 'Sprache des Textes', 'Lang');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('512', 'Search for', 'Suchen nach', 'search for');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('513', 'Look up', 'Suchen', 'Look up');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('514', 'Login', 'Login', 'Login');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('515', 'Register here', 'Hier registrieren', 'Register here');
+
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('516', 'Username','Benutzername', 'Nom Utilisateur');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('517', 'Password', 'Passwort','Mot de passe');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('518', 'Login', 'Anmelden','Entrer');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('519', 'Wrong username or password.', 'Falscher Benutzername oder Passwort.', 'Mot de passe ou Nom Utilisateur incorrect');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('520', 'Logged in', 'Eingeloggt', 'Logged in');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('521', 'Points available','Punkte verfügbar', 'Points existants');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('522', 'Points in work','Punkte in Arbeit', 'Points en travail');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('523', 'Logout', 'Abmelden','Sortir');
+
+
+
 ### home module
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('6000', 'New', 'Neu', 'Nouveau');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES ('6001', 'Change', 'Ändern', 'Changer');

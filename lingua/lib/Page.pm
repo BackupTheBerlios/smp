@@ -27,18 +27,24 @@ sub fill_main_part {
     $mgr->{TmplData}{PAGE_OPEN}           = $mgr->{CGI}->param('open') || '';
 
     # languages
-    $mgr->{TmplData}{PAGE_LANG_000005}    = $mgr->{Func}->get_text($mgr, 5);
-    $mgr->{TmplData}{PAGE_LANG_000006}    = $mgr->{Func}->get_text($mgr, 6);
+    $mgr->{TmplData}{PAGE_LANG_000501}    = $mgr->{Func}->get_text($mgr, 501);
+    $mgr->{TmplData}{PAGE_LANG_000502}    = $mgr->{Func}->get_text($mgr, 502);
 
-    # serach
-    $mgr->{TmplData}{PAGE_LANG_009000}    = $mgr->{Func}->get_text($mgr, 9000);
-    $mgr->{TmplData}{PAGE_LANG_009001}    = $mgr->{Func}->get_text($mgr, 9001);
+    # navigation
+    $mgr->{TmplData}{PAGE_LANG_000503}    = $mgr->{Func}->get_text($mgr, 503);
+    $mgr->{TmplData}{PAGE_LANG_000504}    = $mgr->{Func}->get_text($mgr, 504);
+    $mgr->{TmplData}{PAGE_LANG_000508}    = $mgr->{Func}->get_text($mgr, 508);
+    $mgr->{TmplData}{PAGE_LANG_000509}    = $mgr->{Func}->get_text($mgr, 509);
 
     $mgr->{TmplData}{PAGE_LEFT_LINK_HOME} = $mgr->my_url(ACTION => "home");
-
-    # info/help link (by misterp)
-    $mgr->{TmplData}{PAGE_LANG_002001}    = $mgr->{Func}->get_text($mgr, 2001);
     $mgr->{TmplData}{PAGE_LEFT_LINK_HELP} = $mgr->my_url(ACTION => "help") . "&index=1";
+    $mgr->{TmplData}{PAGE_LEFT_LINK_CONT} = $mgr->my_url(ACTION => "help") . "&index=12";
+
+    # serach
+    $mgr->{TmplData}{PAGE_LANG_000510}    = $mgr->{Func}->get_text($mgr, 510);
+    $mgr->{TmplData}{PAGE_LANG_000511}    = $mgr->{Func}->get_text($mgr, 511);
+    $mgr->{TmplData}{PAGE_LANG_000512}    = $mgr->{Func}->get_text($mgr, 512);
+    $mgr->{TmplData}{PAGE_LANG_000513}    = $mgr->{Func}->get_text($mgr, 513);
 }
 
 sub fill_user_part {
@@ -48,12 +54,12 @@ sub fill_user_part {
     my $lang    = $mgr->{Language};
     my $user_id = $mgr->{UserData}->{UserId}; 
 
-    $mgr->{TmplData}{PAGE_LANG_000003} = $mgr->{Func}->get_text($mgr, 3);
-    $mgr->{TmplData}{PAGE_LANG_000008} = $mgr->{Func}->get_text($mgr, 8);
-    $mgr->{TmplData}{PAGE_LANG_000009} = $mgr->{Func}->get_text($mgr, 9);
-    $mgr->{TmplData}{PAGE_LANG_000010} = $mgr->{Func}->get_text($mgr, 10);
-    $mgr->{TmplData}{PAGE_LANG_000011} = $mgr->{Func}->get_text($mgr, 11);
-    $mgr->{TmplData}{PAGE_USER_LINK}   = $mgr->my_url(ACTION => "user", METHOD => "mypage");
+    # user area
+    $mgr->{TmplData}{PAGE_LANG_000520} = $mgr->{Func}->get_text($mgr, 520); # header
+    $mgr->{TmplData}{PAGE_LANG_000516} = $mgr->{Func}->get_text($mgr, 516); # 'username'
+    $mgr->{TmplData}{PAGE_LANG_000521} = $mgr->{Func}->get_text($mgr, 521); # points 1
+    $mgr->{TmplData}{PAGE_LANG_000522} = $mgr->{Func}->get_text($mgr, 522); # points 2
+    $mgr->{TmplData}{PAGE_LANG_000523} = $mgr->{Func}->get_text($mgr, 523); # logout button
 
     $mgr->{TmplData}{PAGE_USERNAME}   = 
       $mgr->to_unicode($mgr->{UserData}->{UserName});
@@ -62,16 +68,21 @@ sub fill_user_part {
     $mgr->{TmplData}{PAGE_POINTS}     = 
       $mgr->{Points}->get_inactiv_points($mgr, $user_id);
 
+    # personal page link
+    $mgr->{TmplData}{PAGE_LANG_000505} = $mgr->{Func}->get_text($mgr, 505); 
+    $mgr->{TmplData}{PAGE_LEFT_LINK_PERS}   = $mgr->my_url(ACTION => "user", METHOD => "mypage");
+
+
     if (defined $mgr->{UserData}->{UserLevel}) {
       if ($mgr->{UserData}->{UserLevel} == 2) {
 	$mgr->{TmplData}{PAGE_USER_TYPE_2}     = 1;
-	$mgr->{TmplData}{PAGE_CATEGORY_ADMIN}  = $mgr->my_url(ACTION => "home", 
+	$mgr->{TmplData}{PAGE_LANG_000506}     = $mgr->{Func}->get_text($mgr, 506);
+	$mgr->{TmplData}{PAGE_LANG_000507}     = $mgr->{Func}->get_text($mgr, 507);
+	$mgr->{TmplData}{PAGE_LEFT_LINK_CAT}  = $mgr->my_url(ACTION => "home", 
 							      METHOD => "cat_admin",
 							      MODE   => "admin");
-	$mgr->{TmplData}{PAGE_USER_ADMIN_LINK} = $mgr->my_url(ACTION => "user",
+	$mgr->{TmplData}{PAGE_LEFT_LINK_ADM} = $mgr->my_url(ACTION => "user",
 							      METHOD => "adm_search");
-	$mgr->{TmplData}{PAGE_LANG_001200}     = $mgr->{Func}->get_text($mgr, 1200);
-	$mgr->{TmplData}{PAGE_LANG_000014}     = $mgr->{Func}->get_text($mgr, 14);
       } elsif ($mgr->{UserData}->{UserLevel} == 1) {
 
       } else {
@@ -80,12 +91,14 @@ sub fill_user_part {
     }
 
   } else {
-    $mgr->{TmplData}{PAGE_REGISTER_LINK} = $mgr->my_url(ACTION => "user", METHOD => "reg1");
-    $mgr->{TmplData}{PAGE_LEFT_REGISTER} = $mgr->{Func}->get_text($mgr, 23);
+    # login area
     $mgr->{TmplData}{PAGE_IF_LOGIN}      = 1;
-    $mgr->{TmplData}{PAGE_LANG_000003}   = $mgr->{Func}->get_text($mgr, 3);
-    $mgr->{TmplData}{PAGE_LANG_000004}   = $mgr->{Func}->get_text($mgr, 4);
-    $mgr->{TmplData}{PAGE_LANG_000007}   = $mgr->{Func}->get_text($mgr, 7);
+    $mgr->{TmplData}{PAGE_LANG_000514}   = $mgr->{Func}->get_text($mgr, 514);
+    $mgr->{TmplData}{PAGE_LANG_000515}   = $mgr->{Func}->get_text($mgr, 515);
+    $mgr->{TmplData}{PAGE_REGISTER_LINK} = $mgr->my_url(ACTION => "user", METHOD => "reg1");
+    $mgr->{TmplData}{PAGE_LANG_000516}   = $mgr->{Func}->get_text($mgr, 516);
+    $mgr->{TmplData}{PAGE_LANG_000517}   = $mgr->{Func}->get_text($mgr, 517);
+    $mgr->{TmplData}{PAGE_LANG_000518}   = $mgr->{Func}->get_text($mgr, 518);
   }
 
 }

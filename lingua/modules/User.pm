@@ -6,7 +6,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)\.(\d+)/;
 
 # "constants" (don't change later on)
 my $status_ok      = 1;
@@ -203,7 +203,7 @@ sub method_mypage_upd
     }
     elsif (defined($mgr->{CGI}->param('u_sub_descedit')))
     {
-	my $lang_id = $mgr->{CGI}->param('u_desclang');
+	my $lang_id = $mgr->{CGI}->param('u_sel_desclang');
 	# save this lang_id in session
 	$mgr->{Session}->set(UserDescLangId => $lang_id);
         $self->show_upd_descedit($mgr);
@@ -315,6 +315,7 @@ sub method_upd_descedit
     {
 	my $lang_id = $mgr->{CGI}->param('u_sel_desclang');
 	# save this lang_id in session
+	warn sprintf("[method_upd_descedit:] lang id is %d", $lang_id);
 	$mgr->{Session}->set(UserDescLangId => $lang_id);
 	$self->show_upd_descedit($mgr);
     }
@@ -2909,7 +2910,7 @@ sub put_pagedata_textarea
 {
     my ($self, $mgr, $val_name, $value) = @_;
 
-    # convert from unicode
+    # convert to unicode
     my $tmpl_value = $mgr->from_unicode($value);
 
     # html-escape

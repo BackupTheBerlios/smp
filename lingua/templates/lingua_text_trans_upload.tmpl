@@ -1,0 +1,71 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+<input type="hidden" name="text_to_trans_id" value="<TMPL_VAR TEXT_TO_TRANS_ID>">
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="rigth">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#31639C" width="600">
+
+    <table cellspacing="5" cellpadding="0" border="0" align="rigth">
+    <tr>
+	<td> 
+	<a class="normal" onclick="<TMPL_VAR TEXT_BACK>"><TMPL_VAR PAGE_LANG_007001></a>
+	</td>
+        <td>  <TMPL_IF TEXT_TRANS_UPLOAD_ERROR>
+	          <span class="alert">
+        	    <TMPL_VAR TEXT_TRANS_UPLOAD_ERROR>
+        	  </span>
+              </TMPL_IF>
+	</td>
+    </tr>
+    <tr>
+	   <td> <TMPL_VAR PAGE_LANG_007016>: </td>
+	    <td> <INPUT NAME="text_trans_file" TYPE="file" SIZE="50" MAXLENGTH="100000" ACCEPT="text/*" > </td>
+   </tr>
+   <tr><td> </td>
+       <td> <input type="submit" name="text_trans_upload" value="<TMPL_VAR PAGE_LANG_007006>"> </td>
+	
+    </tr>
+   </table>
+
+
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  </td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

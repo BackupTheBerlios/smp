@@ -1,0 +1,63 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#31639C" width="600">
+
+    <table cellspacing="5" cellpadding="0" border="0" width="100%" align="right">
+    <tr> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td><TMPL_VAR NO_MESSAGE_008023>&nbsp;</td> <th><TMPL_VAR PAGE_LANG_008022></th> <td>&nbsp;</td> <th><TMPL_VAR PAGE_LANG_008019></th> <td>&nbsp;</td> <td> <b><TMPL_VAR PAGE_LANG_008020></b> </td> </tr>
+
+    <TMPL_LOOP TEXT_USER_LOOP_MES>					
+    <tr> 
+<td>&nbsp;</td>
+<TMPL_IF TEXT_FUNC_DELETE>
+	<td bgcolor="<TMPL_VAR ROW_COLOR>">&nbsp;<t/d> 
+	<td>&nbsp;</td> 
+	<td>
+		<a class="normal" href="<TMPL_VAR TEXT_MES_DELETE_LINKS>"><TMPL_VAR TEXT_FUNC_DELETE></a>
+	</td>
+</TMPL_IF>
+
+
+<TMPL_IF TEXT_FUNC_UPLOAD>
+	<td bgcolor="<TMPL_VAR ROW_COLOR>">&nbsp;<t/d> 
+	<td>
+		<a class="normal" href="<TMPL_VAR TEXT_MES_UPLOAD_LINKS>"><TMPL_VAR TEXT_FUNC_UPLOAD></a>
+	</td>
+</TMPL_IF>
+
+
+<TMPL_IF TEXT_FUNC_DEBLOCK>
+<td>
+	<a class="normal" href="<TMPL_VAR TEXT_MES_DEBLOCK_LINKS>"><TMPL_VAR TEXT_FUNC_DEBLOCK></a>
+</td>
+</TMPL_IF>
+
+	<td> <TMPL_VAR TEXT_RES_DATE></td> <td>&nbsp;</td> <td><a class="normal" href="<TMPL_VAR TEXT_HEADER_LINKS>"><TMPL_VAR TEXT_HEADER></a></td> <td>&nbsp;</td> <td><TMPL_VAR TEXT_RES_MES></td>
+    </tr>
+    </TMPL_LOOP>
+
+   </table>
+
+
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  </td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+

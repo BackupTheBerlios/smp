@@ -1,0 +1,202 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+<input type="hidden" name="text_to_trans_id" value="<TMPL_VAR TEXT_TO_TRANS_ID>">
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#31639C" width="600">
+
+    <table cellspacing="5" cellpadding="0" border="0" width="100%" align="center">
+    <tr>
+      <td>
+<!-- Zurück -->
+        <a class="normal" onclick="<TMPL_VAR TEXT_BACK>"><TMPL_VAR PAGE_LANG_007001></a>
+      </td>
+      <td> 
+<!-- Fehlermeldung Global-->
+	<TMPL_IF TEXT_TRANS_ERROR>
+	  <span class="alert">
+            <TMPL_VAR TEXT_TRANS_ERROR>
+          </span>
+        </TMPL_IF>      
+      </td>
+    </tr>
+    <tr>
+      <td>
+<!-- Categorie -->
+        <b><TMPL_VAR PAGE_LANG_007000>:</b>
+      </td>
+      <td>
+	<TMPL_VAR TEXT_CAT>
+      </td>
+    </tr>
+    
+<!-- Quellsprache-->
+      <td>
+        <b><TMPL_VAR PAGE_LANG_007012>:</b>
+      </td>
+      <td>
+	<TMPL_VAR TEXT_LANG>
+      </td>
+    <tr>
+    <tr>
+<!-- Zielsprache -->
+      <td>
+<TMPL_IF TEXT_TRANS_LANG_ERROR>
+<br>
+</TMPL_IF>  
+        <b><TMPL_VAR PAGE_LANG_007017>:</b>
+      </td>
+      <td>
+<TMPL_IF TEXT_TRANS_LANG_ERROR>
+	  <span class="alert">
+            <TMPL_VAR TEXT_TRANS_LANG_ERROR>
+          </span>
+          <br>
+        </TMPL_IF>    
+
+        <select name="trans_lang">
+        <TMPL_LOOP LOOP_TEXT_TRANS_LANG>
+          <option value="<TMPL_VAR TEXT_TRANS_LANG_ID>" <TMPL_IF TEXT_TRANS_LANG_IF>selected</TMPL_IF>>
+            <TMPL_VAR TEXT_TRANS_LANG_NAME>
+          </option>
+        </TMPL_LOOP>
+        </select>
+      </td>
+    </tr>
+    <tr>
+<!-- Text-Title ---->
+      <td valign="top">
+        <b><TMPL_VAR PAGE_LANG_008007>:</b>
+      </td>
+      <td>
+        <input type="text" name="text_header" value="<TMPL_VAR TEXT_HEADER>" size="69">
+      </td>
+    </tr>
+    <tr>
+<!-- Trans-Title ---->
+      <td valign="top">
+<TMPL_IF TEXT_TRANS_HEADER_ERROR>
+<br>
+</TMPL_IF>  
+        <b><TMPL_VAR PAGE_LANG_008008>:</b>
+      </td>
+      <td>
+	<TMPL_IF TEXT_TRANS_HEADER_ERROR>
+	  <span class="alert">
+            <TMPL_VAR TEXT_TRANS_HEADER_ERROR>
+          </span>
+          <br>
+        </TMPL_IF>     
+        <input type="text" name="text_trans_header" value="<TMPL_VAR TEXT_TRANS_HEADER>" size="69">
+      </td>
+    </tr>
+
+ <tr>
+      <td>
+        &nbsp;
+      </td>
+      <td>
+<hr>
+      </td>
+    </tr>
+
+    <tr>
+<!-- Text-Desc ---->
+      <td valign="top">
+        <b><br><br><TMPL_VAR PAGE_LANG_008009>:</b>
+      </td>
+      <td>
+        <textarea name="text_desc" cols="50" rows="5" wrap="physical"><TMPL_VAR TEXT_DESC></textarea>
+      </td>
+    </tr>
+    <tr>
+<!-- Trans-Desc ---->
+      <td valign="top">
+        <b><br><br><TMPL_VAR PAGE_LANG_008010>:</b>
+      </td>
+      <td>
+	<TMPL_IF TEXT_TRANS_DESC_ERROR>
+	  <span class="alert">
+            <TMPL_VAR TEXT_TRANS_DESC_ERROR>
+          </span>
+          <br>
+        </TMPL_IF>      
+        <textarea name="text_trans_desc" cols="50" rows="5" wrap="physical"><TMPL_VAR TEXT_TRANS_DESC></textarea>
+      </td>
+    </tr>
+
+ <tr>
+      <td>
+        &nbsp;
+      </td>
+      <td>
+<hr>
+      </td>
+    </tr>
+
+    <tr>
+<!-- Text-Text ---->
+      <td valign="top">
+        <b><br><br><TMPL_VAR PAGE_LANG_008011>:</b>
+      </td>
+      <td>
+        <textarea name="text_text" cols="50" rows="10" wrap="physical"><TMPL_VAR TEXT_TEXT></textarea>
+      </td>
+    </tr>
+    <tr>
+<!-- Trans-Text ---->
+      <td valign="top">
+        <b><br><br><TMPL_VAR PAGE_LANG_008012>:</b>
+      </td>
+      <td>
+	<TMPL_IF TEXT_TRANS_TEXT_ERROR>
+	  <span class="alert">
+            <TMPL_VAR TEXT_TRANS_TEXT_ERROR>
+          </span>
+          <br>
+        </TMPL_IF>      
+        <textarea name="text_trans_text" cols="50" rows="10" wrap="physical"><TMPL_VAR TEXT_TRANS_TEXT></textarea>
+      </td>
+    </tr>
+
+    <tr>
+      <td align="center">
+        <input type="submit" name="show_text_trans_upload" value="<TMPL_VAR PAGE_LANG_008013>">
+      </td>
+      <td align="center">
+        <input type="submit" name="text_trans_add" value="<TMPL_VAR PAGE_LANG_008014>">
+      </td>
+    </tr>
+    </table>
+
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  <td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+
+
+
+
+

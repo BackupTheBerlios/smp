@@ -1,0 +1,104 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<input type="hidden" name="change_lang_text_insert_ok" value="1">
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#31639C" width="600">
+
+    <table cellspacing="5" cellpadding="0" border="0" width="100%" align="center">
+    <tr>
+      <td>
+	<a class="normal" onclick="<TMPL_VAR TEXT_BACK>"><TMPL_VAR PAGE_LANG_007001></a>
+      </td>
+      <td>
+        <TMPL_IF TEXT_TRANS_ERROR>
+          <span class="alert">
+            <TMPL_VAR TEXT_TRANS_ERROR>
+          </span>
+        </TMPL_IF>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <TMPL_VAR PAGE_LANG_007000>: 
+      </td>
+      <td>
+        <TMPL_VAR TEXT_CAT_NAME>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <TMPL_VAR PAGE_LANG_007012>:
+      </td>
+      <td>
+        <TMPL_VAR TEXT_LANG_NAME>
+      </td>
+    <tr>
+    <tr>
+      <td>  
+        <TMPL_VAR PAGE_LANG_007017>:
+      </td>
+      <td>
+        <TMPL_VAR TEXT_TRANS_LANG_NAME>
+      </td>
+    </tr>
+    <tr>
+      <td>
+	<TMPL_VAR PAGE_LANG_007014>:
+      </td>
+      <td>
+        <TMPL_VAR TRANS_WORDS>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <TMPL_VAR PAGE_LANG_007015>:
+      </td>
+      <td>
+        <TMPL_VAR TRANS_POINT>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top">
+        <TMPL_VAR PAGE_LANG_008007>:
+      </td>
+      <td>
+        <TMPL_VAR TEXT_HEADER>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top">
+        <TMPL_VAR PAGE_LANG_008008>:
+      </td>
+      <td>
+        <TMPL_VAR TRANS_HEADER>
+      </td>
+    </tr>
+
+    </table>
+
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  <td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+

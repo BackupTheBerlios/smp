@@ -48,7 +48,7 @@ use fields (
 use vars qw(%FIELDS $VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.17 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.18 $ =~ /(\d+)\.(\d+)/;
 
 &handler();
 
@@ -476,6 +476,12 @@ sub template_error {
 	};
 
     exit;
+}
+
+sub DESTROY {
+    my $self = shift;
+
+    $self->{DbHandle}->disconnect if $self->{DbHandle};
 }
 
 1;

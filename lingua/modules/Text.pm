@@ -6,7 +6,7 @@ use vars qw($VERSION);
 use strict;
 
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.24 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.25 $ =~ /(\d+)\.(\d+)/;
 
 
 #-----------------------------------------------------------------------------#
@@ -2019,11 +2019,11 @@ SQL
 
 
 #Translated Languages of this Text##################
-
-  my @lang_loop_data = $self->get_relation_texts($mgr, $parent_id);
+  my @lang_loop_data;
+  @lang_loop_data = $self->get_relation_texts($mgr, $orig_text_id, @lang_loop_data);
   my %data;
-  $data{TEXT_TRANS_LANG_ID}= $text_id;
-  $data{TEXT_TRANS_LANG_NAME}= $self->lang_name($mgr,$lang_id);
+  $data{TEXT_TRANS_LANG_ID}= $orig_text_id;
+  $data{TEXT_TRANS_LANG_NAME}= $self->lang_name($mgr,$orig_lang_id);
   push(@lang_loop_data,\%data);
 
   @lang_loop_data = sort {$self->sort_uml($a->{TEXT_TRANS_LANG_NAME},$b->{TEXT_TRANS_LANG_NAME})} @lang_loop_data;
@@ -2113,7 +2113,7 @@ SQL
 }#end get_original_text
 
 #-----------------------------------------------------------------------------#
-#CALL: $self->get_relation_texts($mgr, $parent_id)                            #
+#CALL: $self->get_relation_texts($mgr, $text_id)                              #
 #                                                                             #
 #RETURN: @lang_loop_data;                                                     #
 #                                                                             #
@@ -2123,7 +2123,7 @@ SQL
 #Author: Hendrik Erler(erler@cs.tu-berlin.de)                                 #
 #-----------------------------------------------------------------------------#
 sub get_relation_texts{
-  my ($self, $mgr, $parent_id) = @_;
+  my ($self, $mgr, $text_id, @lang_loop_data) = @_;
 
 #Translated Languages of this Text##################
   my $table = $mgr->{Tables}->{TEXT};
@@ -2131,25 +2131,24 @@ sub get_relation_texts{
   my $sth = $dbh->prepare(<<SQL);
 SELECT text_id, parent_id, lang_id
 FROM   $table
-WHERE  text_id = ?
+WHERE  parent_id = ?
 
 SQL
-  unless ($sth->execute($parent_id)) {
+  unless ($sth->execute($text_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
   }
   $table = $sth->fetchall_arrayref();
-  my @lang_loop_data;
   my $row;
   foreach $row (@$table){
     my %data;
-    if($row->[1] > 0){
-      @lang_loop_data = $self->get_relation_texts($mgr, $row->[1]);
-    }
     $data{TEXT_TRANS_LANG_ID}= $row->[0];
     $data{TEXT_TRANS_LANG_NAME}= $self->lang_name($mgr,$row->[2]);
     push(@lang_loop_data,\%data);
+    if(defined $row->[0]){
+      @lang_loop_data = $self->get_relation_texts($mgr, $row->[0], @lang_loop_data);
+    }
   }
   $sth->finish();
   return @lang_loop_data;

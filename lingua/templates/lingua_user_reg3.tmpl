@@ -1,0 +1,122 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<input type="hidden" name="method" value="reg1">
+<input type="hidden" name="reg_from" value="3">
+
+<input type="hidden" name="u_userid"  value="<TMPL_VAR USER_USERID>">
+
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#ababab" width="600">
+
+    <div align="center">
+      <h1><TMPL_VAR PAGE_LANG_001040></h1>
+
+      <TMPL_IF NAME="USER_IF_INP_ERROR">
+        <span class="alert">
+          <TMPL_VAR USER_REG1_ERROR><BR><BR>
+        </span>
+	<br>
+      </TMPL_IF>
+
+      <span class="normal">
+        <TMPL_VAR PAGE_LANG_001041><BR>
+      </span>
+    </div>
+    <br>
+
+    <table cellspacing="0" cellpadding="2" border="0" width="600">
+
+      <colgroup>
+        <col width="100">
+        <col width="200">
+        <col width="200">
+	<col width="100">
+      </colgroup>
+
+      <tr>
+        <td></td>
+        <td align="center">
+	  <span class="normal">
+	    <TMPL_VAR PAGE_LANG_001042>
+	  </span>
+	</td>
+	<td align="center">
+	  <span class="normal">
+	    <TMPL_VAR PAGE_LANG_001043>
+	  </span>
+	</td>
+	<td></td>
+      </tr>
+    
+      <tr>
+        <td></td>
+        <td align="center">
+ 	  <select name="u_sel_lang" size="1">
+	    <TMPL_LOOP USER_LOOP_LANG>
+	      <option value="<TMPL_VAR USER_OPTVAL_LANG>">
+	        <TMPL_VAR USER_OPT_LANG>
+	    </TMPL_LOOP>
+	  </select>
+  	</td>
+	<td align="center">
+	  <select name="u_sel_langlvl" size="1">
+	    <option value="0"><TMPL_VAR PAGE_LANG_001014>
+	    <option value="1"><TMPL_VAR PAGE_LANG_001015>
+	    <option value="2"><TMPL_VAR PAGE_LANG_001016>
+	    <option value="3"><TMPL_VAR PAGE_LANG_001017>
+	    <option value="4"><TMPL_VAR PAGE_LANG_001018>
+	  </select>
+	</td>
+	<td></td>
+      </tr>     
+
+      <tr><td>&nbsp;</td></tr>
+
+      <tr>
+        <td></td>
+        <td></td>
+	<td align=right>
+	  <input type="submit" name="u_sub_reg3more"
+	         value="<TMPL_VAR PAGE_LANG_001044>">
+	  &nbsp;
+	</td>
+	<td>
+	  <input type="submit" name="u_sub_reg3"
+                 value="<TMPL_VAR PAGE_LANG_001028>">
+	</td>
+      </tr>     
+
+    </table>
+ 
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  <td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+
+
+
+

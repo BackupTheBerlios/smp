@@ -1,6 +1,6 @@
 <TMPL_INCLUDE lingua_header.tmpl>
 
-<input type="hidden" name="method" value="mypage">
+<input type="hidden" name="method" value="mypage_upd">
 
 <table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
 <tr valign="top">
@@ -14,155 +14,239 @@
   </td>
   <td bgcolor="#ababab" width="600">
 
-    <h1 align="center"><TMPL_VAR PAGE_LANG_001001></h1>
+    <h1 align="center"><TMPL_VAR PAGE_LANG_001051> <TMPL_VAR USER_USERNAME></h1>
 
-    <TMPL_IF NAME="USER_IF_INP_ERROR">
-      <TMPL_VAR PAGE_LANG_001002>
-    </TMPL_IF>
-
-    <table cellspacing="0" cellpadding="2" border="0" width="600">
-
-      <colgroup>
-        <col width="33%">
-	<col width="34%">
-	<col width="33%">
-      </colgroup>
-
-      <tr>
-        <td align="right">
-	  <TMPL_VAR PAGE_LANG_001004>:&nbsp;
-	</td>
-	<td align="center">
-	  <TMPL_VAR USER_FIRSTNAME>
-	</td>
-	<td>
-	</td>
-      </tr>     
-
-      <tr>
-        <td align="right">
-	  <TMPL_VAR PAGE_LANG_001005>:&nbsp;
-	</td>
-	<td align="center">
-	  <TMPL_VAR USER_LASTNAME>:
-	</td>
-	<td>
-	</td>
-      </tr>
-
-      <tr>
-        <td align="right">
-	  <TMPL_VAR PAGE_LANG_001006>:&nbsp;
-	</td>
-
-        <td align="center">
-          <input type="text" name="u_inp_email"
-            value="<TMPL_VAR USER_EMAIL>" size="30" maxlength="200">
-	</td>
-	<td>
-	  <input type="submit" name="u_sub_email"
-            value="<TMPL_VAR PAGE_LANG_001013>">
-	</td>
-
-      </tr>
-    </table>
+<!-- Part 1: General Information (name etc) ---------------------------------->
     
-    <br>
-    <hr>
-    <h2 align="center"><TMPL_VAR PAGE_LANG_001008></h2>
-
-
     <table cellspacing="0" cellpadding="2" border="0" width="600">
 
       <colgroup>
-        <col width="33%">
-	<col width="34%">
-	<col width="33%">
+        <col width="100">
+        <col width="200">
+        <col width="200">
+        <col width="100">
       </colgroup>
-
-      <TMPL_LOOP NAME='USER_LOOP_LANGLVL'>
-      <tr>
-        <td align="right">
-	  <TMPL_VAR USER_MYLANG>:&nbsp;
-	</td>
-	<td align="center">
-	  <select name="<TMPL_VAR USER_SEL_LANGLVL>" size="1" align="center">
-	    <option value="0" <TMPL_VAR USER_DEF_LANGLVL_0>> 
-	      <TMPL_VAR USER_OPT_LANGLVL_0>
-	    <option value="1" <TMPL_VAR USER_DEF_LANGLVL_1>> 
-	      <TMPL_VAR USER_OPT_LANGLVL_1>
-	    <option value="2" <TMPL_VAR USER_DEF_LANGLVL_2>> 
-	      <TMPL_VAR USER_OPT_LANGLVL_2>
-	    <option value="3" <TMPL_VAR USER_DEF_LANGLVL_3>> 
-	      <TMPL_VAR USER_OPT_LANGLVL_3>
-	    <option value="4" <TMPL_VAR USER_DEF_LANGLVL_4>> 
-	      <TMPL_VAR USER_OPT_LANGLVL_4>
-	    <option value="5" <TMPL_VAR USER_DEF_LANGLVL_5>> 
-	      <TMPL_VAR USER_OPT_LANGLVL_5>	    
-	  </select>
-	</td>
-	<td>
-	  <input type="submit" name="<TMPL_VAR USER_SUB_LANGLVL>"
-	         value="<TMPL_VAR PAGE_LANG_001013>">
-	</td>
-      </tr>
-      </TMPL_LOOP>
-
-      <tr><td><br></td></tr>
       
       <tr>
         <td></td>
-	<td align="center"><h3><TMPL_VAR PAGE_LANG_001010></h3></td>
-	<td></td>
+        <td>
+          <span class="normal"><TMPL_VAR PAGE_LANG_001052>:</span>
+        </td>
+        <td>
+          <span class="normal"><TMPL_VAR USER_FIRSTNAME> <TMPL_VAR USER_LASTNAME></span>
+        </td>
+        <td>
+        </td>
+      </tr>     
+
+      <tr>
+        <td></td>
+        <td>
+          <span class="normal"><TMPL_VAR PAGE_LANG_001053>:</span>
+        </td>
+        <td>
+          <span class="normal"><TMPL_VAR USER_EMAIL></span>
+        </td>
+        <td>
+        </td>
       </tr>
-      <tr>
-        <td align="right">
-	  <select name="u_sel_newlang" size="1">
-	    <TMPL_LOOP USER_LOOP_NEWLANG>
-	      <option value="<TMPL_VAR USER_OPTVAL_NEWLANG>">
-	        <TMPL_VAR USER_OPT_NEWLANG>
-	    </TMPL_LOOP>
-	  </select>
-	</td>
-
-	<td align="center">
-	  <select name="u_sel_newlanglvl" size="1">
-	    <option value="0"><TMPL_VAR USER_OPT_LANGLVL_0>
-	    <option value="1"><TMPL_VAR USER_OPT_LANGLVL_1>
-	    <option value="2"><TMPL_VAR USER_OPT_LANGLVL_2>
-	    <option value="3"><TMPL_VAR USER_OPT_LANGLVL_3>
-	    <option value="4"><TMPL_VAR USER_OPT_LANGLVL_4>
-	  </select>
-	</td>
-	  
-	<td>
-	  <input type="submit" name="u_sub_newlang"
-	         value="<TMPL_VAR PAGE_LANG_001013>">
-	</td>
-      </tr>	
-
-      <tr><td><br></td></tr>
 
       <tr>
-        <td align="right">
-	  <TMPL_VAR PAGE_LANG_001020>:&nbsp;
-	</td>
-	<td align="center">
-	  <select name="u_sel_syslang" size="1">
-	    <TMPL_LOOP NAME="USER_LOOP_SYSLANG">
-	      <option value="<TMPL_VAR USER_OPTVAL_SYSLANG>" 
-	              <TMPL_VAR USER_DEF_SYSLANG>>
-	        <TMPL_VAR USER_OPT_SYSLANG>
-	    </TMPL_LOOP>
-	  </select>
-	</td>
-	<td>
-	  <input type="submit" name="u_sub_syslang"
-	         value="<TMPL_VAR PAGE_LANG_001013>">
-	</td>
-      </tr>  
-	  
+        <td></td>
+        <td>
+          <span class="normal"><TMPL_VAR PAGE_LANG_001054>:</span>
+        </td>
+        <td>
+          <span class="normal"><TMPL_VAR USER_SYSLANG> --&gt;&nbsp;</span>
+          <input type="submit" name="u_sub_syslang"
+                 value="<TMPL_VAR PAGE_LANG_001055>">
+        </td>
+        <td></td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td>
+          <span class="normal"><TMPL_VAR PAGE_LANG_001056>:</span>
+        </td>
+        <td>
+          <span class="normal"><TMPL_VAR USER_LEVEL></span>
+        </td>
+        <td>
+        </td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td>
+          <span class="normal"><TMPL_VAR PAGE_LANG_001057>:</span>
+        </td>
+        <td>
+          <span class="normal"><TMPL_VAR USER_LASTLOGIN></span>
+        </td>
+        <td>
+        </td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td>
+          <span class="normal"><TMPL_VAR PAGE_LANG_001058>:</span>
+        </td>
+        <td>
+          <span class="normal"><TMPL_VAR USER_REGTIME></span>
+        </td>
+        <td>
+        </td>
+      </tr>
+
     </table>
+    
+    <hr>
+
+<!-- Part 2: Languages ------------------------------------------------------->
+
+    <span class="normal"><b><TMPL_VAR PAGE_LANG_001059></b></span>
+    <br><br>
+
+    <!-- if no language given ... -->
+    <div align="center"> 
+      <span class="normal"><TMPL_VAR PAGE_LANG_001075></span> 
+    </div>
+
+    <table cellspacing="0" cellpadding="2" border="0" width="600">
+
+      <colgroup>
+        <col width="100">
+        <col width="200">
+        <col width="200">
+        <col width="100">
+      </colgroup>
+
+      <!-- all languages and levels of this user -->
+      <TMPL_LOOP USER_LOOP_MYLANGS>
+        <tr>
+          <td></td>
+          <td>
+            <span class="normal"><TMPL_VAR USER_MYLANG></span>
+          </td>
+          <td>
+            <span class="normal"><TMPL_VAR USER_MYLANGLVL></span>
+          </td>
+        </tr>
+      </TMPL_LOOP>
+      
+      <!-- edit button -->
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>
+          <input type="submit" name="u_sub_mylang"
+                 value="<TMPL_VAR PAGE_LANG_001061>">
+        </td>
+      </tr>
+
+    </table>
+    
+    <hr>
+
+<!-- Part 3: User's Description ---------------------------------------------->
+          
+    <span class="normal"><b><TMPL_VAR PAGE_LANG_001062></b></span>
+    <br><br>
+
+    <TMPL_IF USER_IF_FIRST_DESC>
+
+      <span class="normal"><TMPL_VAR PAGE_LANG_001068>:&nbsp;</span>
+      <input type="submit" name="u_sub_descnew"
+             value="<TMPL_VAR PAGE_LANG_001069>">
+
+    <TMPL_ELSE>
+
+      <table cellspacing="0" cellpadding="2" border="0" width="600">
+
+        <colgroup>
+          <col width="100">
+          <col width="400">
+          <col width="100">
+        </colgroup>
+
+        <tr>
+          <!-- description-language selection -->
+          <td>
+            <select name="u_sel_desclang" size="1">
+              <TMPL_LOOP NAME="USER_LOOP_DESCLANG">
+                <option value="<TMPL_VAR USER_OPTVAL_DESCLANG>" <TMPL_VAR USER_DEF_DESCLANG>>
+                  <TMPL_VAR USER_OPT_DESCLANG>
+              </TMPL_LOOP>
+            </select>
+          </td>
+          <!-- description -->
+          <td rowspan="2">
+            <span class="normal"><TMPL_VAR USER_DESC></span>
+          </td>
+          <td></td>
+        </tr>
+
+        <!-- language change submit button -->
+        <tr>
+          <td>
+            <input type="submit" name="u_sub_descchange"
+                   value="<TMPL_VAR PAGE_LANG_001076>">
+          </td>
+	  <td></td>
+        </tr>
+	
+	<tr><td></td></tr>
+
+        <!-- edit button -->
+        <tr>
+          <td>
+            <!-- this hidden field saves the lang_id of the desc-to-edit -->
+            <input type="hidden" name="u_desclang" 
+                   value="<TMPL_VAR USER_DESCLANGID>">
+          </td>
+          <td align="right">
+            <span class="normal"><TMPL_VAR PAGE_LANG_001064>:&nbsp;</span>
+          </td>
+          <td>
+            <input type="submit" name="u_sub_descedit"
+                   value="<TMPL_VAR PAGE_LANG_001065>">
+          </td>
+        </tr>
+        
+        <!-- new button -->
+        <tr>
+          <td></td>
+          <td align="right">
+            <span class="normal"><TMPL_VAR PAGE_LANG_001066>:&nbsp;</span>
+          </td>
+          <td>
+            <input type="submit" name="u_sub_descnew"
+                   value="<TMPL_VAR PAGE_LANG_001067>">
+          </td>
+        </tr>
+
+      </table>
+    </TMPL_IF>
+    
+    <hr>
+
+<!-- Part 4: User's text (links to text module) ------------------------------>
+          
+    <span class="normal"><b><TMPL_VAR PAGE_LANG_001070></b></span>
+    <br><br>
+
+    <a class="normal" href="<TMPL_VAR USER_LINK_TEXT>">
+      <TMPL_VAR PAGE_LANG_001071>
+    </a>
+
+    <br>
+
+    <a class="normal" href="<TMPL_VAR USER_LINK_TRANS>">
+      <TMPL_VAR PAGE_LANG_001073>
+    </a>
 
   </td>
 </tr>

@@ -128,7 +128,7 @@ CREATE TABLE lingua_categories (
 	parent_id  INT(10) UNSIGNED           DEFAULT '0',
 	lang_id    INT(10) UNSIGNED NOT NULL,
 	cat_count  INT(10) UNSIGNED           DEFAULT '0',
-	text_count INT(10) UNSIGNED           DEFAULT '0',	
+	text_count INT(10) UNSIGNED           DEFAULT '0',
 	PRIMARY KEY(cat_id)
 );
 
@@ -170,3 +170,64 @@ INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('40', '5');
 INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('41', '24');
 INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('42', '24');
 
+DROP TABLE IF EXISTS lingua_original_text;
+
+
+CREATE TABLE lingua_original_text (
+	original_id     INT(10) UNSIGNED NOT NULL               AUTO_INCREMENT,
+	original_text   MEDIUMBLOB   DEFAULT '',
+	num_words       INT(10) UNSIGNED DEFAULT '0',
+	lang_id         INT(10) UNSIGNED NOT NULL,
+	submit_time     TIMESTAMP,
+	user_id         INT(10) UNSIGNED DEFAULT '0',
+	category_id     INT(10) UNSIGNED DEFAULT '0',
+	status          INT(10) UNSIGNED DEFAULT '0',
+	avg_rating      DOUBLE,
+	num_ratings     INT(10) UNSIGNED DEFAULT '0',
+	PRIMARY KEY(original_id)
+);
+
+
+
+DROP TABLE IF EXISTS lingua_translation_text;
+
+CREATE TABLE lingua_translation_text (
+	trans_id        INT(10) UNSIGNED NOT NULL               AUTO_INCREMENT,
+	trans_text      MEDIUMBLOB   DEFAULT '',
+	num_words       INT(10) UNSIGNED DEFAULT '0',
+	lang_id         INT(10) UNSIGNED NOT NULL,
+	submit_time     TIMESTAMP,
+	user_id         INT(10) UNSIGNED DEFAULT '0',
+	category_id     INT(10) UNSIGNED DEFAULT '0',
+	status          INT(10) UNSIGNED DEFAULT '0',
+	original_id     INT(10) UNSIGNED DEFAULT '0',
+	trans_base_id   INT(10) UNSIGNED DEFAULT '0',
+	avg_rating      DOUBLE,
+	num_ratings     INT(10) UNSIGNED DEFAULT '0',
+	PRIMARY KEY(trans_id)
+);
+
+
+DROP TABLE IF EXISTS lingua_text_description;
+
+CREATE TABLE lingua_text_description (
+	desc_id         INT(10) UNSIGNED NOT NULL               AUTO_INCREMENT,
+	desc_text       MEDIUMBLOB   DEFAULT '',
+	lang_id         INT(10) UNSIGNED NOT NULL,
+	text_id         INT(10) UNSIGNED DEFAULT '0',
+	user_id         INT(10) UNSIGNED DEFAULT '0',
+	submit_time     TIMESTAMP,
+	PRIMARY KEY(desc_id)
+);
+
+DROP TABLE IF EXISTS lingua_text_header;
+
+CREATE TABLE lingua_text_header (
+	header_id       INT(10) UNSIGNED NOT NULL               AUTO_INCREMENT,
+	header_text     MEDIUMBLOB   DEFAULT '',
+	lang_id         INT(10) UNSIGNED NOT NULL,
+	text_id         INT(10) UNSIGNED DEFAULT '0',
+	user_id         INT(10) UNSIGNED DEFAULT '0',
+	submit_time     TIMESTAMP,
+	PRIMARY KEY(header_id)
+);

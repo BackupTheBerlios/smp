@@ -15,7 +15,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.11 $ =~ /(\d+)\.(\d+)/;
 
 #################################################################
 #NAME: parameter($mgr).						#
@@ -1113,36 +1113,30 @@ sub show_text_see {
 #################################################################
 sub show_text_translation {
 my ($self, $mgr) = @_;
-  my $text_id = $mgr->{CGI}->param('text_id') || undef;
+  my $given_text_id = $mgr->{CGI}->param('text_id') || undef;
   my $trans_text_id = $mgr->{CGI}->param('trans_text_id') || undef;
-  my $user_id =$mgr->{Session}->get("UserId");
-  my $user_level = $mgr->{Session}->get("UserLevel");
+  my $current_user_id =$mgr->{Session}->get("UserId");
+  my $current_user_level = $mgr->{Session}->get("UserLevel");
 
   $mgr->{Template} = $mgr->{TmplFiles}->{Text_Show};
 
-  #$mgr->{TmplData}{TEXT_ID} = $trans_text_id;
   $mgr->{TmplData}{TRANS_TEXT_ID} = $trans_text_id;
 
+#  $mgr->{TmplData}{PAGE_LANG_002023} = $mgr->{Func}->get_text($mgr, 2023);
+#  $mgr->{TmplData}{PAGE_LANG_002100} = $mgr->{Func}->get_text($mgr, 2100);
+#  $mgr->{TmplData}{PAGE_LANG_002012} = $mgr->{Func}->get_text($mgr, 2012);
+#  $mgr->{TmplData}{PAGE_LANG_002033} = $mgr->{Func}->get_text($mgr, 2033);
+#  $mgr->{TmplData}{PAGE_LANG_002102} = $mgr->{Func}->get_text($mgr, 2102);
+#  $mgr->{TmplData}{PAGE_LANG_002103} = $mgr->{Func}->get_text($mgr, 2103);
+#  $mgr->{TmplData}{PAGE_LANG_002104} = $mgr->{Func}->get_text($mgr, 2104);
+#  $mgr->{TmplData}{PAGE_LANG_002105} = $mgr->{Func}->get_text($mgr, 2105);
+#  $mgr->{TmplData}{PAGE_LANG_002101} = $mgr->{Func}->get_text($mgr, 2101);
+#  $mgr->{TmplData}{PAGE_LANG_002106} = $mgr->{Func}->get_text($mgr, 2106);
+#  $mgr->{TmplData}{PAGE_LANG_002114} = $mgr->{Func}->get_text($mgr, 2114);
+#  $mgr->{TmplData}{PAGE_LANG_002116} = $mgr->{Func}->get_text($mgr, 2116);
+#  $mgr->{TmplData}{PAGE_LANG_002019} = $mgr->{Func}->get_text($mgr, 2019);
 
-  if($user_level == 0){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'hidden';}
-  elsif($user_level == 1){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';}
-  elsif($user_level == 2){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'submit'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';}
-
-
-  $mgr->{TmplData}{PAGE_LANG_002023} = $mgr->{Func}->get_text($mgr, 2023);
-  $mgr->{TmplData}{PAGE_LANG_002100} = $mgr->{Func}->get_text($mgr, 2100);
-  $mgr->{TmplData}{PAGE_LANG_002012} = $mgr->{Func}->get_text($mgr, 2012);
-  $mgr->{TmplData}{PAGE_LANG_002033} = $mgr->{Func}->get_text($mgr, 2033);
-  $mgr->{TmplData}{PAGE_LANG_002102} = $mgr->{Func}->get_text($mgr, 2102);
-  $mgr->{TmplData}{PAGE_LANG_002103} = $mgr->{Func}->get_text($mgr, 2103);
-  $mgr->{TmplData}{PAGE_LANG_002104} = $mgr->{Func}->get_text($mgr, 2104);
-  $mgr->{TmplData}{PAGE_LANG_002105} = $mgr->{Func}->get_text($mgr, 2105);
-  $mgr->{TmplData}{PAGE_LANG_002101} = $mgr->{Func}->get_text($mgr, 2101);
-  $mgr->{TmplData}{PAGE_LANG_002106} = $mgr->{Func}->get_text($mgr, 2106);
-  $mgr->{TmplData}{PAGE_LANG_002114} = $mgr->{Func}->get_text($mgr, 2114);
-  $mgr->{TmplData}{PAGE_LANG_002116} = $mgr->{Func}->get_text($mgr, 2116);
-
-  #text wether current user rates this text#############
+#text wether current user rates this text#############
   my $table = $mgr->{Tables}->{TEXT_RATING};
 
   my $dbh = $mgr->connect();
@@ -1150,11 +1144,11 @@ my ($self, $mgr) = @_;
 
 SELECT  user_id, text_trans_id, text_rating
 FROM   $table
-WHERE  user_id = ?
+WHERE  user_id = ? AND text_trans_id = ?
 
 SQL
 
-  unless ($sth->execute($user_id)) {
+  unless ($sth->execute($current_user_id, $given_text_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
@@ -1167,32 +1161,9 @@ SQL
 
   $sth->finish();
 
-  if(defined $text_trans_id){
-
-    $mgr->{TmplData}{RADIO_TYPE} = 'hidden';
-    $mgr->{TmplData}{SUBMIT_TYPE} = 'hidden';
-
-    if($text_rating == 1 ){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2117) }
-    elsif($text_rating == 2){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107);}
-    elsif($text_rating == 3){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107);}
-    elsif($text_rating == 4){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107); }
-    elsif($text_rating == 5){ $mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107);}
-
-  }
-  else{
-    $mgr->{TmplData}{PAGE_LANG_002107} = $mgr->{Func}->get_text($mgr, 2107);
-    $mgr->{TmplData}{PAGE_LANG_002108} = $mgr->{Func}->get_text($mgr, 2108);
-    $mgr->{TmplData}{PAGE_LANG_002109} = $mgr->{Func}->get_text($mgr, 2109);
-    $mgr->{TmplData}{PAGE_LANG_002110} = $mgr->{Func}->get_text($mgr, 2110);
-    $mgr->{TmplData}{PAGE_LANG_002111} = $mgr->{Func}->get_text($mgr, 2111);
-    $mgr->{TmplData}{PAGE_LANG_002113} = $mgr->{Func}->get_text($mgr, 2113);
-    $mgr->{TmplData}{RADIO_TYPE} = 'radio';
-    $mgr->{TmplData}{SUBMIT_TYPE} = 'submit';
-    $mgr->{TmplData}{PAGE_LANG_002115} = $mgr->{Func}->get_text($mgr, 2115);
-  }
 
 
-  #length of Text and Text#############
+#Values of this Text#############
   my $table = $mgr->{Tables}->{TEXT_TRANS};
 
   my $dbh = $mgr->connect();
@@ -1225,169 +1196,9 @@ SQL
 
   $sth->finish();
 
-  $mgr->{TmplData}{TEXT_LENGTH} = $num_words;
-  $mgr->{TmplData}{TEXT} = $trans_text;
-
-  if($avg_rating < 1.5 && $avg_rating != 0){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2111); }
-  elsif($avg_rating < 2.5 && $avg_rating >= 1.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2110); }
-  elsif($avg_rating < 3.5 && $avg_rating >= 2.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2109); }
-  elsif($avg_rating < 4.5 && $avg_rating >= 3.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2108); }
-  elsif($avg_rating >= 4.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2107); }
-
-  $mgr->{TmplData}{TEXT_RATING_NUMBER} = $num_ratings;
-  $mgr->{TmplData}{TEXT_SUBMIT_TIME} = substr($submit_time,6, 2) . "." . substr($submit_time,4, 2) . "." .substr($submit_time,0, 4);
-
-  #Title################################
-  my $table = $mgr->{Tables}->{TEXT_TITLE};
-
-  my $dbh = $mgr->connect();
-  my $sth = $dbh->prepare(<<SQL);
-
-SELECT  header_id, header_text, lang_id, text_id, user_id, submit_time
-FROM   $table
-WHERE  text_id = ?
-
-SQL
-
-  unless ($sth->execute($text_id)) {
-    warn sprintf("[Error:] Trouble selecting data from [%s].".
-                 "Reason: [%s].", $table, $dbh->errstr());
-    $mgr->fatal_error("Database error.");
-  }
-
-  my @row = $sth->fetchrow_array();
-  my $header_id   = @row[0];
-  my $header_text = @row[1];
-  my $lang_id     = @row[2];
-  my $text_id     = @row[3];
-  my $user_id     = @row[4];
-  my $submit_time = @row[5];
-
-  $sth->finish();
-
-  $mgr->{TmplData}{TEXT_TITLE} = $header_text;
-
-
-
-  #Description#####################
-  my $table = $mgr->{Tables}->{TEXT_DESC};
-
-  my $dbh = $mgr->connect();
-  my $sth = $dbh->prepare(<<SQL);
-
-SELECT desc_id, desc_text, lang_id, text_id, user_id, submit_time
-FROM   $table
-WHERE  text_id = ?
-
-SQL
-
-  unless ($sth->execute($trans_text_id)) {
-    warn sprintf("[Error:] Trouble selecting data from [%s].".
-                 "Reason: [%s].", $table, $dbh->errstr());
-    $mgr->fatal_error("Database error.");
-  }
-
-  my @row = $sth->fetchrow_array();
-  my $desc_id     = @row[0];
-  my $desc_text   = @row[1];
-  my $lang_id     = @row[2];
-  my $text_id     = @row[3];
-  my $user_id     = @row[4];
-  my $submit_time = @row[5];
-
-  $sth->finish();
-
-  $mgr->{TmplData}{TEXT_DESCRIPTION} = $desc_text;
-
-  #Author#####################
-  my $table = $mgr->{Tables}->{USER};
-
-  my $dbh = $mgr->connect();
-  my $sth = $dbh->prepare(<<SQL);
-
-SELECT user_id, username, lastname, firstname, email
-FROM   $table
-WHERE  user_id = ?
-
-SQL
-
-  unless ($sth->execute($user_id)) {
-    warn sprintf("[Error:] Trouble selecting data from [%s].".
-                 "Reason: [%s].", $table, $dbh->errstr());
-    $mgr->fatal_error("Database error.");
-  }
-
-  my @row = $sth->fetchrow_array();
-  my $username  = @row[1];
-  my $lastname  = @row[2];
-  my $firstname = @row[3];
-  my $email     = @row[4];
-
-  $sth->finish();
-
-  $mgr->{TmplData}{TEXT_AUTOR} = $firstname . " " . $lastname;
-
-
-
-  #Original Language##################
-  my $table = $mgr->{Tables}->{LANG};
-
-  my $dbh = $mgr->connect();
-  my $sth = $dbh->prepare(<<SQL);
-
-SELECT lang_id, lang_name_id, system_lang
-FROM   $table
-WHERE  lang_id = ?
-
-SQL
-
-  unless ($sth->execute($lang_id)) {
-    warn sprintf("[Error:] Trouble selecting data from [%s].".
-                 "Reason: [%s].", $table, $dbh->errstr());
-    $mgr->fatal_error("Database error.");
-  }
-
-  my @row = $sth->fetchrow_array();
-  #my $lang_id      = @row[0];
-  my $lang_name_id = @row[1];
-  my $system_lang  = @row[2];
-
-  $sth->finish();
-
-  $mgr->{TmplData}{TEXT_ORIG_LANG} = $mgr->{Func}->get_text($mgr, $lang_id);
-
-
-
-  #Translated Languages##################
-  my $table = $mgr->{Tables}->{TEXT_TRANS};
-
-  my $dbh = $mgr->connect();
-  my $sth = $dbh->prepare(<<SQL);
-
-SELECT original_id, lang_id
-FROM   $table
-WHERE  original_id = ?
-
-SQL
-
-  unless ($sth->execute($text_id)) {
-    warn sprintf("[Error:] Trouble selecting data from [%s].".
-                 "Reason: [%s].", $table, $dbh->errstr());
-    $mgr->fatal_error("Database error.");
-  }
-
-  my $table = $sth->fetchall_arrayref();
-  my @lang_loop_data;
-  my $row;
-  foreach $row (@$table){
-    my %data;
-    $data{TEXT_TRANS_LANG_ID}= $row[0];
-    $data{TEXT_TRANS_LANG_NAME}= $row[1];
-    push(@lang_loop_data,\%data);
-  }
-  $mgr->{TmplData}{TEXT_LOOP_TRANS_LANG}=\@lang_loop_data;
-
-  $sth->finish();
+  $mgr->{TmplData}{PAGE_LANG_002104} = $mgr->{Func}->get_text($mgr, 2115);#TEXT_RATING Average
+  $mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2115);#TEXT_RATING
+  $self->show_text_rest($mgr, $trans_text_id, $text_rating, $given_text_id, $trans_id, $trans_text, $num_words, $lang_id, $submit_time, $user_id, $category_id, $status, $avg_rating, $num_ratings, $current_user_id, $current_user_level);
 
 }
 
@@ -1403,86 +1214,17 @@ SQL
 #################################################################
 sub show_text_original {
   my ($self, $mgr) = @_;
-  my $text_id = $mgr->{CGI}->param('text_id') || undef;
+  my $given_text_id = $mgr->{CGI}->param('text_id') || undef;
   my $trans_text_id = $mgr->{CGI}->param('trans_text_id') || undef;
-  my $user_id = $mgr->{Session}->get('UserId');
-  my $user_level = $mgr->{Session}->get('UserLevel');
+  my $current_user_id = $mgr->{Session}->get('UserId');
+  my $current_user_level = $mgr->{Session}->get('UserLevel');
 
   $mgr->{Template} = $mgr->{TmplFiles}->{Text_Show};
 
-  $mgr->{TmplData}{TEXT_ID} = $text_id;
-  #$mgr->{TmplData}{TRANS_TEXT_ID} = $trans_text_id; #Muß noch geändert werden.
+  $mgr->{TmplData}{TEXT_ID} = $given_text_id;
 
 
-  if($user_level == 0){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'hidden';}
-  elsif($user_level == 1){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';}
-  elsif($user_level == 2){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'submit'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';}
-
-  $mgr->{TmplData}{PAGE_LANG_002023} = $mgr->{Func}->get_text($mgr, 2023);
-  $mgr->{TmplData}{PAGE_LANG_002100} = $mgr->{Func}->get_text($mgr, 2100);
-  $mgr->{TmplData}{PAGE_LANG_002012} = $mgr->{Func}->get_text($mgr, 2012);
-  $mgr->{TmplData}{PAGE_LANG_002033} = $mgr->{Func}->get_text($mgr, 2033);
-  $mgr->{TmplData}{PAGE_LANG_002102} = $mgr->{Func}->get_text($mgr, 2102);
-  $mgr->{TmplData}{PAGE_LANG_002103} = $mgr->{Func}->get_text($mgr, 2103);
-  $mgr->{TmplData}{PAGE_LANG_002104} = $mgr->{Func}->get_text($mgr, 2104);
-  $mgr->{TmplData}{PAGE_LANG_002105} = $mgr->{Func}->get_text($mgr, 2105);
-  $mgr->{TmplData}{PAGE_LANG_002101} = $mgr->{Func}->get_text($mgr, 2101);
-  $mgr->{TmplData}{PAGE_LANG_002106} = $mgr->{Func}->get_text($mgr, 2106);
-  $mgr->{TmplData}{PAGE_LANG_002114} = $mgr->{Func}->get_text($mgr, 2114);
-  $mgr->{TmplData}{PAGE_LANG_002116} = $mgr->{Func}->get_text($mgr, 2116);
-
-  #test wether current user rates this text#############
-  my $table = $mgr->{Tables}->{TEXT_RATING};
-
-  my $dbh = $mgr->connect();
-  my $sth = $dbh->prepare(<<SQL);
-
-SELECT  user_id, text_original_id, text_rating
-FROM   $table
-WHERE  user_id = ?
-
-SQL
-
-  unless ($sth->execute($user_id)) {
-    warn sprintf("[Error:] Trouble selecting data from [%s].".
-                 "Reason: [%s].", $table, $dbh->errstr());
-    $mgr->fatal_error("Database error.");
-  }
-
-  my @row = $sth->fetchrow_array();
-  my $user_id          = @row[0];
-  my $text_original_id = @row[1];
-  my $text_rating      = @row[2];
-
-  $sth->finish();
-
-  if(defined $text_original_id){
-
-    $mgr->{TmplData}{RADIO_TYPE} = 'hidden';
-    $mgr->{TmplData}{SUBMIT_TYPE} = 'hidden';
-
-    if($text_rating == 1 ){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2117); }
-    elsif($text_rating == 2){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107);}
-    elsif($text_rating == 3){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107);}
-    elsif($text_rating == 4){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107); }
-    elsif($text_rating == 5){ $mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107);}
-  }
-  else{
-    $mgr->{TmplData}{PAGE_LANG_002107} = $mgr->{Func}->get_text($mgr, 2107);
-    $mgr->{TmplData}{PAGE_LANG_002108} = $mgr->{Func}->get_text($mgr, 2108);
-    $mgr->{TmplData}{PAGE_LANG_002109} = $mgr->{Func}->get_text($mgr, 2109);
-    $mgr->{TmplData}{PAGE_LANG_002110} = $mgr->{Func}->get_text($mgr, 2110);
-    $mgr->{TmplData}{PAGE_LANG_002111} = $mgr->{Func}->get_text($mgr, 2111);
-    $mgr->{TmplData}{PAGE_LANG_002113} = $mgr->{Func}->get_text($mgr, 2113);
-    $mgr->{TmplData}{RADIO_TYPE} = 'radio';
-    $mgr->{TmplData}{SUBMIT_TYPE} = 'submit';
-    $mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2115);
-  }
-
-
-
-
-  #length of Text and Text#############
+#get Textvalues from original_text - Table#############
   my $table = $mgr->{Tables}->{TEXT_ORIG};
 
   my $dbh = $mgr->connect();
@@ -1494,7 +1236,7 @@ WHERE  original_id = ?
 
 SQL
 
-  unless ($sth->execute($text_id)) {
+  unless ($sth->execute($given_text_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
@@ -1514,8 +1256,56 @@ SQL
 
   $sth->finish();
 
+
+#test wether current user rated this text#############
+  my $table = $mgr->{Tables}->{TEXT_RATING};
+
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+SELECT  user_id, text_original_id, text_rating
+FROM   $table
+WHERE  user_id = ? AND text_original_id = ?
+
+SQL
+
+  unless ($sth->execute($current_user_id, $given_text_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+  my @row = $sth->fetchrow_array();
+  my $user_id          = @row[0];
+  my $text_original_id   = @row[1];
+  my $text_rating      = @row[2];
+
+  $sth->finish();
+
+  $mgr->{TmplData}{PAGE_LANG_002104} = $mgr->{Func}->get_text($mgr, 2112);#TEXT_RATING Average
+  $mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2112);#TEXT_RATING
+  $self->show_text_rest($mgr, $text_original_id, $text_rating, $given_text_id, $original_id, $original_text, $num_words, $lang_id, $submit_time, $user_id, $category_id, $status, $avg_rating, $num_ratings, $current_user_id, $current_user_level);
+
+}
+
+
+
+
+#################################################################
+#CALL: $self->show_text_rest					#
+#								#
+#RETURN: 							#
+#								#
+#DESC: See SQL Statement. 					#
+#								#
+#Author: Hendrik Erler(erler@cs.tu-berlin.de)			#
+#################################################################
+sub show_text_rest{
+  my ($self, $mgr, $text_rating_id, $text_rating, $given_text_id, $text_id, $text, $num_words, $lang_id, $submit_time, $user_id, $category_id, $status, $avg_rating, $num_ratings, $current_user_id, $current_user_level) = @_;
+
+
   $mgr->{TmplData}{TEXT_LENGTH} = $num_words;
-  $mgr->{TmplData}{TEXT} = $original_text;
+  $mgr->{TmplData}{TEXT} = $text;
 
   if($avg_rating < 1.5 && $avg_rating != 0){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2111); }
   elsif($avg_rating < 2.5 && $avg_rating >= 1.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2110); }
@@ -1526,24 +1316,64 @@ SQL
   $mgr->{TmplData}{TEXT_RATING_NUMBER} = $num_ratings;
   $mgr->{TmplData}{TEXT_SUBMIT_TIME} = substr($submit_time,6, 2) . "." . substr($submit_time,4, 2) . "." .substr($submit_time,0, 4);
 
-  #Title################################
-  my $table = $mgr->{Tables}->{TEXT_TITLE};
 
+#show text-rating-radio-buttons or not
+  if($text_rating_id == $given_text_id){
+    $mgr->{TmplData}{RADIO_TYPE} = 'hidden';
+    $mgr->{TmplData}{SUBMIT_TYPE} = 'hidden';
+    if($text_rating == 1 ){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2111); }
+    elsif($text_rating == 2){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2110);}
+    elsif($text_rating == 3){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2109);}
+    elsif($text_rating == 4){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2108); }
+    elsif($text_rating == 5){ $mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107);}
+  }
+  else{
+    $mgr->{TmplData}{PAGE_LANG_002107} = $mgr->{Func}->get_text($mgr, 2107);
+    $mgr->{TmplData}{PAGE_LANG_002108} = $mgr->{Func}->get_text($mgr, 2108);
+    $mgr->{TmplData}{PAGE_LANG_002109} = $mgr->{Func}->get_text($mgr, 2109);
+    $mgr->{TmplData}{PAGE_LANG_002110} = $mgr->{Func}->get_text($mgr, 2110);
+    $mgr->{TmplData}{PAGE_LANG_002111} = $mgr->{Func}->get_text($mgr, 2111);
+    $mgr->{TmplData}{PAGE_LANG_002113} = $mgr->{Func}->get_text($mgr, 2113);
+    $mgr->{TmplData}{RADIO_TYPE} = 'radio';
+    $mgr->{TmplData}{SUBMIT_TYPE} = 'submit';
+  }
+
+
+#User-handlig
+  if($current_user_level == 0){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'hidden';}
+  elsif($current_user_level == 1){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';}
+  elsif($current_user_level == 2){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'submit'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';}
+
+
+  $mgr->{TmplData}{PAGE_LANG_002023} = $mgr->{Func}->get_text($mgr, 2023);#Title
+  $mgr->{TmplData}{PAGE_LANG_002100} = $mgr->{Func}->get_text($mgr, 2100);#Author
+  $mgr->{TmplData}{PAGE_LANG_002012} = $mgr->{Func}->get_text($mgr, 2012);#Text-Description
+  $mgr->{TmplData}{PAGE_LANG_002033} = $mgr->{Func}->get_text($mgr, 2033);#Text_Length
+  $mgr->{TmplData}{PAGE_LANG_002102} = $mgr->{Func}->get_text($mgr, 2102);#TEXT_ORIG_LANG
+  $mgr->{TmplData}{PAGE_LANG_002103} = $mgr->{Func}->get_text($mgr, 2103);#TEXT_TRANS_LANGUAGES
+  $mgr->{TmplData}{PAGE_LANG_002105} = $mgr->{Func}->get_text($mgr, 2105);#TEXT_RATING_NUMBE
+  $mgr->{TmplData}{PAGE_LANG_002101} = $mgr->{Func}->get_text($mgr, 2101);#TEXT
+  $mgr->{TmplData}{PAGE_LANG_002106} = $mgr->{Func}->get_text($mgr, 2106);#text_trans_buuton
+  $mgr->{TmplData}{PAGE_LANG_002114} = $mgr->{Func}->get_text($mgr, 2114);#delete_text_button
+  $mgr->{TmplData}{PAGE_LANG_002116} = $mgr->{Func}->get_text($mgr, 2116);#TEXT_SUBMIT_TIME
+  $mgr->{TmplData}{PAGE_LANG_002019} = $mgr->{Func}->get_text($mgr, 2019);#TEXT_CAT
+
+
+
+#Text-Title################################
+  my $table = $mgr->{Tables}->{TEXT_TITLE};
   my $dbh = $mgr->connect();
   my $sth = $dbh->prepare(<<SQL);
-
 SELECT  header_id, header_text, lang_id, text_id, user_id, submit_time
 FROM   $table
 WHERE  text_id = ?
 
 SQL
-
   unless ($sth->execute($text_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
   }
-
   my @row = $sth->fetchrow_array();
   my $header_id   = @row[0];
   my $header_text = @row[1];
@@ -1551,31 +1381,25 @@ SQL
   my $text_id     = @row[3];
   my $user_id     = @row[4];
   my $submit_time = @row[5];
-
   $sth->finish();
-
   $mgr->{TmplData}{TEXT_TITLE} = $header_text;
 
 
 
-  #Description#####################
+#Text-Description#####################
   my $table = $mgr->{Tables}->{TEXT_DESC};
-
   my $dbh = $mgr->connect();
   my $sth = $dbh->prepare(<<SQL);
-
 SELECT desc_id, desc_text, lang_id, text_id, user_id, submit_time
 FROM   $table
 WHERE  text_id = ?
 
 SQL
-
   unless ($sth->execute($text_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
   }
-
   my @row = $sth->fetchrow_array();
   my $desc_id     = @row[0];
   my $desc_text   = @row[1];
@@ -1583,88 +1407,72 @@ SQL
   my $text_id     = @row[3];
   my $user_id     = @row[4];
   my $submit_time = @row[5];
-
   $sth->finish();
-
   $mgr->{TmplData}{TEXT_DESCRIPTION} = $desc_text;
 
-  #Author#####################
-  my $table = $mgr->{Tables}->{USER};
 
+
+#Author of this Text#####################
+  my $table = $mgr->{Tables}->{USER};
   my $dbh = $mgr->connect();
   my $sth = $dbh->prepare(<<SQL);
-
 SELECT user_id, username, lastname, firstname, email
 FROM   $table
 WHERE  user_id = ?
 
 SQL
-
   unless ($sth->execute($user_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
   }
-
   my @row = $sth->fetchrow_array();
   my $username  = @row[1];
   my $lastname  = @row[2];
   my $firstname = @row[3];
   my $email     = @row[4];
-
   $sth->finish();
-
   $mgr->{TmplData}{TEXT_AUTOR} = $firstname . " " . $lastname;
 
 
 
-  #Original Language##################
+#Original Language of this Text##################
   my $table = $mgr->{Tables}->{LANG};
-
   my $dbh = $mgr->connect();
   my $sth = $dbh->prepare(<<SQL);
-
 SELECT lang_id, lang_name_id, system_lang
 FROM   $table
 WHERE  lang_id = ?
 
 SQL
-
   unless ($sth->execute($lang_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
   }
-
   my @row = $sth->fetchrow_array();
   #my $lang_id      = @row[0];
   my $lang_name_id = @row[1];
   my $system_lang  = @row[2];
-
   $sth->finish();
-
   $mgr->{TmplData}{TEXT_ORIG_LANG} = $mgr->{Func}->get_text($mgr, $lang_id);
 
 
 
-  #Translated Languages##################
+#Translated Languages of this Text##################
   my $table = $mgr->{Tables}->{TEXT_TRANS};
-
   my $dbh = $mgr->connect();
   my $sth = $dbh->prepare(<<SQL);
-
 SELECT original_id, lang_id
 FROM   $table
 WHERE  original_id = ?
 
 SQL
-
   unless ($sth->execute($text_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
   }
-
   my $table = $sth->fetchall_arrayref();
   my @lang_loop_data;
   my $row;
@@ -1675,11 +1483,34 @@ SQL
     push(@lang_loop_data,\%data);
   }
   $mgr->{TmplData}{TEXT_LOOP_TRANS_LANG}=\@lang_loop_data;
-
   $sth->finish();
 
 
-}
+
+#Category-Name of this Text##################
+  my $table = $mgr->{Tables}->{CATS};
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+SELECT cat_id, lang_id
+FROM   $table
+WHERE  cat_id = ?
+
+SQL
+  unless ($sth->execute($category_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+  my @row = $sth->fetchrow_array();
+  my $cat_lang_id  = @row[1];
+  $sth->finish();
+
+
+  $mgr->{TmplData}{TEXT_CAT} = $mgr->{Func}->get_text($mgr, $cat_lang_id);
+
+}#end show_text_rest
+
+
 
 
 #################################################################
@@ -1695,9 +1526,9 @@ sub text_original_rating {
   my ($self, $mgr) = @_;
   my $rating = $mgr->{CGI}->param('rating') || undef;
   my $user_id =$mgr->{Session}->get("UserId");
+  my $text_id = $mgr->{CGI}->param('text_id') || undef;
 
-
-  #test wether current user rates this text#############
+  #test wether current user rated this text#############
   my $table = $mgr->{Tables}->{TEXT_RATING};
 
   my $dbh = $mgr->connect();
@@ -1705,11 +1536,11 @@ sub text_original_rating {
 
 SELECT  user_id, text_original_id, text_rating
 FROM   $table
-WHERE  user_id = ?
+WHERE  user_id = ? AND text_original_id = ?
 
 SQL
 
-  unless ($sth->execute($user_id)) {
+  unless ($sth->execute($user_id, $text_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
@@ -1723,7 +1554,7 @@ SQL
   $sth->finish();
 
 
-  if(defined $rating && $text_original_id==undef){
+  if(defined $rating && $text_original_id == undef){
 
     my $text_id = $mgr->{CGI}->param('text_id') || undef;
 
@@ -1765,7 +1596,7 @@ VALUES (?, ?, ?)
 
 SQL
 
-    unless ($sth->execute($original_id, $user_id, $rating))
+    unless ($sth->execute($user_id, $original_id, $rating))
       {
 	  warn sprintf("[Error:] Trouble adding user to %s. " .
 	  	       "Reason: [%s].", $table, $dbh->errstr());
@@ -1823,7 +1654,7 @@ sub text_trans_rating {
   my ($self, $mgr) = @_;
   my $rating = $mgr->{CGI}->param('rating') || undef;
   my $user_id =$mgr->{Session}->get("UserId");
-
+  my $text_id = $mgr->{CGI}->param('text_id') || undef;
 
   #test wether current user rates this text#############
   my $table = $mgr->{Tables}->{TEXT_RATING};
@@ -1833,11 +1664,11 @@ sub text_trans_rating {
 
 SELECT user_id, text_trans_id, text_rating
 FROM   $table
-WHERE  user_id = ?
+WHERE  user_id = ? AND text_trans_id = ?
 
 SQL
 
-  unless ($sth->execute($user_id)) {
+  unless ($sth->execute($user_id, $text_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
@@ -1887,12 +1718,12 @@ SQL
   my $sth = $dbh->prepare(<<SQL);
 
 
-INSERT INTO $table (user_id, text_original_id, text_rating)
+INSERT INTO $table (user_id, text_trans_id, text_rating)
 VALUES (?, ?, ?)
 
 SQL
 
-  unless ($sth->execute($trans_id, $user_id, $rating))
+  unless ($sth->execute($user_id, $trans_id, $rating))
     {
 	warn sprintf("[Error:] Trouble adding user to %s. " .
 		     "Reason: [%s].", $table, $dbh->errstr());

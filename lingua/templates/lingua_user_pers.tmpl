@@ -21,7 +21,16 @@
     <h1 align="center"><TMPL_VAR PAGE_LANG_001051> <TMPL_VAR USER_USERNAME></h1>
 
 <!-- Part 1: General Information (name etc) ---------------------------------->
-    
+
+    <TMPL_IF USER_IF_BLOCKED>
+      <div align="center">
+        <span class="alert">
+          <b><TMPL_VAR PAGE_LANG_001079></b>
+        </span>
+	<br><br>
+      </div>
+    </TMPL_IF>
+
     <table cellspacing="0" cellpadding="2" border="0" width="600">
 
       <colgroup>
@@ -133,9 +142,13 @@
     <br><br>
 
     <!-- if no language given ... -->
-    <div align="center"> 
-      <span class="normal"><TMPL_VAR PAGE_LANG_001075></span> 
-    </div>
+    <TMPL_IF USER_IF_NOLANGS>
+
+      <div align="center">
+        <span class="normal">(<TMPL_VAR PAGE_LANG_001075>)</span> 
+	<br><br>
+      </div>
+    </TMPL_IF>
 
     <table cellspacing="0" cellpadding="2" border="0" width="600">
 
@@ -165,17 +178,17 @@
         <td></td>
         <td></td>
         <td>
-	  <TMPL_IF USER_IF_ME>
+          <TMPL_IF USER_IF_ME>
             <input type="submit" name="u_sub_langs"
                    value="<TMPL_VAR PAGE_LANG_001061>">
           <TMPL_ELSE>
-	    <br>
+            <br>
           </TMPL_IF>
         </td>
       </tr>
 
     </table>
-    
+
     <hr>
 
 <!-- Part 3: User's Description ---------------------------------------------->
@@ -190,8 +203,9 @@
         <input type="submit" name="u_sub_descnew"
                value="<TMPL_VAR PAGE_LANG_001069>">
       <TMPL_ELSE>
-        <div align="center"
-          <span class="normal"><TMPL_VAR PAGE_LANG_001067></span>
+        <div align="center">
+          <span class="normal">(<TMPL_VAR PAGE_LANG_001078>)</span>
+	  <br><br>
         </div>
       </TMPL_IF>
 

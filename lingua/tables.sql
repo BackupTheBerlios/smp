@@ -45,7 +45,7 @@ INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Put a text', 'Text rein stel
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Category admin', 'Kategorien verwalten', 'Gestion de Categories');
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Start', 'Start', 'Start');
 
-INSERT INTO lingua_dictionary (en, de, fr) VALUES ('French', 'französich', 'francais');
+INSERT INTO lingua_dictionary (en, de, fr) VALUES ('French', 'französisch', 'francais');
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Swahili', 'swahili', 'swahili' );
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Lingala', 'lingala', 'lingala' );
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Arabic', 'arabisch', 'arabe' );
@@ -641,7 +641,7 @@ INSERT INTO lingua_user (username, password, lastname, firstname, email, reg_tim
 INSERT INTO lingua_user (user_id, username, password, lastname, firstname, email, reg_time, points, status, level, system_lang) VALUES ('3','gio', 'gio', 'Test', 'Testie', 'test@test.de', '1007057807', '1000', '1', '2', '1');
 INSERT INTO lingua_user 
 (user_id, username, password, lastname, firstname, email, reg_time, points, status, level, system_lang) VALUES 
-('2', 'evil', '666', 'Beelzebub', 'Himself', 'sauron@morgul.mor', '1007057807', '1000', '2', '0', '1');
+('2', 'evil', '666', 'Beelzebub', 'Himself', 'sauron@morgul.mor', '1007057807', '1000', '0', '0', '1');
 
 DROP TABLE IF EXISTS lingua_user_desc;
 

@@ -6,7 +6,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)\.(\d+)/;
 
 # "constants" (don't change later on)
 my $status_ok      = 1;
@@ -1561,7 +1561,7 @@ sub fill_langlvl_loop
 #
 sub fill_lang_select
 {
-    my ($self, $mgr, $langs, $mylangs, $default, $loop_num) = @_;
+    my ($self, $mgr, $langs, $excl_langs, $default, $loop_num) = @_;
     my $lang;
     my @loop;
 
@@ -1569,13 +1569,13 @@ sub fill_lang_select
     foreach $lang (@$langs)
     {
 	# see if this language is to be excluded
-	if (defined($mylangs))
+	if (defined($excl_langs))
         {
 	    my $noshow = 0;
-	    my $mylang;
-	    foreach $mylang (@$mylangs)
+	    my $excl_lang;
+	    foreach $excl_lang (@$excl_langs)
             {
-		if ($mylang->[0] == $lang->[0])
+		if ($excl_lang->[0] == $lang->[0])
 	        {
 		    $noshow = 1;
 		    last;
@@ -1762,22 +1762,6 @@ SQL
     }
 
     $dbh->do("UNLOCK TABLES");    
-}
-
-
-#
-# adds a language of a new user to database
-# Params: 1. Manager ref
-#         2. user_id
-#         3. lang_id
-#         4. description
-# Returns $error_lang_id
-#
-sub add_new_desc
-{
-    my ($self, $mgr, $user_id, $lang_id, $description) = @_;
-
-    return 0;
 }
 
 

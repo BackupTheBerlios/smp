@@ -1,7 +1,6 @@
 package lib::Points;
 
 use strict;
-use lib::Config;
 
 sub new {
   my $proto = shift;
@@ -9,7 +8,7 @@ sub new {
   my $self  = {};
 
   bless ($self, $class);
-}
+};
 
 #-----------------------------------------------------------------------------#
 # CALL: $self->update_points($mgr, $user_id).                                 #
@@ -30,7 +29,7 @@ sub update_points {
   };
 
   my $sth = $dbh->prepare(qq{SELECT sum(points) FROM $mgr->{Tables}->{POINTS_INACTIV} WHERE 
-                             ((userid = $user_id) AND (TO_DAYS(NOW()) >= TO_DAYS(insert_date)+ $lib::Config::CONFIG->{InactivTime})) });
+                             ( (userid = $user_id) AND (TO_DAYS(NOW()) >= TO_DAYS(insert_date)+ ($mgr->{InactivTime}) )) });
 
   unless ($sth->execute()) {
     warn sprintf("[Error:] Trouble selecting data from [%s] and [%s].".
@@ -40,7 +39,7 @@ sub update_points {
 
   my $points = $sth->fetchrow_array();
 
-  if ($points>0) {
+  if ((defined $points) && ($points > 0)) {
     $sth = $dbh->prepare(qq{ UPDATE $mgr->{Tables}->{USER} SET points=points+$points });
 
     unless ($sth->execute()) {
@@ -50,7 +49,7 @@ sub update_points {
     };
 
     $sth = $dbh->prepare(qq{ DELETE FROM $mgr->{Tables}->{POINTS_INACTIV} WHERE 
-       ((userid = $user_id) AND (TO_DAYS(NOW()) >= TO_DAYS(insert_date)+ $lib::Config::CONFIG->{InactivTime}))});
+       ((userid = $user_id) AND (TO_DAYS(NOW()) >= TO_DAYS(insert_date)+ ($mgr->{InactivTime})))});
 
     unless ($sth->execute()) {
       warn sprintf("[Error:] Trouble selecting data from [%s] and [%s].".
@@ -58,12 +57,32 @@ sub update_points {
       $mgr->fatal_error("Database error.");
     };
 
-  }
+  };
 
   $sth->finish();
   $dbh->do("UNLOCK TABLES");
   
   return 1;
+};
+
+#-----------------------------------------------------------------------------#
+# CALL: $self->cost_text($mgr, $user_id, $words).                             #
+#                                                                             #
+#       $mgr     = manager object.                                            #
+#       $user_id = die ID des Users der diesen Text einstellen will           #
+#       $words   = Anzahl der Worte des Textes                                #
+#                                                                             #
+# DESC Ermittelt die Kosten zum Reinstellen eines Textes                      #
+#                                                                             #
+# RETURN ( $points )                                                          #
+#                                                                             #
+#       $points : Punktekosten für diesen Text                                #
+#-----------------------------------------------------------------------------#
+sub cost_text {
+
+  my ($self, $mgr, $user_id, $words) = @_;
+
+  return ($mgr->{TextPoints}) * $words;
 };
 
 #-----------------------------------------------------------------------------#
@@ -87,7 +106,7 @@ sub receive_text {
 
   my ($self, $mgr, $user_id, $words) = @_;
 
-  my $pointscost = ($lib::Config::CONFIG->{TextPoints}) * $words;
+  my $pointscost = ($mgr->{TextPoints}) * $words;
 
   if ($self->get_activ_points($mgr, $user_id) >= $pointscost) {
 
@@ -113,6 +132,29 @@ sub receive_text {
     return (-1);
   }
 };
+
+#-----------------------------------------------------------------------------#
+# CALL: $self->cost_trans($mgr, $user_id, $words, $trans_id).                 #
+#                                                                             #
+#       $mgr      = manager object.                                           #
+#       $user_id  = die ID des Users der diese Übersetzung erstellt hat       #
+#       $words    = Anzahl der Worte der Übersetzung                          #
+#       $trans_id = ID der Übersetzung                                        #
+#                                                                             #
+# DESC Ermittelt die Punkte die für eine Übersetzung gutgeschrieben werden.   #
+#                                                                             #
+# RETURN ( $points )                                                          #
+#                                                                             #
+#       $points : Punkte die für diese Übersetzung gutgeschrieben werden      #
+#                 (inaktiv)                                                   #
+#-----------------------------------------------------------------------------#
+sub cost_trans {
+
+  my ($self, $mgr, $user_id, $words, $trans_id) = @_;
+
+  return ($mgr->{TransPoints} * $words);
+};
+
 
 #-----------------------------------------------------------------------------#
 # CALL: $self->receive_trans($mgr, $user_id, $words, $trans_id).              #
@@ -143,7 +185,7 @@ sub receive_trans {
             sub {($_[0]+1900, $_[1]+1),@_[2..5]}->((localtime)[5,4,3,2,1,0]));
 
   my $sth = $dbh->prepare(qq{INSERT INTO $mgr->{Tables}->{POINTS_INACTIV} (userid, insert_date, translation_id, points) VALUES
-                            ($user_id, NOW(), $trans_id, (($lib::Config::CONFIG->{TransPoints}) * $words)) });
+                            ($user_id, NOW(), $trans_id, (($mgr->{TransPoints}) * $words)) });
 
   unless ($sth->execute()) {
     warn sprintf("[Error:] Trouble selecting data from [%s] and [%s].".
@@ -154,7 +196,7 @@ sub receive_trans {
   $sth->finish();
   $dbh->do("UNLOCK TABLES");
 
-  return ($lib::Config::CONFIG->{TransPoints} * $words);
+  return ($mgr->{TransPoints} * $words);
 };
 
 #-----------------------------------------------------------------------------#
@@ -236,4 +278,6 @@ sub get_inactiv_points {
 };
 
 1;
+
+
 

@@ -931,9 +931,10 @@ DROP TABLE IF EXISTS lingua_text_rating;
 
 CREATE TABLE lingua_text_rating (
         rating_id   INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+         parent_id   INT(10) UNSIGNED DEFAULT '0',
         user_id     INT(10) UNSIGNED DEFAULT '0',
         text_id     INT(10) UNSIGNED DEFAULT '0',
-	text_rating INT(10) UNSIGNED DEFAULT '0',
+		text_rating INT(10) UNSIGNED DEFAULT '0',
         PRIMARY KEY(rating_id)
 );
 

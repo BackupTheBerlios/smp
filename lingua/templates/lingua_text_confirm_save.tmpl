@@ -1,0 +1,89 @@
+<!------------------------------------------------------------------------------>
+<!-- NAME: lingua_test_message.tmpl				 		>				
+<!-- 				 				 		>
+<!-- DESC: Used to send a Message to the user (Ex. Text or Desc. confirmation)  > 							 >
+<!--										>
+<!-- Author: Giovanni Ngapout(ngapout@cs.tu-berlin.de)		 		>
+<!------------------------------------------------------------------------------>
+
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<input type="hidden" name="title" value="<TMPL_VAR TEXT_TITLE>">
+<input type="hidden" name="text_desc" value="<TMPL_VAR TEXT_DESCRIPTION>">
+<input type="hidden" name="text_desc_lang_id" value="<TMPL_VAR TEXT_LANG>">
+<input type="hidden" name="text_cat_id" value="<TMPL_VAR TEXT_CAT>">
+<input type="hidden" name="mytext" value="<TMPL_VAR TEXT>">
+
+<input type="hidden" name="textcounter" value="<TMPL_VAR TEXT_COUNTER>">
+<input type="hidden" name="freicounter" value="<TMPL_VAR FREI_COUNTER>">
+
+
+<input type="hidden" name="method" value="text_confirm_save">
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+	<tr valign="top">
+	   <td colspan="2">
+	       <TMPL_INCLUDE lingua_logo.tmpl>
+	  </td>
+	</tr>
+	<tr valign="top">
+ 		<td width="200">
+    			<TMPL_INCLUDE lingua_left.tmpl>
+  		</td>
+  		<td bgcolor="#ababab" width="600">
+
+				<TABLE cellspacing="2">
+					
+				<!--	<TR>	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td> -->
+
+
+					<TMPL_LOOP TEXT_LOOP_MES>					
+					<TR > 	<td>&nbsp;</td> 
+						<td align="left"> <b>
+						<font color="black" size=4><TMPL_VAR TEXT_MESS></font> </b></td> <td>
+						<font color="blue" size=3><TMPL_VAR TEXT_MESS_VAL></font>
+						</td>					
+					</TR>
+					</TMPL_LOOP>
+					
+	
+					<tr> 	 <td> &nbsp;</td> <td><br>
+						<input type="submit" name="text_change" value="<TMPL_VAR PAGE_LANG_002038>"> 
+						</td> 
+						<td> <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					  	<input type="submit" name="text_save" value="<TMPL_VAR PAGE_LANG_002037>">  			
+						</td>
+					</tr>
+
+
+				</table>
+			</td>
+</tr>
+
+</table>
+
+<center>© Giovanni NGAPOUT </center>
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

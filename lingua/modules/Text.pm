@@ -15,7 +15,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/;
 
 #################################################################
 #NAME: parameter($mgr).						#
@@ -38,7 +38,7 @@ sub parameter {
   $mgr->{Page}->fill_user_part($mgr);
   $mgr->{Page}->fill_lang_part($mgr);
 
-my $method = $mgr->{CGI}->param('method') || 'text_new';
+my $method = $mgr->{CGI}->param('method') || 'text_confirm_save'; #'text_new';
 
 if ($method eq 'text_new'){
   $self->show_text_new($mgr);}
@@ -57,6 +57,14 @@ elsif ($method eq 'text_message'){
 
 elsif ($method eq 'text_message_way'){
   $self->show_way($mgr);}
+
+elsif ($method eq 'text_confirm_save'){
+  $self->show_text_confirm_save($mgr);}
+
+elsif ($method eq 'create_text'){
+  $self->show_text_new($mgr);}
+
+
 
 return 1;
 }
@@ -245,26 +253,32 @@ elsif(defined $text_send ) {
 	if (!$text){$text_mes=1;}
 
 	if ( ((($cat_mes==1) or ($lang_mes==1)) or ($title_mes==1)) or ($text_mes==1)){
+
+		#Hidden-Var des 2. Formular setzen.  
+		$mgr->{TmplData}{PAGE_ACTION}=$mgr->{Action};
+		$mgr->{TmplData}{PAGE_SID}= $mgr->{SessionId};
+		my $lang = $mgr->{Language};
+		$mgr->{TmplData}{PAGE_LANG}= $mgr->{SystemLangs}->{$lang};
+
 		 $self->show_text_new($mgr,$cat_mes, $lang_mes, $title_mes, $text_mes);
 
 	} else { 
-		###check length(text)#############
+		###check_length(text)#############
+		###check_Codierung(text)#############
 
-		$self->text_save($mgr);
-		
-	
-		##### Confirmation###########
-		my $mes1_002035= $mgr->{Func}->get_text($mgr, 2035); 
-		my $mes2_002036= $mgr->{Func}->get_text($mgr, 2036); 
-
-		$mgr->{TmplData}{TEXT_MES1_DICO} = 2035;
-		$mgr->{TmplData}{TEXT_MES2_DICO} = 2036;
-
-		$self->show_text_message($mgr, $mes1_002035, $mes2_002036);
+		$self->show_text_confirm_save($mgr);
 	 }
-
+	
      }	
-else { $self->show_text_new($mgr);}
+else { 
+	#Hidden-Var des 2. Formular setzen.  
+	$mgr->{TmplData}{PAGE_ACTION}=$mgr->{Action};
+	$mgr->{TmplData}{PAGE_SID}= $mgr->{SessionId};
+	my $lang = $mgr->{Language};
+	$mgr->{TmplData}{PAGE_LANG}= $mgr->{SystemLangs}->{$lang};
+
+	$self->show_text_new($mgr);
+      }
 
 
 
@@ -532,6 +546,84 @@ $self->show_text_message($mgr, $mes1, $mes2);
 }
 
 #########################################################################################################################################
+#CALL: $self->show_text_confirm_save($mgr).													#
+#																	#
+#														#
+#DESC:  														#
+#																	#
+#Author: Giovanni Ngapout(ngapout@cs.tu-berlin.de)											#
+#########################################################################################################################################
+
+sub show_text_confirm_save{
+
+	my ($self, $mgr) = @_;
+
+
+my $title = $mgr->{CGI}->param('title') || undef;
+my $text_cat_id = $mgr->{CGI}->param('text_cat_id') || undef;
+my $text_lang_id = $mgr->{CGI}->param('text_desc_lang_id') || undef;
+my $text = $mgr->{CGI}->param('mytext') || undef;
+my $text_desc = $mgr->{CGI}->param('text_desc') || undef;
+
+my $text_change = $mgr->{CGI}->param('text_change') || undef;
+my $text_save = $mgr->{CGI}->param('text_save') || undef;
+
+if (defined $text_change){$self->show_text_new($mgr);}
+elsif (defined $text_save){
+		
+		$self->text_save($mgr);
+		##### Confirmation###########
+		my $mes1_002035= $mgr->{Func}->get_text($mgr, 2035); 
+		my $mes2_002036= $mgr->{Func}->get_text($mgr, 2036); 
+
+		$mgr->{TmplData}{TEXT_MES1_DICO} = 2035;
+		$mgr->{TmplData}{TEXT_MES2_DICO} = 2036;
+
+		$self->show_text_message($mgr, $mes1_002035, $mes2_002036);
+ 
+}else{
+
+		my $title_mess_002039 	= $mgr->{Func}->get_text($mgr, 2039);
+		my $Code_mess2_002040 	= $mgr->{Func}->get_text($mgr, 2040); 
+		my $length_mess2_002041 = $mgr->{Func}->get_text($mgr, 2041); 
+		my $punct_tomove_mess2_002042 = $mgr->{Func}->get_text($mgr, 2042); 
+		my $act_punct_mess2_002043 = $mgr->{Func}->get_text($mgr, 2043); 
+		my $new_punct_mess2_002044 = $mgr->{Func}->get_text($mgr, 2044); 
+
+###########Provisoire#########
+my $textcounter = $mgr->{CGI}->param('textcounter') || 0;
+my $freicounter = $mgr->{CGI}->param('freicounter') || 0;
+my $punkt= $textcounter + $freicounter;
+		my @array_data = (
+				{ TEXT_MESS  => $title_mess_002039 ,       TEXT_MESS_VAL  => $title} ,
+				{ TEXT_MESS  => $Code_mess2_002040 ,       TEXT_MESS_VAL  => 'Unicode (OK)'} ,
+				{ TEXT_MESS  => $length_mess2_002041 ,     TEXT_MESS_VAL  => $freicounter } ,
+				{ TEXT_MESS  => $punct_tomove_mess2_002042,TEXT_MESS_VAL  => $freicounter } ,
+				{ TEXT_MESS  => $act_punct_mess2_002043  ,  TEXT_MESS_VAL => $punkt},
+				{ TEXT_MESS  => $new_punct_mess2_002044 ,  TEXT_MESS_VAL  =>  $textcounter }
+			      );
+		
+		$mgr->{TmplData}{TEXT_LOOP_MES}=\@array_data;
+		$mgr->{TmplData}{PAGE_LANG_002037} = $mgr->{Func}->get_text($mgr, 2037);
+		$mgr->{TmplData}{PAGE_LANG_002038} = $mgr->{Func}->get_text($mgr, 2038);
+
+		$mgr->{TmplData}{TEXT_TITLE} = $title ;
+		$mgr->{TmplData}{TEXT_DESCRIPTION}= $text_desc;
+		$mgr->{TmplData}{TEXT_LANG}=$text_lang_id;
+		$mgr->{TmplData}{TEXT_CAT}=$text_cat_id;
+		$mgr->{TmplData}{TEXT}=$text;
+
+		$mgr->{TmplData}{TEXT_COUNTER}=$textcounter;
+		$mgr->{TmplData}{FREI_COUNTER}=$freicounter;
+
+		$mgr->{Template} = $mgr->{TmplFiles}->{Text_Conf_Save};
+
+
+
+     }
+}
+
+#########################################################################################################################################
 #CALL: $self->get_below_cats($mgr).													#
 #																	#
 #RETURN: @array of {Cat_id & Cat_name in the actual language} of the below Categories (no parent <=> cat_count=0)			#
@@ -626,6 +718,9 @@ SQL
 
 
 1;
+
+
+
 
 
 

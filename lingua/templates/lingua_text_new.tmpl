@@ -8,6 +8,13 @@
 
 
 <TMPL_INCLUDE lingua_header.tmpl>
+</form>
+
+<form name="textform" method="post">
+<input type="hidden" name="action" value="<TMPL_VAR PAGE_ACTION>">
+<input type="hidden" name="sid" value="<TMPL_VAR PAGE_SID>">
+<input type="hidden" name="lang" value="<TMPL_VAR PAGE_LANG>">
+
 <input type="hidden" name="method" value="text_direction">
 
 <table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
@@ -133,7 +140,11 @@
   		</td>
 	</tr>
 </table>
+<center>© Giovanni NGAPOUT </center>
 <TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
 
 
 

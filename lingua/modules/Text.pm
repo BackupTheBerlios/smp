@@ -15,7 +15,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/;
 
 #################################################################
 #NAME: parameter($mgr).						#
@@ -38,7 +38,7 @@ sub parameter {
   $mgr->{Page}->fill_user_part($mgr);
   $mgr->{Page}->fill_lang_part($mgr);
 
-my $method = $mgr->{CGI}->param('method') || 'text_confirm_save'; #'text_new';
+my $method = $mgr->{CGI}->param('method') || 'trans_desc'; #'text_new';
 
 if ($method eq 'text_new'){
   $self->show_text_new($mgr);}
@@ -65,6 +65,11 @@ elsif ($method eq 'create_text'){
   $self->show_text_new($mgr);}
 
 
+elsif ( ($method eq 'trans_desc') || ($method eq 'text_trans') ){
+  $self->show_trans_desc($mgr);}
+
+elsif ($method eq 'text_trans_contents'){
+  $self->show_trans_contents($mgr);}
 
 return 1;
 }
@@ -623,6 +628,170 @@ my $punkt= $textcounter + $freicounter;
      }
 }
 
+
+
+#########################################################################################################################################
+#CALL: $self->show_trans_desc($mgr).													#
+#																	#
+#RETURN:
+#																	#
+#DESC:  														#
+#																	#
+#Author: # Guy Nokam
+#########################################################################################################################################
+
+sub show_trans_desc{
+  my ($self, $mgr) = @_;
+
+
+my $text_id = $mgr->{CGI}->param('text_id') || undef;
+
+my $send_desc = $mgr->{CGI}->param('send_desc') || undef;
+my $trans_desc_lang_id = $mgr->{CGI}->param('text_desc_lang_id') || undef;
+my $trans_title = $mgr->{CGI}->param('trans_title') || undef;
+my $trans_desc = $mgr->{CGI}->param('trans_desc') || undef;
+
+###Schnitstelle avec hendrick von text_ansehen 
+#my $new_trans = $mgr->{CGI}->param('text_id') || undef;
+# et nom de son button
+
+
+if (defined $send_desc){
+
+	if ((defined $trans_desc_lang_id ) && (defined  $trans_title) &(defined $trans_desc )) {
+
+		### Speichern Text_id trans_title trans_desc dans text_trans_contenns
+
+		$self->show_trans_contents($mgr);
+	}else{		
+	
+		if (defined $trans_desc_lang_id){
+			$mgr->{TmplData}{TEXT_LANG_ID_SELECT}=$trans_desc_lang_id;
+			my $nr = $self->get_lang_name_id($mgr,$trans_desc_lang_id);
+			my $lang_name = $mgr->{Func}->get_text($mgr, $nr);
+			$mgr->{TmplData}{TEXT_LANG_NAME_SELECT}= $lang_name ; }
+
+		else{ 
+			$mgr->{TmplData}{PAGE_LANG_002511} = $mgr->{Func}->get_text($mgr, 2511);
+			$mgr->{TmplData}{TEXT_LANG_NAME_SELECT}= '-----------'; }
+
+			my @lang_loop_data=();
+			my @ray = $mgr->{Func}->get_langs($mgr,'all');
+			my $elem;
+
+			foreach $elem (@ray){
+				my %data;
+				$data{TEXT_LANG_ID}= $$elem[0];
+				$data{TEXT_LANG_NAME}= $$elem[1];
+
+				push(@lang_loop_data,\%data);
+
+				}
+
+			$mgr->{TmplData}{TEXT_LOOP_LANG}=\@lang_loop_data;
+
+		if (!$trans_title){ $mgr->{TmplData}{PAGE_LANG_002514} = $mgr->{Func}->get_text($mgr, 2514);}
+
+		if (!$trans_desc ){ $mgr->{TmplData}{PAGE_LANG_002518} = $mgr->{Func}->get_text($mgr, 2518);}
+		
+		$mgr->{TmplData}{PAGE_LANG_002510} = $mgr->{Func}->get_text($mgr, 2510);
+		$mgr->{TmplData}{PAGE_LANG_002512} = $mgr->{Func}->get_text($mgr, 2512);
+		$mgr->{TmplData}{PAGE_LANG_002513} = $mgr->{Func}->get_text($mgr, 2513);
+		$mgr->{TmplData}{PAGE_LANG_002516} = $mgr->{Func}->get_text($mgr, 2516);
+		$mgr->{TmplData}{PAGE_LANG_002517} = $mgr->{Func}->get_text($mgr, 2517);
+		$mgr->{TmplData}{PAGE_LANG_002519} = $mgr->{Func}->get_text($mgr, 2519);
+		$mgr->{TmplData}{PAGE_LANG_002520} = $mgr->{Func}->get_text($mgr, 2520);
+		$mgr->{Template} = $mgr->{TmplFiles}->{Text_Trans_Desc};
+		}
+}else{
+
+	if (defined $trans_desc_lang_id){
+			$mgr->{TmplData}{TEXT_LANG_ID_SELECT}=$trans_desc_lang_id;
+			my $nr = $self->get_lang_name_id($mgr,$trans_desc_lang_id);
+			my $lang_name = $mgr->{Func}->get_text($mgr, $nr);
+			$mgr->{TmplData}{TEXT_LANG_NAME_SELECT}= $lang_name ; }
+
+		else{ 
+			$mgr->{TmplData}{TEXT_LANG_NAME_SELECT}= '-----------'; }
+
+			my @lang_loop_data=();
+			my @ray = $mgr->{Func}->get_langs($mgr,'all');
+			my $elem;
+
+			foreach $elem (@ray){
+				my %data;
+				$data{TEXT_LANG_ID}= $$elem[0];
+				$data{TEXT_LANG_NAME}= $$elem[1];
+
+				push(@lang_loop_data,\%data);
+
+				}
+
+			$mgr->{TmplData}{TEXT_LOOP_LANG}=\@lang_loop_data;
+
+		$mgr->{TmplData}{PAGE_LANG_002510} = $mgr->{Func}->get_text($mgr, 2510);
+		$mgr->{TmplData}{PAGE_LANG_002512} = $mgr->{Func}->get_text($mgr, 2512);
+		$mgr->{TmplData}{PAGE_LANG_002513} = $mgr->{Func}->get_text($mgr, 2513);
+		$mgr->{TmplData}{PAGE_LANG_002516} = $mgr->{Func}->get_text($mgr, 2516);
+		$mgr->{TmplData}{PAGE_LANG_002517} = $mgr->{Func}->get_text($mgr, 2517);
+		$mgr->{TmplData}{PAGE_LANG_002519} = $mgr->{Func}->get_text($mgr, 2519);
+		$mgr->{TmplData}{PAGE_LANG_002520} = $mgr->{Func}->get_text($mgr, 2520);
+		
+			$mgr->{Template} = $mgr->{TmplFiles}->{Text_Trans_Desc};
+ 
+
+}
+
+
+}
+
+########################################################################################################################################
+#CALL: $self->show_trans_contents($mgr).													#
+#																	#
+#RETURN:
+#																	#
+#DESC:  														#
+#																	#
+#Author: # Guy Nokam
+#########################################################################################################################################
+
+sub show_trans_contents{
+  my ($self, $mgr) = @_;
+
+
+my $trans_desc_change = $mgr->{CGI}->param('trans_desc_change') || undef;
+my $trans_send = $mgr->{CGI}->param('trans_send') || undef;
+
+
+if (defined $trans_desc_change){}
+
+elsif(defined  $trans_send){
+
+my $mes1_2521 = $mgr->{Func}->get_text($mgr, 2521);
+my $mes2_2522 = $mgr->{Func}->get_text($mgr, 2522);
+$self->show_text_message($mgr,$mes1_2521, $mes2_2522);
+
+
+}
+
+else {
+# übernehmen les params
+ 	
+$mgr->{TmplData}{PAGE_LANG_002500} = $mgr->{Func}->get_text($mgr, 2500);
+$mgr->{TmplData}{PAGE_LANG_002501} = $mgr->{Func}->get_text($mgr, 2501);
+$mgr->{TmplData}{PAGE_LANG_002503} = $mgr->{Func}->get_text($mgr, 2503);
+$mgr->{TmplData}{PAGE_LANG_002504} = $mgr->{Func}->get_text($mgr, 2504);
+$mgr->{TmplData}{PAGE_LANG_002505} = $mgr->{Func}->get_text($mgr, 2505);
+
+	
+$mgr->{Template} = $mgr->{TmplFiles}->{Text_Trans_contents};}
+
+
+
+
+}
+
+
 #########################################################################################################################################
 #CALL: $self->get_below_cats($mgr).													#
 #																	#
@@ -718,31 +887,4 @@ SQL
 
 
 1;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -8,8 +8,6 @@ use Symbol;
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/;
-
 sub new {
     my $proto  = shift;
     my %params = @_;
@@ -144,7 +142,7 @@ sub set_sid {
 sub get_sid {
     my $self = shift;
 
-    return $self->{session}->{_session_id};
+    return $self->{_sess}->{name};
 }
 
 sub check_sessions {
@@ -212,7 +210,9 @@ sub DESTROY {
             CORE::close $self->{_sess}->{file};
 
             if (!defined $self->{_main}->{unserialized}{$self->{_sess}->{name}}) {
+                if (defined $self->{_sess}->{name} && $self->{_sess}->{name} ne "") {
                     rmtree([$self->{directory}."/".$self->{_sess}->{name}], 0, 0);
+                }
             }
         };
     }

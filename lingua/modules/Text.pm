@@ -7,7 +7,7 @@ use strict;
 
 
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.29 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.30 $ =~ /(\d+)\.(\d+)/;
 
 
 
@@ -819,7 +819,7 @@ my $count_words = $#length_header + $#length_desc + $#length_text + 3;
 
 my $translator_id = $mgr->{UserData}->{UserId} || undef;
 
-my $cat_id 	= $mgr->{Session}->set("TextTransCatID") || undef;
+my $cat_id 	= $mgr->{Session}->get("TextTransCatID") || undef;
 my $trans_data 	= $mgr->{Session}->get("TextTransArt")   || undef;
 my ($trans_art, $text_res_id, $res_id);
 
@@ -1880,7 +1880,7 @@ $sth->finish();
 }
 
 #-----------------------------------------------------------------------------#
-#CALL: $self->show_text($mgr)                                                 #
+#CALL: $self->show_text_see($mgr)                                             #
 #                                                                             #
 #RETURN:                                                                      #
 #                                                                             #
@@ -1904,7 +1904,7 @@ sub show_text_see {
 
 
 #-----------------------------------------------------------------------------#
-#CALL: $self->show_text_original($mgr)                                        #
+#CALL: $self->show_text($mgr)                                                 #
 #                                                                             #
 #RETURN:                                                                      #
 #                                                                             #
@@ -1915,8 +1915,8 @@ sub show_text_see {
 sub show_text{
   my ($self, $mgr) = @_;
   my $given_text_id = $mgr->{CGI}->param('text_id') || undef;
-  my $current_user_id = $mgr->{Session}->get('UserId');
-  my $current_user_level = $mgr->{Session}->get('UserLevel');
+  my $current_user_id = $mgr->{UserData}->{UserId} || undef;
+  my $current_user_level = $mgr->{Session}->get('UserLevel') || undef;
 
 #if selected another language in language-Box
   if ($mgr->{CGI}->param('method') eq 'view_trans' || defined $mgr->{CGI}->param('view_trans')){
@@ -1989,7 +1989,7 @@ SQL
 
 
 #User-handlig for Delete-Button and Transalation-Button
-  if(!(defined $mgr->{UserData}->{UserId})){
+  if(!(defined $mgr->{UserData}->{UserId}) || !(defined $current_user_level)){
     $mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden';
     $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'hidden';
   }elsif($current_user_level == 0){
@@ -2021,7 +2021,7 @@ SQL
   }
 
   @row = $sth->fetchrow_array();
-  my $text_rating_id  = $row[1];
+  my $text_rating_id  = $row[1] || 0;
   my $text_rating     = $row[2];
 
   $sth->finish();
@@ -2093,15 +2093,16 @@ SQL
 
 
 #show text-rating-radio-buttons only if user not owner by this text and if user haven't rated this text
-  if($current_user_id == $user_id || $text_rating_id == $given_text_id || !(defined $mgr->{UserData}->{UserId})) {
+  if(!(defined $mgr->{UserData}->{UserId}) || $current_user_id == $user_id || $text_rating_id == $given_text_id ) {
     $mgr->{TmplData}{RADIO_TYPE} = 'hidden';
     $mgr->{TmplData}{SUBMIT_TYPE} = 'hidden';
-
-    if($text_rating == 1 ){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7111); }
-    elsif($text_rating == 2){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7110);}
-    elsif($text_rating == 3){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7109);}
-    elsif($text_rating == 4){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7108); }
-    elsif($text_rating == 5){ $mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7107);}
+    if(defined $text_rating){
+      if($text_rating == 1 ){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7111); }
+      elsif($text_rating == 2){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7110);}
+      elsif($text_rating == 3){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7109);}
+      elsif($text_rating == 4){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7108); }
+      elsif($text_rating == 5){ $mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7107);}
+    }  
   }
   else{
     $mgr->{TmplData}{PAGE_LANG_007107} = $mgr->{Func}->get_text($mgr, 7107);
@@ -2125,7 +2126,7 @@ SQL
 }#end show_text
 
 #-----------------------------------------------------------------------------#
-#CALL: $self->get_original_text($mgr, text_id)                                #
+#CALL: $self->decrement_category_entry($mgr, text_id)                         #
 #                                                                             #
 #RETURN:                                                                      #
 #                                                                             #
@@ -2285,7 +2286,7 @@ SQL
 
 
 #-----------------------------------------------------------------------------#
-#CALL: $self->cat_lang_id($mgr)                                               #
+#CALL: $self->get_author($mgr, $user_id)                                      #
 #                                                                             #
 #RETURN: $firstname . " " . $lastname;                                        #
 #                                                                             #
@@ -2318,7 +2319,7 @@ SQL
 
 
 #-----------------------------------------------------------------------------#
-#CALL: $self->cat_lang_id($mgr)                                               #
+#CALL: $self->cat_lang_id($mgr, $category_id)                                 #
 #                                                                             #
 #RETURN: cat_lang_id                                                          #
 #                                                                             #
@@ -2468,7 +2469,7 @@ SQL
 
 
 #-----------------------------------------------------------------------------#
-#CALL: $self->show_rating($mgr)                                               #
+#CALL: $self->text_rating($mgr)                                               #
 #                                                                             #
 #RETURN:                                                                      #
 #                                                                             #
@@ -2479,7 +2480,7 @@ SQL
 sub text_rating {
   my ($self, $mgr) = @_;
   my $rating = $mgr->{CGI}->param('rating') || undef;
-  my $user_id =$mgr->{Session}->get("UserId");
+  my $user_id =$mgr->{Session}->get("UserId") || undef;
   my $text_id = $mgr->{CGI}->param('text_id') || undef;
   my $current_user_level = $mgr->{Session}->get('UserLevel');
 
@@ -2509,9 +2510,8 @@ SQL
   $sth->finish();
 
 #if user not rated this text and selected an ratingvalue then insert this rating
-#and if the userlevel of this user 1 or 2
-  if(defined $rating && $TEXT_RATING_text_id eq undef && $mgr->{UserData}->{UserId} ne undef){
-
+#and if the UserId is defined(User is logged)
+  if(defined $mgr->{UserData}->{UserId} && defined $rating && !(defined $TEXT_RATING_text_id)){
 
     $table = $mgr->{Tables}->{TEXT};
     $dbh = $mgr->connect();
@@ -2993,7 +2993,7 @@ SQL
 }#delete_trans
 
 #-----------------------------------------------------------------------------#
-#CALL: $self->set_parent_id($mgr,$text_id)                                    #
+#CALL: $self->set_parent_id($mgr,$text_id, $parent_id)                        #
 #                                                                             #
 #RETURN:  lang_name correspond to lang_id                                     #
 #                                                                             #

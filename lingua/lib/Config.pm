@@ -95,8 +95,9 @@ $TMPL = {
 	 Text_Show            => 'lingua_text_show.tmpl',          #by HENDRIK Erler
          Text_Delete          => 'lingua_text_delete.tmpl',        #by HENDRIK Erler
          Text_Delete_ALL_Ok   => 'lingua_text_delete_all_ok.tmpl', #by HENDRIK Erler
+         Text_Delete_TRANS_Ok => 'lingua_text_delete_trans_ok.tmpl',#by HENDRIK Erler
 	 Texts_Own            => 'lingua_texts_own.tmpl',           #by HENDRIK Erler
-	 Trans_Own             => 'lingua_trans_own.tmpl'           #by HENDRIK Erler
+	 Trans_Own            => 'lingua_trans_own.tmpl'           #by HENDRIK Erler
 };
 
 1;

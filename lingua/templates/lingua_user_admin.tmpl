@@ -53,7 +53,12 @@
           <span class="normal"><TMPL_VAR PAGE_LANG_001177>:</span>
         </td>
         <td>
-          <span class="normal"><TMPL_VAR USER_STATUS></span>
+          <TMPL_IF USER_IF_BLOCKED>
+            <span class="alert">
+          <TMPL_ELSE>
+            <span class="normal">
+          </TMPL_IF>
+	  <TMPL_VAR USER_STATUS></span>
         </td>
         <td></td>
       </tr>
@@ -82,62 +87,157 @@
 
     <hr>
 
-<!-- Part 2: Promotion  ------------------------------------------------------->
-    <span class="normal"><b><TMPL_VAR PAGE_LANG_001179></b></span>
-    <br><br>
+    <TMPL_IF USER_IF_BLOCKED>
 
-    <table cellspacing="0" cellpadding="2" border="0" width="600">
+<!-- Part 2.1.: Reason for blocking ------------------------------------------->
+      <span class="normal"><b><TMPL_VAR PAGE_LANG_001188></b></span>
+      <br><br>
 
-      <colgroup>
-        <col width="100">
-        <col width="200">
-        <col width="200">
-        <col width="100">
-      </colgroup>
+      <table cellspacing="0" cellpadding="2" border="0" width="600">
 
-      <tr>
-        <td></td>
-        <td>
-          <span class="normal"><TMPL_VAR PAGE_LANG_001180></span>
-	</td>
-        <td>
-          <select name="u_sel_level" size="1">
-            <option value="0"><TMPL_VAR PAGE_LANG_001088>
-            <option value="1"><TMPL_VAR PAGE_LANG_001089>
-            <option value="2"><TMPL_VAR PAGE_LANG_001090>
-          </select>
-        </td>
-        <td>
-          <input type="submit" name="u_sub_promote"
-                 value="<TMPL_VAR PAGE_LANG_001181>">
-        </td>
-      </tr>
+        <colgroup>
+          <col width="100">
+          <col width="400">
+          <col width="100">
+        </colgroup>
 
-    </table>
+        <tr>
+          <!-- reason language selection -->
+          <td valign="top">
+            <select name="u_sel_rslang" size="1">
+              <TMPL_LOOP NAME="USER_LOOP_LANG">
+                <option value="<TMPL_VAR USER_OPTVAL_LANG>" <TMPL_VAR USER_DEF_LANG>>
+                  <TMPL_VAR USER_OPT_LANG>
+              </TMPL_LOOP>
+            </select>
+	    <br>
+            <!-- language change submit button -->
+            <input type="submit" name="u_sub_rschange"
+                   value="<TMPL_VAR PAGE_LANG_001189>">
+          </td>
+          <!-- the reason -->
+          <td>
+            <span class="normal">
+	      <textarea name="u_inp_reason" readonly
+	                rows="8" cols="55"><TMPL_VAR USER_REASON></textarea>
+	    </span>
+          </td>
+          <td></td>
+        </tr>
+	
+	<tr><td><br></td></tr>
 
-    <br>
-    <hr>
+        <!-- edit button -->
+        <tr>
+          <td></td>
+          <td align="right">
+            <span class="normal"><TMPL_VAR PAGE_LANG_001190>:&nbsp;</span>
+          </td>
+          <td>
+            <input type="submit" name="u_sub_rsedit"
+                   value="<TMPL_VAR PAGE_LANG_001191>">
+          </td>
+        </tr>
+        
+          <!-- new button -->
+          <tr>
+            <td></td>
+            <td align="right">
+              <span class="normal"><TMPL_VAR PAGE_LANG_001192>:&nbsp;</span>
+            </td>
+            <td>
+              <input type="submit" name="u_sub_rsnew"
+                     value="<TMPL_VAR PAGE_LANG_001193>">
+            </td>
+          </tr>
+        </table>
 
-<!-- Part 3: Block user  ------------------------------------------------------>
-    <span class="normal"><b><TMPL_VAR PAGE_LANG_001182></b></span>
-    <br><br>
+	<hr>
 
-    <table cellspacing="0" cellpadding="2" border="0" width="600">
+<!-- Part 2.2.: De-Block ------------------------------------------------------>
+      <span class="normal"><b><TMPL_VAR PAGE_LANG_001185></b></span>
+      <br><br>
 
-      <colgroup>
-        <col width="500">
-        <col width="100">
-      </colgroup>
+      <div align="center">
+        <span class="normal"><TMPL_VAR PAGE_LANG_001186></span>
+      </div>
 
-      <tr>
-        <td></td>
-        <td>
-          <input type="submit" name="u_sub_block"
-                 value="<TMPL_VAR PAGE_LANG_001183>">
-        </td>
-      </tr>
+      <table cellspacing="0" cellpadding="2" border="0" width="600">
 
-    </table>
+        <colgroup>
+          <col width="500">
+          <col width="100">
+        </colgroup>
+
+        <tr>
+          <td></td>
+          <td>
+            <input type="submit" name="u_sub_deblock"
+                   value="<TMPL_VAR PAGE_LANG_001187>">
+          </td>
+        </tr>
+      </table>
+
+    <TMPL_ELSE>
+
+<!-- Part 3.1.: Promotion ----------------------------------------------------->
+      <span class="normal"><b><TMPL_VAR PAGE_LANG_001179></b></span>
+      <br><br>
+
+      <table cellspacing="0" cellpadding="2" border="0" width="600">
+
+        <colgroup>
+          <col width="100">
+          <col width="200">
+          <col width="200">
+          <col width="100">
+        </colgroup>
+
+        <tr>
+          <td></td>
+          <td>
+            <span class="normal"><TMPL_VAR PAGE_LANG_001180></span>
+  	  </td>
+          <td>
+            <select name="u_sel_level" size="1">
+              <option value="0"><TMPL_VAR PAGE_LANG_001088>
+              <option value="1"><TMPL_VAR PAGE_LANG_001089>
+              <option value="2"><TMPL_VAR PAGE_LANG_001090>
+            </select>
+          </td>
+          <td>
+            <input type="submit" name="u_sub_promote"
+                   value="<TMPL_VAR PAGE_LANG_001181>">
+          </td>
+        </tr>
+
+      </table>
+
+      <br>
+      <hr>
+
+<!-- Part 3.2.: Block user ---------------------------------------------------->
+      <span class="normal"><b><TMPL_VAR PAGE_LANG_001182></b></span>
+      <br><br>
+
+      <table cellspacing="0" cellpadding="2" border="0" width="600">
+
+        <colgroup>
+          <col width="500">
+          <col width="100">
+        </colgroup>
+
+        <tr>
+          <td></td>
+          <td>
+            <input type="submit" name="u_sub_block"
+                   value="<TMPL_VAR PAGE_LANG_001183>">
+          </td>
+        </tr>
+
+      </table>
+
+    </TMPL_IF> <!-- if user is not blocked ------------------------------------>
 
   </td>
 </tr>

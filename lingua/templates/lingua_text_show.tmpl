@@ -63,17 +63,17 @@
 
 					<TR>
 
-						<td><input name=rating type="radio" value="5"><TMPL_VAR PAGE_LANG_002107></td>
-						<td><input name=rating type="radio" value="4"><TMPL_VAR PAGE_LANG_002108></td>
-						<td><input name=rating type="radio" value="3"><TMPL_VAR PAGE_LANG_002109></td>
-						<td><input name=rating type="radio" value="2"><TMPL_VAR PAGE_LANG_002110></td>
-						<td><input name=rating type="radio" value="1"><TMPL_VAR PAGE_LANG_002111></td>
-						<td><input type="submit" name="text_rating" value="<TMPL_VAR PAGE_LANG_002113>"></td>
+						<td><input name=rating type="<TMPL_VAR RADIO_TYPE>" value="5"><TMPL_VAR PAGE_LANG_002107></td>
+						<td><input name=rating type="<TMPL_VAR RADIO_TYPE>" value="4"><TMPL_VAR PAGE_LANG_002108></td>
+						<td><input name=rating type="<TMPL_VAR RADIO_TYPE>" value="3"><TMPL_VAR PAGE_LANG_002109></td>
+						<td><input name=rating type="<TMPL_VAR RADIO_TYPE>" value="2"><TMPL_VAR PAGE_LANG_002110></td>
+						<td><input name=rating type="<TMPL_VAR RADIO_TYPE>" value="1"><TMPL_VAR PAGE_LANG_002111></td>
+						<td><input type="<TMPL_VAR SUBMIT_TYPE>" name="text_rating" value="<TMPL_VAR PAGE_LANG_002113>"></td>
 					</TR>
 				</table>
 				<p>
-					<input type="submit" name="text_trans_contents" value="<TMPL_VAR PAGE_LANG_002106>">
-					<input type="submit" name="delete_text" value="<TMPL_VAR PAGE_LANG_002114>">
+					<input type="<TMPL_VAR SUBMIT_TRANS_TYPE>" name="text_trans_contents" value="<TMPL_VAR PAGE_LANG_002106>">
+					<input type="<TMPL_VAR SUBMIT_DELETE_TYPE>" name="delete_text" value="<TMPL_VAR PAGE_LANG_002114>">
 				</p>
 			</td>
 </tr>

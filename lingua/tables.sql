@@ -343,6 +343,8 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('2115', 'Rating of translation', 'Übersetzungsbewertung', 'Übersetzungsbewertungfr');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('2116', 'Prepare date', 'Erstellungsdatum', 'Erstellungsdatumfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2117', 'You rated this text with', 'Sie haben diesen Text bewertet mit', 'Sie haben diesen Text bewertet mitfr');
 
 DROP TABLE IF EXISTS lingua_user;
 

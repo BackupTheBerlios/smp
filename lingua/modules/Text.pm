@@ -15,7 +15,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /(\d+)\.(\d+)/;
 
 #################################################################
 #NAME: parameter($mgr).						#
@@ -1115,11 +1115,19 @@ sub show_text_translation {
 my ($self, $mgr) = @_;
   my $text_id = $mgr->{CGI}->param('text_id') || undef;
   my $trans_text_id = $mgr->{CGI}->param('trans_text_id') || undef;
+  my $user_id =$mgr->{Session}->get("UserId");
+  my $user_level = $mgr->{Session}->get("UserLevel");
 
   $mgr->{Template} = $mgr->{TmplFiles}->{Text_Show};
 
   #$mgr->{TmplData}{TEXT_ID} = $trans_text_id;
   $mgr->{TmplData}{TRANS_TEXT_ID} = $trans_text_id;
+
+
+  if($user_level == 0){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'hidden';}
+  elsif($user_level == 1){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';}
+  elsif($user_level == 2){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'submit'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';}
+
 
   $mgr->{TmplData}{PAGE_LANG_002023} = $mgr->{Func}->get_text($mgr, 2023);
   $mgr->{TmplData}{PAGE_LANG_002100} = $mgr->{Func}->get_text($mgr, 2100);
@@ -1131,15 +1139,58 @@ my ($self, $mgr) = @_;
   $mgr->{TmplData}{PAGE_LANG_002105} = $mgr->{Func}->get_text($mgr, 2105);
   $mgr->{TmplData}{PAGE_LANG_002101} = $mgr->{Func}->get_text($mgr, 2101);
   $mgr->{TmplData}{PAGE_LANG_002106} = $mgr->{Func}->get_text($mgr, 2106);
-  $mgr->{TmplData}{PAGE_LANG_002107} = $mgr->{Func}->get_text($mgr, 2107);
-  $mgr->{TmplData}{PAGE_LANG_002108} = $mgr->{Func}->get_text($mgr, 2108);
-  $mgr->{TmplData}{PAGE_LANG_002109} = $mgr->{Func}->get_text($mgr, 2109);
-  $mgr->{TmplData}{PAGE_LANG_002110} = $mgr->{Func}->get_text($mgr, 2110);
-  $mgr->{TmplData}{PAGE_LANG_002111} = $mgr->{Func}->get_text($mgr, 2111);
-  $mgr->{TmplData}{PAGE_LANG_002113} = $mgr->{Func}->get_text($mgr, 2113);
   $mgr->{TmplData}{PAGE_LANG_002114} = $mgr->{Func}->get_text($mgr, 2114);
-  $mgr->{TmplData}{PAGE_LANG_002115} = $mgr->{Func}->get_text($mgr, 2115);
   $mgr->{TmplData}{PAGE_LANG_002116} = $mgr->{Func}->get_text($mgr, 2116);
+
+  #text wether current user rates this text#############
+  my $table = $mgr->{Tables}->{TEXT_RATING};
+
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+SELECT  user_id, text_trans_id, text_rating
+FROM   $table
+WHERE  user_id = ?
+
+SQL
+
+  unless ($sth->execute($user_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+  my @row = $sth->fetchrow_array();
+  my $user_id       = @row[0];
+  my $text_trans_id = @row[1];
+  my $text_rating   = @row[2];
+
+  $sth->finish();
+
+  if(defined $text_trans_id){
+
+    $mgr->{TmplData}{RADIO_TYPE} = 'hidden';
+    $mgr->{TmplData}{SUBMIT_TYPE} = 'hidden';
+
+    if($text_rating == 1 ){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2117) }
+    elsif($text_rating == 2){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107);}
+    elsif($text_rating == 3){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107);}
+    elsif($text_rating == 4){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107); }
+    elsif($text_rating == 5){ $mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107);}
+
+  }
+  else{
+    $mgr->{TmplData}{PAGE_LANG_002107} = $mgr->{Func}->get_text($mgr, 2107);
+    $mgr->{TmplData}{PAGE_LANG_002108} = $mgr->{Func}->get_text($mgr, 2108);
+    $mgr->{TmplData}{PAGE_LANG_002109} = $mgr->{Func}->get_text($mgr, 2109);
+    $mgr->{TmplData}{PAGE_LANG_002110} = $mgr->{Func}->get_text($mgr, 2110);
+    $mgr->{TmplData}{PAGE_LANG_002111} = $mgr->{Func}->get_text($mgr, 2111);
+    $mgr->{TmplData}{PAGE_LANG_002113} = $mgr->{Func}->get_text($mgr, 2113);
+    $mgr->{TmplData}{RADIO_TYPE} = 'radio';
+    $mgr->{TmplData}{SUBMIT_TYPE} = 'submit';
+    $mgr->{TmplData}{PAGE_LANG_002115} = $mgr->{Func}->get_text($mgr, 2115);
+  }
+
 
   #length of Text and Text#############
   my $table = $mgr->{Tables}->{TEXT_TRANS};
@@ -1176,7 +1227,13 @@ SQL
 
   $mgr->{TmplData}{TEXT_LENGTH} = $num_words;
   $mgr->{TmplData}{TEXT} = $trans_text;
-  $mgr->{TmplData}{TEXT_RATING} = $avg_rating;
+
+  if($avg_rating < 1.5 && $avg_rating != 0){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2111); }
+  elsif($avg_rating < 2.5 && $avg_rating >= 1.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2110); }
+  elsif($avg_rating < 3.5 && $avg_rating >= 2.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2109); }
+  elsif($avg_rating < 4.5 && $avg_rating >= 3.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2108); }
+  elsif($avg_rating >= 4.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2107); }
+
   $mgr->{TmplData}{TEXT_RATING_NUMBER} = $num_ratings;
   $mgr->{TmplData}{TEXT_SUBMIT_TIME} = substr($submit_time,6, 2) . "." . substr($submit_time,4, 2) . "." .substr($submit_time,0, 4);
 
@@ -1348,11 +1405,18 @@ sub show_text_original {
   my ($self, $mgr) = @_;
   my $text_id = $mgr->{CGI}->param('text_id') || undef;
   my $trans_text_id = $mgr->{CGI}->param('trans_text_id') || undef;
+  my $user_id = $mgr->{Session}->get('UserId');
+  my $user_level = $mgr->{Session}->get('UserLevel');
 
   $mgr->{Template} = $mgr->{TmplFiles}->{Text_Show};
 
   $mgr->{TmplData}{TEXT_ID} = $text_id;
   #$mgr->{TmplData}{TRANS_TEXT_ID} = $trans_text_id; #Muß noch geändert werden.
+
+
+  if($user_level == 0){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'hidden';}
+  elsif($user_level == 1){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';}
+  elsif($user_level == 2){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'submit'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';}
 
   $mgr->{TmplData}{PAGE_LANG_002023} = $mgr->{Func}->get_text($mgr, 2023);
   $mgr->{TmplData}{PAGE_LANG_002100} = $mgr->{Func}->get_text($mgr, 2100);
@@ -1364,15 +1428,59 @@ sub show_text_original {
   $mgr->{TmplData}{PAGE_LANG_002105} = $mgr->{Func}->get_text($mgr, 2105);
   $mgr->{TmplData}{PAGE_LANG_002101} = $mgr->{Func}->get_text($mgr, 2101);
   $mgr->{TmplData}{PAGE_LANG_002106} = $mgr->{Func}->get_text($mgr, 2106);
-  $mgr->{TmplData}{PAGE_LANG_002107} = $mgr->{Func}->get_text($mgr, 2107);
-  $mgr->{TmplData}{PAGE_LANG_002108} = $mgr->{Func}->get_text($mgr, 2108);
-  $mgr->{TmplData}{PAGE_LANG_002109} = $mgr->{Func}->get_text($mgr, 2109);
-  $mgr->{TmplData}{PAGE_LANG_002110} = $mgr->{Func}->get_text($mgr, 2110);
-  $mgr->{TmplData}{PAGE_LANG_002111} = $mgr->{Func}->get_text($mgr, 2111);
-  $mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2112);
-  $mgr->{TmplData}{PAGE_LANG_002113} = $mgr->{Func}->get_text($mgr, 2113);
   $mgr->{TmplData}{PAGE_LANG_002114} = $mgr->{Func}->get_text($mgr, 2114);
   $mgr->{TmplData}{PAGE_LANG_002116} = $mgr->{Func}->get_text($mgr, 2116);
+
+  #test wether current user rates this text#############
+  my $table = $mgr->{Tables}->{TEXT_RATING};
+
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+SELECT  user_id, text_original_id, text_rating
+FROM   $table
+WHERE  user_id = ?
+
+SQL
+
+  unless ($sth->execute($user_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+  my @row = $sth->fetchrow_array();
+  my $user_id          = @row[0];
+  my $text_original_id = @row[1];
+  my $text_rating      = @row[2];
+
+  $sth->finish();
+
+  if(defined $text_original_id){
+
+    $mgr->{TmplData}{RADIO_TYPE} = 'hidden';
+    $mgr->{TmplData}{SUBMIT_TYPE} = 'hidden';
+
+    if($text_rating == 1 ){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2117); }
+    elsif($text_rating == 2){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107);}
+    elsif($text_rating == 3){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107);}
+    elsif($text_rating == 4){$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107); }
+    elsif($text_rating == 5){ $mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2117) . " " . $mgr->{Func}->get_text($mgr, 2107);}
+  }
+  else{
+    $mgr->{TmplData}{PAGE_LANG_002107} = $mgr->{Func}->get_text($mgr, 2107);
+    $mgr->{TmplData}{PAGE_LANG_002108} = $mgr->{Func}->get_text($mgr, 2108);
+    $mgr->{TmplData}{PAGE_LANG_002109} = $mgr->{Func}->get_text($mgr, 2109);
+    $mgr->{TmplData}{PAGE_LANG_002110} = $mgr->{Func}->get_text($mgr, 2110);
+    $mgr->{TmplData}{PAGE_LANG_002111} = $mgr->{Func}->get_text($mgr, 2111);
+    $mgr->{TmplData}{PAGE_LANG_002113} = $mgr->{Func}->get_text($mgr, 2113);
+    $mgr->{TmplData}{RADIO_TYPE} = 'radio';
+    $mgr->{TmplData}{SUBMIT_TYPE} = 'submit';
+    $mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2115);
+  }
+
+
+
 
   #length of Text and Text#############
   my $table = $mgr->{Tables}->{TEXT_ORIG};
@@ -1408,7 +1516,13 @@ SQL
 
   $mgr->{TmplData}{TEXT_LENGTH} = $num_words;
   $mgr->{TmplData}{TEXT} = $original_text;
-  $mgr->{TmplData}{TEXT_RATING} = $avg_rating;
+
+  if($avg_rating < 1.5 && $avg_rating != 0){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2111); }
+  elsif($avg_rating < 2.5 && $avg_rating >= 1.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2110); }
+  elsif($avg_rating < 3.5 && $avg_rating >= 2.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2109); }
+  elsif($avg_rating < 4.5 && $avg_rating >= 3.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2108); }
+  elsif($avg_rating >= 4.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2107); }
+
   $mgr->{TmplData}{TEXT_RATING_NUMBER} = $num_ratings;
   $mgr->{TmplData}{TEXT_SUBMIT_TIME} = substr($submit_time,6, 2) . "." . substr($submit_time,4, 2) . "." .substr($submit_time,0, 4);
 
@@ -1580,16 +1694,44 @@ SQL
 sub text_original_rating {
   my ($self, $mgr) = @_;
   my $rating = $mgr->{CGI}->param('rating') || undef;
-
-  if(defined $rating){
-
-  my $text_id = $mgr->{CGI}->param('text_id') || undef;
+  my $user_id =$mgr->{Session}->get("UserId");
 
 
-  my $table = $mgr->{Tables}->{TEXT_ORIG};
+  #test wether current user rates this text#############
+  my $table = $mgr->{Tables}->{TEXT_RATING};
 
   my $dbh = $mgr->connect();
   my $sth = $dbh->prepare(<<SQL);
+
+SELECT  user_id, text_original_id, text_rating
+FROM   $table
+WHERE  user_id = ?
+
+SQL
+
+  unless ($sth->execute($user_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+  my @row = $sth->fetchrow_array();
+  my $user_id          = @row[0];
+  my $text_original_id = @row[1];
+  my $text_rating      = @row[2];
+
+  $sth->finish();
+
+
+  if(defined $rating && $text_original_id==undef){
+
+    my $text_id = $mgr->{CGI}->param('text_id') || undef;
+
+
+    my $table = $mgr->{Tables}->{TEXT_ORIG};
+
+    my $dbh = $mgr->connect();
+    my $sth = $dbh->prepare(<<SQL);
 
 SELECT  original_id, user_id, avg_rating, num_ratings
 FROM   $table
@@ -1597,25 +1739,25 @@ WHERE  original_id = ?
 
 SQL
 
-  unless ($sth->execute($text_id)) {
-    warn sprintf("[Error:] Trouble selecting data from [%s].".
-                 "Reason: [%s].", $table, $dbh->errstr());
-    $mgr->fatal_error("Database error.");
-  }
+    unless ($sth->execute($text_id)) {
+      warn sprintf("[Error:] Trouble selecting data from [%s].".
+                   "Reason: [%s].", $table, $dbh->errstr());
+      $mgr->fatal_error("Database error.");
+    }
 
-  my @row = $sth->fetchrow_array();
-  my $original_id   = @row[0];
-  my $user_id       = @row[1];
-  my $avg_rating    = @row[2];
-  my $num_ratings   = @row[3];
+    my @row = $sth->fetchrow_array();
+    my $original_id   = @row[0];
+    my $user_id       = @row[1];
+    my $avg_rating    = @row[2];
+    my $num_ratings   = @row[3];
 
-  $sth->finish();
+    $sth->finish();
 
 
-  my $table = $mgr->{Tables}->{TEXT_RATING};
+    my $table = $mgr->{Tables}->{TEXT_RATING};
 
-  my $dbh = $mgr->connect();
-  my $sth = $dbh->prepare(<<SQL);
+    my $dbh = $mgr->connect();
+    my $sth = $dbh->prepare(<<SQL);
 
 
 INSERT INTO $table (user_id, text_original_id, text_rating)
@@ -1623,41 +1765,41 @@ VALUES (?, ?, ?)
 
 SQL
 
-  unless ($sth->execute($original_id, $user_id, $rating))
-    {
-	warn sprintf("[Error:] Trouble adding user to %s. " .
-		     "Reason: [%s].", $table, $dbh->errstr());
-	$dbh->do("UNLOCK TABLES");
-	$mgr->fatal_error("Database error.");
+    unless ($sth->execute($original_id, $user_id, $rating))
+      {
+	  warn sprintf("[Error:] Trouble adding user to %s. " .
+	  	       "Reason: [%s].", $table, $dbh->errstr());
+	  $dbh->do("UNLOCK TABLES");
+	  $mgr->fatal_error("Database error.");
     }
 
-  $dbh->do("UNLOCK TABLES");
+    $dbh->do("UNLOCK TABLES");
 
-  $sth->finish();
+    $sth->finish();
 
 
-  $avg_rating = (($avg_rating * $num_ratings) + $rating) / ($num_ratings+1);
-  $num_ratings += 1;
+    $avg_rating = (($avg_rating * $num_ratings) + $rating) / ($num_ratings+1);
+    $num_ratings += 1;
 
-  my $table = $mgr->{Tables}->{TEXT_ORIG};
-  my $dbh = $mgr->connect();
-  my $sth = $dbh->prepare(<<SQL);
+    my $table = $mgr->{Tables}->{TEXT_ORIG};
+    my $dbh = $mgr->connect();
+    my $sth = $dbh->prepare(<<SQL);
 
 UPDATE LOW_PRIORITY $table SET avg_rating=?, num_ratings=?
 WHERE original_id = ?
 
 SQL
 
-  unless ($sth->execute($avg_rating, $num_ratings, $text_id))
+    unless ($sth->execute($avg_rating, $num_ratings, $text_id))
     {
-	warn sprintf("[Error:] Trouble adding user to %s. " .
-		     "Reason: [%s].", $table, $dbh->errstr());
-	$dbh->do("UNLOCK TABLES");
-	$mgr->fatal_error("Database error.");
+	  warn sprintf("[Error:] Trouble adding user to %s. " .
+	  	     "Reason: [%s].", $table, $dbh->errstr());
+	  $dbh->do("UNLOCK TABLES");
+	  $mgr->fatal_error("Database error.");
     }
 
-  $dbh->do("UNLOCK TABLES");
-  $sth->finish();
+    $dbh->do("UNLOCK TABLES");
+    $sth->finish();
 
   }#end if
 
@@ -1678,10 +1820,37 @@ SQL
 #Author: Hendrik Erler(erler@cs.tu-berlin.de)			#
 #################################################################
 sub text_trans_rating {
-my ($self, $mgr) = @_;
-my $rating = $mgr->{CGI}->param('rating') || undef;
+  my ($self, $mgr) = @_;
+  my $rating = $mgr->{CGI}->param('rating') || undef;
+  my $user_id =$mgr->{Session}->get("UserId");
 
-if(defined $rating){
+
+  #test wether current user rates this text#############
+  my $table = $mgr->{Tables}->{TEXT_RATING};
+
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+SELECT user_id, text_trans_id, text_rating
+FROM   $table
+WHERE  user_id = ?
+
+SQL
+
+  unless ($sth->execute($user_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+  my @row = $sth->fetchrow_array();
+  my $user_id          = @row[0];
+  my $text_trans_id    = @row[1];
+  my $text_rating      = @row[2];
+
+  $sth->finish();
+
+if(defined $rating && $text_trans_id==undef){
 
   my $trans_text_id = $mgr->{CGI}->param('trans_text_id') || undef;
 

@@ -248,6 +248,25 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
        ('1090', 'Administrator', 'Administrator');
 
+# password-mail to user (1093 - 1100)
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1093', 'Hello', 'Hallo');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1094', 'Thanks for registering with LINGUA', 'Vielen Dank für Ihre Registrierung bei LINGUA');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1095', 'You can log in using the following', 'Ihre Zugangsdaten sind:');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1096', 'username', 'Benutzername');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1097', 'password', 'Passwort');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1098', 'Yours,', 'Mit freundlichem Gruß');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1099', 'The LINGUA Community', 'Ihre LINGUA-Community');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1100', 'Your LINGUA login data', 'Ihre LINGUA-Zugangs-Daten');
+
+
 # Gesperrt ...
 
 # (1084 - ...)

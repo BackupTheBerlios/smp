@@ -1,7 +1,6 @@
 <TMPL_INCLUDE lingua_header.tmpl>
 
-<input type="hidden" name="method" value="reg1">
-<input type="hidden" name="reg_from"   value="1">
+<input type="hidden" name="method" value="reg2">
 
 <table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
 <tr valign="top">
@@ -16,20 +15,22 @@
   <td bgcolor="#ababab" width="600">
 
     <div align="center">
-      <h1><TMPL_VAR PAGE_LANG_001021></h1>
+      <h1><TMPL_VAR PAGE_LANG_001010></h1>
 
-      <TMPL_IF NAME="USER_IF_INP_ERROR">
+      <span class="normal">
+        <b><TMPL_VAR PAGE_LANG_001011></b><BR>
+        <TMPL_VAR PAGE_LANG_001012><BR>
+        (<TMPL_VAR PAGE_LANG_001013>)<BR>
+        <b><TMPL_VAR PAGE_LANG_001014></b><BR><BR>
+      </span>
+
+      <TMPL_IF USER_IF_REG1_ERR>
         <span class="alert">
-          <TMPL_VAR USER_REG1_ERROR><BR><BR>
+          <b><TMPL_VAR PAGE_LANG_001023></b><BR>
+          <b><TMPL_VAR USER_ERROR_REG1></b><BR><BR>
         </span>
       </TMPL_IF>
 
-      <span class="normal">
-        <b><TMPL_VAR PAGE_LANG_001022></b><BR>
-        <TMPL_VAR PAGE_LANG_001023><BR>
-        (<TMPL_VAR PAGE_LANG_001024>)<BR>
-        <b><TMPL_VAR PAGE_LANG_001025></b><BR><BR>
-      </span>
     </div>
 
     <table cellspacing="0" cellpadding="2" border="0" width="600">
@@ -43,10 +44,9 @@
 
       <tr>
         <td></td>
-        <td>
-	  <span class="normal"><TMPL_VAR PAGE_LANG_001003></span>
+        <td colspan=2>
+	  <span class="normal"><TMPL_VAR PAGE_LANG_001015></span>
 	</td>
-	<td></td>
 	<td></td>
       </tr>     
 
@@ -63,10 +63,10 @@
       <tr>
         <td></td>
 	<td>
-	  <span class="normal"><TMPL_VAR PAGE_LANG_001004></span>
+	  <span class="normal"><TMPL_VAR PAGE_LANG_001016></span>
 	</td>
 	<td>
-	  <span class="normal"><TMPL_VAR PAGE_LANG_001005></span>
+	  <span class="normal"><TMPL_VAR PAGE_LANG_001017></span>
 	</td>
 	<td></td>
       </tr>
@@ -87,7 +87,7 @@
       <tr>
         <td></td>
         <td>
-	  <span class="normal"><TMPL_VAR PAGE_LANG_001006></span>
+	  <span class="normal"><TMPL_VAR PAGE_LANG_001018></span>
 	</td>
 	<td></td>
 	<td></td>
@@ -105,10 +105,9 @@
 
       <tr>
         <td></td>
-        <td>
-	  <span class="normal"><TMPL_VAR PAGE_LANG_001020></span>
+        <td colspan=2>
+	  <span class="normal"><TMPL_VAR PAGE_LANG_001019></span>
 	</td>
-	<td></td>
 	<td></td>
       </tr>     
 
@@ -133,7 +132,7 @@
 	<td></td>
 	<td align="center">
 	  <input type="submit" name="u_sub_reg1"
-                 value="<TMPL_VAR PAGE_LANG_001028>">
+                 value="<TMPL_VAR PAGE_LANG_001020>">
 	</td>
       </tr>     
 

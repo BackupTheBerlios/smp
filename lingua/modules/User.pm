@@ -6,7 +6,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.17 $ =~ /(\d+)\.(\d+)/;
 
 # "constants" (don't change later on)
 my $status_ok      = 1;
@@ -2812,6 +2812,12 @@ sub check_desc
 sub check_user_search
 {
     my ($self, $mgr, $username) = @_;
+
+    # check if admin is trying to admister himself
+    if ($username eq $mgr->{Session}->get("UserName"))
+    {
+	return (0, 1172);
+    }
 
     # check if username is valid
     if (not $self->check_username($mgr, $username))

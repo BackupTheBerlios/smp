@@ -1,9 +1,9 @@
 <TMPL_INCLUDE lingua_header.tmpl>
 
 <input type="hidden" name="text_id" value="<TMPL_VAR TEXT_ID>">
+<input type="hidden" name="trans_text_id" value="<TMPL_VAR TRANS_TEXT_ID>">
 <input type="hidden" name="text_method" value="text_message_way">
 <input type="hidden" name="show_text" value="show_text">
-<input type="hidden" name="mes2_dico" value="<TMPL_VAR TEXT_MES2_DICO>">
 
 <table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
 	<tr valign="top">
@@ -50,7 +50,8 @@
 						<td><TMPL_VAR TEXT></td>
 					</TR>
 
-					<TR>	<input type="submit" name="text_trans_contents" value="<TMPL_VAR PAGE_LANG_002106>">
+					<TR>
+						<input type="submit" name="text_trans_contents" value="<TMPL_VAR PAGE_LANG_002106>">
 					</TR>
 				</table>
 			</td>

@@ -15,7 +15,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.7 $ =~ /(\d+)\.(\d+)/;
 
 #################################################################
 #NAME: parameter($mgr).						#
@@ -932,17 +932,14 @@ $self->show_text_message($mgr,$mes1_2521, $mes2_2522);
 
 else {
 # übernehmen les params
- 	
+
+$mgr->{Template} = $mgr->{TmplFiles}->{Text_Trans_contents};}
+
 $mgr->{TmplData}{PAGE_LANG_002500} = $mgr->{Func}->get_text($mgr, 2500);
 $mgr->{TmplData}{PAGE_LANG_002501} = $mgr->{Func}->get_text($mgr, 2501);
 $mgr->{TmplData}{PAGE_LANG_002503} = $mgr->{Func}->get_text($mgr, 2503);
 $mgr->{TmplData}{PAGE_LANG_002504} = $mgr->{Func}->get_text($mgr, 2504);
 $mgr->{TmplData}{PAGE_LANG_002505} = $mgr->{Func}->get_text($mgr, 2505);
-
-	
-$mgr->{Template} = $mgr->{TmplFiles}->{Text_Trans_contents};}
-
-
 
 
 }
@@ -1093,8 +1090,11 @@ sub show_text_see {
   my $text_id = $mgr->{CGI}->param('text_id') || undef;
 
 
-
   $mgr->{Template} = $mgr->{TmplFiles}->{Text_Show};
+
+  $mgr->{TmplData}{TEXT_ID} = $text_id;
+  $mgr->{TmplData}{TRANS_TEXT_ID} = $text_id; #Muß noch geändert werden.
+
   $mgr->{TmplData}{PAGE_LANG_002023} = $mgr->{Func}->get_text($mgr, 2023);
   $mgr->{TmplData}{PAGE_LANG_002100} = $mgr->{Func}->get_text($mgr, 2100);
   $mgr->{TmplData}{PAGE_LANG_002012} = $mgr->{Func}->get_text($mgr, 2012);

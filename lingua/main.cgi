@@ -20,6 +20,7 @@ use fields (
 	    'DefaultAction',       # Default action name.
 	    'DefaultModule',       # Hashref with the default module.
 	    'Func',                # Func object.
+	    'InactivTime',         # Time, for updating the points in days.
 	    'Language',            # Current system language.
 	    'LoginOk',             # If this is true, a right session is set.
 	    'ModuleDir',           # Module directory.
@@ -35,15 +36,17 @@ use fields (
 	    'SystemLangs',         # Hashref with all system languages.
 	    'Tables',              # Hashref with all tables.
 	    'Template',            # Current template.
+            'TextPoints',          # Point cost for creating a text per word.
 	    'TmplData',            # Template data.
 	    'TmplDir',             # Template directory.
 	    'TmplFiles',           # Hashref with all templates.
+	    'TransPoints',         # Point cost for translating a text per word.
 	    'UserData'             # Hashref with current user data..
 );
 use vars qw(%FIELDS $VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.7 $ =~ /(\d+)\.(\d+)/;
 
 &handler();
 
@@ -57,6 +60,7 @@ sub handler {
 			       DefaultAction       => $lib::Config::CONFIG->{DefaultModule}->{action},
 			       DefaultModule       => $lib::Config::CONFIG->{DefaultModule}->{script},
 			       Func                => lib::Func->new(),
+			       InactivPoints       => $lib::Config::CONFIG->{InactivPoints},
 			       Language            => 1,
 			       LoginOk             => 0,
 			       ModuleDir           => $lib::Config::CONFIG->{ModuleDir},
@@ -72,9 +76,11 @@ sub handler {
 			       SystemLangs         => $lib::Config::SYSTEM_LANGS,
 			       Tables              => $lib::Config::TABLES,
 			       Template            => undef,
+			       TextPoints          => $lib::Config::CONFIG->{TextPoints},
 			       TmplData            => undef,
 			       TmplDir             => $lib::Config::CONFIG->{TmplDir},
 			       TmplFiles           => $lib::Config::TMPL,
+			       TransPoints         => $lib::Config::CONFIG->{TransPoints},
 			       UserData            => {
 						       UserId      => undef,
 						       UserLevel   => undef,
@@ -262,13 +268,13 @@ SQL
       if (@data) {
 	my $sid = $self->{Session}->start_session(UserId      => $data[0],
 						  UserLevel   => $data[3],
-						  UserName    => $data[1],
-						  UserPoints1 => $data[2],
-						  UserPoints2 => '');
+						  UserName    => $data[1]);
+					#	  UserPoints1 => $data[2],
+					#	  UserPoints2 => $self->{Points}->get_inactiv_points($self, $data[0]));
 
-	$self->{Language}  = $data[4];
-	$self->{LoginOk}   = 1;
-	$self->{SessionId} = $sid;
+	$self->{Language}                = $data[4];
+	$self->{LoginOk}                 = 1;
+	$self->{SessionId}               = $sid;
 	$self->{UserData}->{UserId}      = $data[0];
 	$self->{UserData}->{UserLevel}   = $data[3];
 	$self->{UserData}->{UserName}    = $data[1];
@@ -291,6 +297,8 @@ SQL
 
 	$dbh->do("UNLOCK TABLES");
 	$sth->finish();
+
+        $self->{Points}->update_points($self, $data[0]);
       } else {
 	$self->{TmplData}{PAGE_LOGIN_ERROR} = 
 	  $self->to_unicode($self->{Func}->get_text($self, 12));

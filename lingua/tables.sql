@@ -55,6 +55,11 @@ INSERT INTO lingua_dictionary (en, de, fr) VALUES ('polnich','polnich', 'polonai
 
 INSERT INTO lingua_dictionary (en, de) VALUES ('Register here', 'Hier Registrieren');
 
+INSERT INTO lingua_dictionary (en, de) VALUES ('Title', 'Überschrift');
+INSERT INTO lingua_dictionary (en, de) VALUES ('Description', 'Beschreibung');
+INSERT INTO lingua_dictionary (en, de) VALUES ('Languages', 'Sprachen');
+INSERT INTO lingua_dictionary (en, de) VALUES ('Amount of intresting', 'Interessengrad');
+
 INSERT INTO lingua_dictionary (dict_id, de, fr) VALUES (4001,'Geschichte, Politik', 'Histoire et Politique');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Jura', 'Droit');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Naturwissenschaften', 'Sciences Naturelles');
@@ -383,7 +388,7 @@ CREATE TABLE lingua_user (
         email       VARCHAR(200)         NOT NULL,
         reg_time    CHAR(10),
         last_login  CHAR(10),
-        points      VARCHAR(10),
+        points      VARCHAR(10)          DEFAULT '0',
         status      ENUM('0','1','2')    DEFAULT '0',
         level       ENUM('0','1','2')    DEFAULT '0',
         system_lang SMALLINT(3) UNSIGNED DEFAULT '0',

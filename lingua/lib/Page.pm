@@ -35,7 +35,8 @@ sub fill_user_part {
   my ($self, $mgr, $user_type)    = @_;
 
   if ($mgr->{LoginOk} == 1) {
-    my $lang = $mgr->{Language};
+    my $lang    = $mgr->{Language};
+    my $user_id = $mgr->{UserData}->{UserId}; 
 
     $mgr->{TmplData}{PAGE_LANG_000003} = $mgr->{Func}->get_text($mgr, 3);
     $mgr->{TmplData}{PAGE_LANG_000008} = $mgr->{Func}->get_text($mgr, 8);
@@ -49,9 +50,9 @@ sub fill_user_part {
     $mgr->{TmplData}{PAGE_USERNAME}   = 
       $mgr->to_unicode($mgr->{UserData}->{UserName});
     $mgr->{TmplData}{PAGE_ALL_POINTS} = 
-      $mgr->to_unicode($mgr->{Session}->get("UserPoints1") || '0');
+      $mgr->{Points}->get_activ_points($mgr, $user_id);
     $mgr->{TmplData}{PAGE_POINTS}     = 
-      $mgr->to_unicode($mgr->{Session}->get("UserPoints2") || '0');
+      $mgr->{Points}->get_inactiv_points($mgr, $user_id);
 
     if (defined $mgr->{UserData}->{UserLevel}) {
       if ($mgr->{UserData}->{UserLevel} == 2) {

@@ -62,7 +62,7 @@ sub update_points {
 
   $sth->finish();
   $dbh->do("UNLOCK TABLES");
-
+  
   return 1;
 };
 
@@ -191,8 +191,8 @@ sub get_activ_points {
   $sth->finish();
   $dbh->do("UNLOCK TABLES");
 
-  if ($points) {
-    return $points
+  if ((defined $points) && ($points >= 0)) { 
+    return $points;
   } else {
     return(-1);
   };

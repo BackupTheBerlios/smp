@@ -5,14 +5,14 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /(\d+)\.(\d+)/;
 
 #-----------------------------------------------------------------------------#
 # CALL:   $self->parameter($mgr).                                             #
 #                                                                             #
 #         $mgr = manager object.                                              #
 #                                                                             #
-# AUTHOR: Sören Wurch (sowuinfo@cs.tu-berlin.de)                              # 
+# AUTHOR: Sören Wurch (sowuinfo@cs.tu-berlin.de)                              #
 #                                                                             #
 # DESC:   Main function for the Home module.                                  #
 #                                                                             #
@@ -239,6 +239,7 @@ sub show_categories {
   $self->create_cat_list($mgr);
 
   $mgr->{TmplData}{PAGE_LOOP_CATS} = \@page_cats;
+  #$mgr->{TmplData}{PAGE_LOOP_TEXT} = $self->show_text_data($mgr, $cat_id);
   $mgr->{Template}                 = $mgr->{TmplFiles}->{Home};
 }
 
@@ -258,11 +259,9 @@ sub create_cat_list {
     while ($cat_id ne "0") {
       my @cat = $mgr->{Func}->get_cat($mgr, $cat_id);
       $cat_id = $cat[5];
-# XXX
-      push (@all_cats, \@cat);
-    }
 
-    @all_cats = reverse(@all_cats);
+      unshift (@all_cats, \@cat);
+    }
 
     foreach my $tmp_cat (@all_cats) {
       $result[$count]{PAGE_CAT_LIST_NAME} = @$tmp_cat[2];
@@ -347,6 +346,12 @@ sub close_category {
   $mgr->{Session}->set(HomeCatsOpen => join(',', keys %list));
 
   $self->show_category_admin($mgr);
+}
+
+sub show_text_data {
+  my ($self, $mgr, $cat_id) = @_;
+
+  
 }
 
 1;

@@ -153,7 +153,7 @@ sub get_cat {
   my ($self, $mgr, $cat_id) = @_;
 
   # Language table name from the current system language.
-  my $lang  = $mgr->{SystemLangs}->{$mgr->{Language}};
+  my $lang = $mgr->{SystemLangs}->{$mgr->{Language}};
 
   # Names for the categories and dictionary table.
   my $table_cats = $mgr->{Tables}->{CATS};
@@ -180,6 +180,28 @@ SQL
   $sth->finish();
 
   return @cat;
+}
+
+sub get_original_texts {
+  my ($self, $mgr, $cat_id) = @_;
+
+  my $table_user_lang   = $mgr->{Tables}->{USER_LANG};
+  my $table_text_header = $mgr->{Tables}->{TEXT_TITLE};
+  my $table_text_desc   = $mgr->{Tables}->{TEXT_DESC};
+  my $table_text_orig   = $mgr->{Tables}->{TEXT_ORIG};
+
+#  my $dbh = $mgr->connect();
+#  my $sth = $dbh->prepare(<<SQL);
+#
+#SELECT h.header_text AS header, d.desc_text AS desc, o.avg_rating AS rating
+#FROM $table_user_lang l, $table_text_header h, $table_text_desc d, $table_text_orig o
+#WHERE o.category_id = ? AND o.original_id = h.text_id AND 
+#
+#SQL
+
+#  unless ($sth->execute($cat_id)) {
+#
+#  }
 }
 
 #-----------------------------------------------------------------------------#

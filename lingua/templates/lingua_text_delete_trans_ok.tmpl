@@ -1,6 +1,8 @@
 <TMPL_INCLUDE lingua_header.tmpl>
 
 <input type="hidden" name="text_id" value="<TMPL_VAR TEXT_ID>">
+<input type="hidden" name="parent_id" value="<TMPL_VAR PARENT_ID>">
+<input type="hidden" name="text_title" value="<TMPL_VAR TEXT_TITLE>">
 <input type="hidden" name="trans_text_id" value="<TMPL_VAR TRANS_TEXT_ID>">
 <input type="hidden" name="text_method" value="text_message_way">
 <input type="hidden" name="show_text" value="show_text">
@@ -29,13 +31,17 @@
           <tr>
             <td valign="top" align="left">
               <table border="0">
-                <tr> <!-- Category -->
+                <tr> <!-- link to Category -->
                   <td><TMPL_VAR PAGE_LANG_007301></td>
                   <td><a class="normal" href="<TMPL_VAR CAT_LINK>"><TMPL_VAR TEXT_CAT></a></td>
                 </tr>
-                <tr> <!-- Author -->
+                <tr> <!-- Link to Author -->
                   <td><TMPL_VAR PAGE_LANG_007302></td>
                   <td><a class="normal" href="<TMPL_VAR AUTHOR_LINK>"><TMPL_VAR TEXT_AUTOR></a></td>
+                </tr>
+		<tr> <!-- Original-Text-Link -->
+                  <td><TMPL_VAR PAGE_LANG_007305></td>
+                  <td><a class="normal" href="<TMPL_VAR ORIGINAL_TEXT_LINK>"><TMPL_VAR ORIGINAL_TEXT_TITEL></a></td>
                 </tr>
               </table>
             </td>

@@ -7,7 +7,7 @@ use strict;
 
 
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.32 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.33 $ =~ /(\d+)\.(\d+)/;
 
 
 
@@ -1867,7 +1867,7 @@ $sth->finish();
 				$mgr->{TmplData}{TEXT_DOWNLOAD} = $link;
 				$mgr->{TmplData}{PAGE_LANG_008017}     = $mgr->{Func}->get_text($mgr, 8017);
 
-				$mgr->{TmplData}{TEXT_BACK} =  'window.history.go(-2)';	
+				$mgr->{TmplData}{TEXT_BACK} =  'window.history.go(-2)';
 				$set_url =0;
 
 			#show this_tmpl with confirmation  & download tex
@@ -1992,7 +1992,7 @@ $sth->finish();
 }
 
 #-----------------------------------------------------------------------------#
-#CALL: $self->show_text($mgr)                                                 #
+#CALL: $self->show_text_see($mgr)                                             #
 #                                                                             #
 #RETURN:                                                                      #
 #                                                                             #
@@ -2205,15 +2205,17 @@ SQL
 
 
 #show text-rating-radio-buttons only if user not owner by this text and if user haven't rated this text
-  if($current_user_id == $user_id || $text_rating_id == $given_text_id || !(defined $mgr->{UserData}->{UserId})) {
+  if(!(defined $mgr->{UserData}->{UserId}) || $current_user_id == $user_id || $text_rating_id == $given_text_id) {
     $mgr->{TmplData}{RADIO_TYPE} = 'hidden';
     $mgr->{TmplData}{SUBMIT_TYPE} = 'hidden';
 
-    if($text_rating == 1 ){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7111); }
-    elsif($text_rating == 2){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7110);}
-    elsif($text_rating == 3){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7109);}
-    elsif($text_rating == 4){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7108); }
-    elsif($text_rating == 5){ $mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7107);}
+    if(defined $text_rating){
+      if($text_rating == 1 ){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7111); }
+      elsif($text_rating == 2){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7110);}
+      elsif($text_rating == 3){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7109);}
+      elsif($text_rating == 4){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7108); }
+      elsif($text_rating == 5){ $mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7107);}
+    }  
   }
   else{
     $mgr->{TmplData}{PAGE_LANG_007107} = $mgr->{Func}->get_text($mgr, 7107);
@@ -2624,7 +2626,7 @@ SQL
 
 #if user not rated this text and selected an ratingvalue then insert this rating
 #and if the userlevel of this user 1 or 2
-  if(defined $rating && $TEXT_RATING_text_id eq undef && $mgr->{UserData}->{UserId} ne undef){
+  if(defined $rating && !(defined $TEXT_RATING_text_id) && defined $mgr->{UserData}->{UserId}){
 
 
     $table = $mgr->{Tables}->{TEXT};
@@ -2971,12 +2973,13 @@ sub delete_trans {
   my $author_id     = $mgr->{CGI}->param('author_id') || undef;
   my $cat_lang_id   = $mgr->{CGI}->param('cat_lang_id') || undef;
 
-#get parent_id and category_id of text which have to delete
+
+#get parent_id , category_id, text_header of text which have to delete
   my $table = $mgr->{Tables}->{TEXT};
   my $dbh = $mgr->connect();
   $dbh->do("LOCK TABLES $table WRITE");
   my $sth = $dbh->prepare(<<SQL);
-SELECT category_id, parent_id
+SELECT category_id, parent_id, text_header
 FROM   $table
 WHERE  text_id = ?
 
@@ -2989,9 +2992,16 @@ SQL
   }
   my @row = $sth->fetchrow_array();
   my $TEXT_category_id = $row[0];
-  my $TEXT_parent_id = $row[1];
+  my $TEXT_parent_id = $row[1] || undef;
+  my $TEXT_text_header = $row[2];
   $dbh->do("UNLOCK TABLES");
   $sth->finish();
+
+
+  if(!(defined $TEXT_parent_id)){
+    $TEXT_parent_id = $mgr->{CGI}->param('parent_id') || undef;
+    $TEXT_text_header = $mgr->{CGI}->param('text_title') || undef;
+  }
 
 #get childs of this text##############
   $table = $mgr->{Tables}->{TEXT};
@@ -3069,14 +3079,19 @@ SQL
   $mgr->{Template} = $mgr->{TmplFiles}->{Text_Delete_TRANS_Ok};
   $mgr->{TmplData}{AUTHOR_ID} = $author_id ;#insert author_id in template as hidden
   $mgr->{TmplData}{CAT_LANG_ID} = $cat_lang_id ;#insert cat_lang_id_text_id in template as hidden
+  $mgr->{TmplData}{PARENT_ID} = $TEXT_parent_id;
+  $mgr->{TmplData}{TEXT_TITLE} = $TEXT_text_header;
 
   $mgr->{TmplData}{PAGE_LANG_007300} = $mgr->{Func}->get_text($mgr, 7300);#text deleted-information
   $mgr->{TmplData}{PAGE_LANG_007301} = $mgr->{Func}->get_text($mgr, 7301);#Category of deleted Text
   $mgr->{TmplData}{PAGE_LANG_007302} = $mgr->{Func}->get_text($mgr, 7302);#Author of deleted Text
+  $mgr->{TmplData}{PAGE_LANG_007305} = $mgr->{Func}->get_text($mgr, 7305);#Original text
 
   $mgr->{TmplData}{CAT_LINk} = $mgr->my_url(ACTION => "text", METHOD => "show_texts") . '&cat_id=' . $TEXT_category_id;
   $mgr->{TmplData}{TEXT_CAT} = $mgr->{Func}->get_text($mgr, $cat_lang_id);
 
+  $mgr->{TmplData}{ORIGINAL_TEXT_LINK} = $mgr->my_url(ACTION => "text", METHOD => "text_show") . '&text_id=' . $TEXT_parent_id;
+  $mgr->{TmplData}{ORIGINAL_TEXT_TITEL} = $mgr->escape($TEXT_text_header);
 
 #Author of deleted Text#####################
   $table = $mgr->{Tables}->{USER};

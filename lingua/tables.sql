@@ -315,7 +315,8 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7303',
                                                            'Description', 'Bescreibung:', 'Description:');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7304',
                                                            'Text','Text','Texte');
-
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7305',
+                                                           'Original Text','Originaltext','Originaltextfr');
 
 ### text module (texts_own)
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7400',

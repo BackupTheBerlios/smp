@@ -632,9 +632,6 @@ CREATE TABLE lingua_inactiv_points (
   PRIMARY KEY(id)
 );
 
-INSERT INTO lingua_user (user_id,username,lastname,firstname,email,points) VALUES
-  (2,"testuser2","nachname2","vorname2","email@email.de",26);
-
 INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (4,1,25);
 INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (3,2,25);
 INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (2,3,25);

@@ -55,11 +55,14 @@ sub fill_user_part {
 
     if (defined $mgr->{UserData}->{UserLevel}) {
       if ($mgr->{UserData}->{UserLevel} == 2) {
-	$mgr->{TmplData}{PAGE_USER_TYPE_2}    = 1;
-	$mgr->{TmplData}{PAGE_CATEGORY_ADMIN} = $mgr->my_url(ACTION => "home", 
-							     METHOD => "cat_admin",
-							     MODE   => "admin");
-	$mgr->{TmplData}{PAGE_LANG_000014}    = $mgr->{Func}->get_text($mgr, 14);
+	$mgr->{TmplData}{PAGE_USER_TYPE_2}     = 1;
+	$mgr->{TmplData}{PAGE_CATEGORY_ADMIN}  = $mgr->my_url(ACTION => "home", 
+							      METHOD => "cat_admin",
+							      MODE   => "admin");
+	$mgr->{TmplData}{PAGE_USER_ADMIN_LINK} = $mgr->my_url(ACTION => "user",
+							      METHOD => "adm_search");
+	$mgr->{TmplData}{PAGE_LANG_001200}     = $mgr->{Func}->get_text($mgr, 1200);
+	$mgr->{TmplData}{PAGE_LANG_000014}     = $mgr->{Func}->get_text($mgr, 14);
       } elsif ($mgr->{UserData}->{UserLevel} == 1) {
 
       } else {

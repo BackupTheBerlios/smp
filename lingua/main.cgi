@@ -48,7 +48,7 @@ use fields (
 use vars qw(%FIELDS $VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.12 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)\.(\d+)/;
 
 &handler();
 
@@ -257,7 +257,7 @@ sub set_lang {
     my $lang = $self->{CGI}->param('lang') || 'de';
 
     if (defined $self->{CGI}->param('login')) {
-      $self->{Language} = $self->{UserData}->{UserLang};
+      $self->{Language} = $self->{UserData}->{UserLang} || 1;
     } else {
       foreach my $tmp (keys %{$self->{SystemLangs}}) {
 	if ($lang eq $self->{SystemLangs}->{$tmp}) {
@@ -300,7 +300,7 @@ SQL
 						  UserLevel   => $data[3],
 						  UserName    => $data[1],
 						  UserLang    => $data[4]);
-
+	
 	$self->{Language}                = $data[4];
 	$self->{LoginOk}                 = 1;
 	$self->{SessionId}               = $sid;
@@ -308,7 +308,7 @@ SQL
 	$self->{UserData}->{UserLevel}   = $data[3];
 	$self->{UserData}->{UserName}    = $data[1];
 	$self->{UserData}->{UserLang}    = $data[4];
-
+	
 	$dbh->do("LOCK TABLES $table WRITE");
 	$sth = $dbh->prepare(<<SQL);
 
@@ -318,20 +318,19 @@ WHERE user_id = ?
 
 SQL
 
-        unless ($sth->execute(time(), $data[0])) {
+	unless ($sth->execute(time(), $data[0])) {
 	  warn sprintf("[Error:] Trouble selecting data from [%s].".
 		       "Reason: [%s].", $table, $dbh->errstr());
 	  $dbh->do("UNLOCK TABLES");
 	  $self->fatal_error("Database error");
-        }
-
+	}
+	
 	$dbh->do("UNLOCK TABLES");
 	$sth->finish();
-
-        $self->{Points}->update_points($self, $data[0]);
+	
+	$self->{Points}->update_points($self, $data[0]);
       } else {
-	$self->{TmplData}{PAGE_LOGIN_ERROR} = 
-	  $self->to_unicode($self->{Func}->get_text($self, 12));
+	$self->{TmplData}{PAGE_LOGIN_ERROR} = $self->{Func}->get_text($self, 12);
       }
     }
   } else {

@@ -19,19 +19,16 @@ sub fill_main_part {
   my $lang = $mgr->{Language};
   $lang    = $mgr->{SystemLangs}->{$lang};
 
-  $mgr->{TmplData}{PAGE_SCRIPT}      = $mgr->{ScriptName};
-  $mgr->{TmplData}{PAGE_CHARSET}     = $mgr->{Charset};
-  $mgr->{TmplData}{PAGE_ACTION}      = $mgr->{Action};
-  $mgr->{TmplData}{PAGE_SID}         = $mgr->{SessionId};
-  $mgr->{TmplData}{PAGE_LANG}        = $lang;
+  $mgr->{TmplData}{PAGE_SCRIPT}         = $mgr->{ScriptName};
+  $mgr->{TmplData}{PAGE_CHARSET}        = $mgr->{Charset};
+  $mgr->{TmplData}{PAGE_ACTION}         = $mgr->{Action};
+  $mgr->{TmplData}{PAGE_SID}            = $mgr->{SessionId};
+  $mgr->{TmplData}{PAGE_LANG}           = $lang;
 
-  $mgr->{TmplData}{PAGE_LANG_000001} = $mgr->{Func}->get_text($mgr, 5);
-  $mgr->{TmplData}{PAGE_LANG_000002} = $mgr->{Func}->get_text($mgr, 6);
+  $mgr->{TmplData}{PAGE_LANG_000001}    = $mgr->{Func}->get_text($mgr, 5);
+  $mgr->{TmplData}{PAGE_LANG_000002}    = $mgr->{Func}->get_text($mgr, 6);
 
-  $mgr->{TmplData}{PAGE_LEFT_LINK_HOME} = sprintf($link,
-						  $mgr->{ScriptName},
-						  "home",
-						  $lang);
+  $mgr->{TmplData}{PAGE_LEFT_LINK_HOME} = $mgr->my_url(ACTION => "home");
 }
 
 sub fill_user_part {
@@ -45,17 +42,9 @@ sub fill_user_part {
     $mgr->{TmplData}{PAGE_LANG_000007} = $mgr->{Func}->get_text($mgr, 9);
     $mgr->{TmplData}{PAGE_LANG_000009} = $mgr->{Func}->get_text($mgr, 10);
     $mgr->{TmplData}{PAGE_LANG_000010} = $mgr->{Func}->get_text($mgr, 11);
-    $mgr->{TmplData}{PAGE_USER_LINK}   =
-      sprintf("%s?action=%s&lang=%s&sid=%s",
-	      $mgr->{ScriptName}, "user",
-	      $mgr->{SystemLangs}->{$lang},
-	      $mgr->{SessionId});
+    $mgr->{TmplData}{PAGE_USER_LINK}   = $mgr->my_url(ACTION => "user");
     $mgr->{TmplData}{PAGE_LANG_000012} = $mgr->{Func}->get_text($mgr, 13);
-    $mgr->{TmplData}{PAGE_TEXT_LINK}   =
-      sprintf("%s?action=%s&lang=%s&sid=%s",
-	      $mgr->{ScriptName}, "text",
-	      $mgr->{SystemLangs}->{$lang},
-	      $mgr->{SessionId});
+    $mgr->{TmplData}{PAGE_TEXT_LINK}   = $mgr->my_url(ACTION => "text", METHOD => "create_text");
 
     $mgr->{TmplData}{PAGE_USERNAME}   = 
       $mgr->to_unicode($mgr->{UserData}->{UserName});
@@ -67,7 +56,8 @@ sub fill_user_part {
     if (defined $mgr->{UserData}->{UserLevel}) {
       if ($mgr->{UserData}->{UserLevel} == 2) {
 	$mgr->{TmplData}{PAGE_USER_TYPE_2}    = 1;
-	$mgr->{TmplData}{PAGE_CATEGORY_ADMIN} = sprintf("%s&method=cat_admin", $mgr->my_url());
+	$mgr->{TmplData}{PAGE_CATEGORY_ADMIN} = $mgr->my_url(ACTION => "home", 
+							     METHOD => "cat_admin");
 	$mgr->{TmplData}{PAGE_LANG_000011}    = $mgr->{Func}->get_text($mgr, 14);
       } elsif ($mgr->{UserData}->{UserLevel} == 1) {
 

@@ -35,6 +35,7 @@ INSERT INTO lingua_dictionary (en, de) VALUES
 	('Wrong username or password.', 'Falscher Benutzername oder Passwort.');
 INSERT INTO lingua_dictionary (en, de) VALUES ('Put in a text', 'Text rein stellen');
 INSERT INTO lingua_dictionary (en, de) VALUES ('Category admin', 'Kategorien verwalten');
+INSERT INTO lingua_dictionary (en, de) VALUES ('Start', 'Start');
 
 INSERT INTO lingua_dictionary (dict_id, de) VALUES (4001,'Geschichte, Politik');
 INSERT INTO lingua_dictionary (de) VALUES ('Jura');

@@ -5,16 +5,10 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/;
 
 sub parameter {
   my ($self, $mgr) = @_;
-
-  $mgr->{Template} = $mgr->{TmplFiles}->{Home};
-
-  $mgr->{Page}->fill_main_part($mgr);
-  $mgr->{Page}->fill_user_part($mgr);
-  $mgr->{Page}->fill_lang_part($mgr);
 
   my $method = $mgr->{CGI}->param('method') || undef;
 
@@ -39,7 +33,84 @@ sub show_category_admin {
     return 1;
   }
 
-  # Display categories for administration.
+  my $cat_id = $mgr->{CGI}->param('cat_id') || "0";
+  my @open   = split(',', $mgr->{CGI}->param('open') || '');
+  my %list;
+
+  # Get all the ids from the categories, which are open.
+  foreach my $open (@open) {
+    $list{$open} = 1;
+  }
+
+  $mgr->{TmplData}{PAGE_LANG_000015} = $mgr->{Func}->get_text($mgr, 15);
+  $mgr->{Template}                   = $mgr->{TmplFiles}->{Home_Cats};
+
+  my $count  = 0;
+  my @result;
+
+  @result = $self->show_cat_tree($mgr, $cat_id, \%list, $count, \@result);
+
+  $mgr->{TmplData}{PAGE_LOOP_CATS} = \@result;
+}
+
+sub show_cat_tree {
+  my ($self, $mgr, $cat_id, $list, $count, $result) = @_;
+
+  my %list   = %$list;
+  my @result = @$result;
+
+  my @cats   = $mgr->{Func}->get_cats($mgr, $cat_id);
+
+  foreach my $cat (@cats) {
+    if ($cat->[3] != 0) {
+      $result[$count]{PAGE_BUTTON} = 1;
+    }
+
+    if (defined $list{$cat->[0]}) {
+
+      if ($cat->[4] != 0) {
+	for (my $i = 0; $i <= $cat->[4]; $i++) {
+	  #$result .= "&nbsp;";
+	}
+      }
+
+      $result[$count]{PAGE_CAT_NAME}     = $cat->[1];
+
+      # Create a link for closing the category.
+      $result[$count]{PAGE_CLOSE_BUTTON} = 1;
+      $result[$count]{PAGE_CLOSE_LINK}   = sprintf("%s&cat_id=%s&open=%s", 
+						   $mgr->my_url(METHOD => "cat_close"), 
+						   $cat->[0], keys %list);
+      $count++;
+
+      my @tmp = $self->show_cat_tree($mgr, $cat->[0], \%list, $count, \@result);
+      use Data::Dumper; warn $count;
+      foreach my $tmp (@tmp) {
+	#push (@result, %$tmp);
+	#$result[$count++] = %$tmp;
+      }
+
+    } else {
+      if ($cat->[4] != 0) {
+	for (my $i = 0; $i <= $cat->[4]; $i++) {
+	  #$result .= "&nbsp;";
+	}
+      }
+
+      # Create a link for opening the category.
+      if ($cat->[3] != 0) {
+	$result[$count]{PAGE_OPEN_BUTTON} = 1;
+	$result[$count]{PAGE_OPEN_LINK}   = sprintf("%s&cat_id=%s&open=%s", 
+						    $mgr->my_url(METHOD => "cat_open"), 
+						    $cat->[0], keys %list);
+      }
+
+      $result[$count]{PAGE_CAT_NAME} = $cat->[1];
+      $count++;
+    }
+  }
+
+  return @result;
 }
 
 sub show_categories {
@@ -56,7 +127,6 @@ sub show_categories {
 
   my @page_cats;
   my $count = 0;
-  my $link  = "%s&cat_id=%s&method=show_cat";
 
   foreach my $cat (@cats) {
 
@@ -64,7 +134,7 @@ sub show_categories {
     # category, we make a link.
     if (($cat->[3] != 0) || ($cat->[2] != 0)) {
       $page_cats[$count]{PAGE_CAT_LINK} = 
-	sprintf($link, $mgr->my_url(), $cat->[0]);
+	sprintf("%s&cat_id=%s", $mgr->my_url(METHOD => "show_cat"), $cat->[0]);
     }
 
     $page_cats[$count]{PAGE_CAT_NAME}       = $cat->[1];
@@ -95,7 +165,7 @@ sub show_categories {
 	# category, we make a link.
 	if (($p_cat->[3] != 0) || ($p_cat->[2])) {
 	  $p_cats[$p_count]{PAGE_P_CAT_LINK} = 
-	    sprintf($link, $mgr->my_url(), $p_cat->[0]);
+	    sprintf("%s&cat_id=%s", $mgr->my_url(METHOD => "show_cat"), $p_cat->[0]);
 	}
 
 	$p_cats[$p_count]{PAGE_P_CAT_NAME}       = $p_cat->[1];
@@ -112,6 +182,7 @@ sub show_categories {
   }
 
   $mgr->{TmplData}{PAGE_LOOP_CATS} = \@page_cats;
+  $mgr->{Template}                 = $mgr->{TmplFiles}->{Home};
 }
 
 1;

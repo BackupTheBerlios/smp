@@ -54,9 +54,10 @@ $TABLES = {
 };
 
 $TMPL = {
-	 Error => 'lingua_error.tmpl',
-	 Home  => 'lingua_home.tmpl',
-	 User_Pers => 'lingua_user_pers.tmpl',	 
+	 Error     => 'lingua_error.tmpl',
+	 Home      => 'lingua_home.tmpl',
+	 Home_Cats => 'lingua_home_categories_admin.tmpl',
+	 User_Pers => 'lingua_user_pers.tmpl',
 };
 
 1;

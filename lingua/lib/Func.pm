@@ -118,7 +118,7 @@ sub get_cats {
   my $dbh = $mgr->connect();
   my $sth = $dbh->prepare(<<SQL);
 
-SELECT c.cat_id, c.text_count, d.$lang, c.cat_count
+SELECT c.cat_id, c.text_count, d.$lang, c.cat_count, c.depth
 FROM $table_cats c, $table_dict d
 WHERE d.dict_id = c.lang_id AND c.parent_id = ?
 
@@ -133,8 +133,8 @@ SQL
   my @cats;
 
   # Push all the selected values into an array.
-  while (my ($cid, $count, $name, $cats) = $sth->fetchrow_array()) {
-    push (@cats, [$cid, $name, $count, $cats]);
+  while (my ($cid, $count, $name, $cats, $depth) = $sth->fetchrow_array()) {
+    push (@cats, [$cid, $name, $count, $cats, $depth]);
   }
 
   $sth->finish();
@@ -152,7 +152,7 @@ sub check_for_user {
   my ($self, $mgr, $user_type) = @_;
 
   if ($mgr->{Session}->check_sid($mgr->{SessionId})) {
-    if ($mgr->{UserData}->{UserType} != $user_type) {
+    if ($mgr->{UserData}->{UserLevel} ne $user_type) {
       return undef;
     }
   }

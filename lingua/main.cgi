@@ -41,7 +41,7 @@ use fields (
 use vars qw(%FIELDS $VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/;
 
 &handler();
 
@@ -141,7 +141,12 @@ sub handler {
     $self->fatal_error();
   }
 
-  $self->output() unless $self->{ModuleHandlesOutput};
+  unless ($self->{ModuleHandlesOutput}) {
+    $self->{Page}->fill_main_part($self);
+    $self->{Page}->fill_user_part($self);
+    $self->{Page}->fill_lang_part($self);
+    $self->output();
+  }
 }
 
 sub new {
@@ -333,7 +338,6 @@ sub check_session {
       $self->{UserData}->{UserId}      = $self->{Session}->get("UserId");
       $self->{UserData}->{UserLevel}   = $self->{Session}->get("UserLevel");
       $self->{UserData}->{UserName}    = $self->{Session}->get("UserName");
-      $self->{UserData}->{UserLevel}   = $self->{Session}->get("UserLevel");
 
       return 1;
     }
@@ -354,20 +358,22 @@ sub fatal_error {
 }
 
 sub my_url {
-  my $self = shift;
-
-  return $self->{MyUrl} if $self->{MyUrl};
+  my ($self, %args) = @_;
 
   my $lang = $self->{Language};
 
   $self->{MyUrl} = sprintf("%s?action=%s&lang=%s",
 			   $self->{ScriptName},
-			   $self->{Action},
+			   $args{ACTION} || $self->{Action},
 			   $self->{SystemLangs}->{$lang}
 			  );
 
   if ($self->{LoginOk} == 1) {
     $self->{MyUrl} .= sprintf("&sid=%s", $self->{SessionId});
+  }
+
+  if (defined $args{METHOD}) {
+    $self->{MyUrl} .= sprintf("&method=%s", $args{METHOD});
   }
 
   return $self->{MyUrl};

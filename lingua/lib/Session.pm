@@ -10,7 +10,7 @@ use fields (
 use strict;
 use vars qw(%FIELDS $VERSION);
  
-$VERSION = sprintf "%d.%03d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/;
 
 #====================================================================================================#
 # SYNOPSIS: new($class, %par);
@@ -111,6 +111,9 @@ sub kill_session {
 #====================================================================================================#
 sub check_sid {
 	my $self = shift;
+	my $sid  = shift;
+
+	$self->{Sid} = $sid if (defined $sid);
 
 	return undef unless ($self->{Sid});
 

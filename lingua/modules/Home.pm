@@ -5,7 +5,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/;
 
 sub parameter {
   my ($self, $mgr) = @_;
@@ -16,9 +16,16 @@ sub parameter {
     $self->show_category_admin($mgr);
   } elsif ($method eq "show_cat") {
     $self->show_categories($mgr);
+  } elsif ($method eq "cat_open") {
+    $self->open_category($mgr);
+  } elsif ($method eq "cat_close") {
+    $self->close_category($mgr);
   } else {
     $self->show_categories($mgr);
   }
+
+  $mgr->{TmplData}{PAGE_CAT_ID} = $mgr->{CGI}->param('cat_id') || '';
+  $mgr->{TmplData}{PAGE_OPEN}   = $mgr->{CGI}->param('open') || '';
 }
 
 sub show_category_admin {
@@ -30,10 +37,10 @@ sub show_category_admin {
   }
 
   my $cat_id = $mgr->{CGI}->param('cat_id') || "0";
-  my @open   = split(',', $mgr->{CGI}->param('open') || '');
+  my @open   = split (',', $mgr->{CGI}->param('open') || '');
   my %list;
 
-  # Get all the ids from the categories, which are open.
+  # Get all the ids, which are open.
   foreach my $open (@open) {
     $list{$open} = 1;
   }
@@ -44,7 +51,7 @@ sub show_category_admin {
   my $count  = 0;
   my @result;
 
-  @result = $self->show_cat_tree($mgr, $cat_id, \%list, $count, \@result);
+  ($count, @result) = $self->show_cat_tree($mgr, $cat_id, \%list, $count, \@result);
 
   $mgr->{TmplData}{PAGE_LOOP_CATS} = \@result;
 }
@@ -54,7 +61,6 @@ sub show_cat_tree {
 
   my %list   = %$list;
   my @result = @$result;
-
   my @cats   = $mgr->{Func}->get_cats($mgr, $cat_id);
 
   foreach my $cat (@cats) {
@@ -62,38 +68,49 @@ sub show_cat_tree {
       $result[$count]{PAGE_BUTTON} = 1;
     }
 
+    $result[$count]{PAGE_CAT_LINK} = sprintf("%s&cat_id=%s", 
+					     $mgr->my_url(METHOD => "change_cat"),
+					     $cat->[0]);
+
     if (defined $list{$cat->[0]}) {
-
-      if ($cat->[4] != 0) {
-	for (my $i = 0; $i <= $cat->[4]; $i++) {
-	  #$result .= "&nbsp;";
-	}
-      }
-
       $result[$count]{PAGE_CAT_NAME}     = $cat->[1];
 
       # Create a link for closing the category.
       $result[$count]{PAGE_CLOSE_BUTTON} = 1;
       $result[$count]{PAGE_CLOSE_LINK}   = sprintf("%s&cat_id=%s&open=%s", 
 						   $mgr->my_url(METHOD => "cat_close"), 
-						   $cat->[0], keys %list);
+						   $cat->[0], join(',', keys %list));
       $count++;
 
-      my @tmp = $self->show_cat_tree($mgr, $cat->[0], \%list, $count, \@result);
+      my $tmp_count = $count;
+      my @tmp;
 
-    } else {
-      if ($cat->[4] != 0) {
-	for (my $i = 0; $i <= $cat->[4]; $i++) {
-	  #$result .= "&nbsp;";
+      # Recursive call to get all sub categories from the parent category.
+      ($count, @tmp) = $self->show_cat_tree($mgr, $cat->[0], \%list, $count, \@result);
+
+      # Open the ul for this sub categories.
+      $result[$tmp_count]{PAGE_OPEN_CAT} = 1;
+
+      # Put in the main result array all the values from the sub categories.
+      for (;$tmp_count < $count; $tmp_count++) {
+	my $tmp_cat = $tmp[$tmp_count];
+
+	# Do it for all the keys for the current category.
+	foreach my $tmp_cat_value (keys %$tmp_cat) {
+	  $result[$tmp_count]{$tmp_cat_value} = $tmp_cat->{$tmp_cat_value};
 	}
       }
 
+      # Close the ul for this sub categories.
+      $result[$count-1]{PAGE_CLOSE_CAT} = 1;
+
+    } else {
       # Create a link for opening the category.
       if ($cat->[3] != 0) {
 	$result[$count]{PAGE_OPEN_BUTTON} = 1;
 	$result[$count]{PAGE_OPEN_LINK}   = sprintf("%s&cat_id=%s&open=%s", 
 						    $mgr->my_url(METHOD => "cat_open"), 
-						    $cat->[0], keys %list);
+						    $cat->[0], join(',', keys %list));
       }
 
       $result[$count]{PAGE_CAT_NAME} = $cat->[1];
@@ -101,7 +118,7 @@ sub show_cat_tree {
     }
   }
 
-  return @result;
+  return ($count, @result);
 }
 
 sub show_categories {
@@ -174,6 +191,51 @@ sub show_categories {
 
   $mgr->{TmplData}{PAGE_LOOP_CATS} = \@page_cats;
   $mgr->{Template}                 = $mgr->{TmplFiles}->{Home};
+}
+
+sub open_category {
+  my ($self, $mgr) = @_;
+
+  my $cat_id = $mgr->{CGI}->param('cat_id') || "0";
+  my @cat    = $mgr->{Func}->get_cat($mgr, $cat_id);
+
+  $mgr->{CGI}->param(-name => "cat_id", -value => "0");
+
+  if (((defined $cat[1]) && ($cat[1] ne 0)) || ((defined $cat[3]) && ($cat[3] ne 0))) {
+    my @open = split(',', $mgr->{CGI}->param('open') || '');
+    my %list;
+
+    foreach my $open (@open) {
+      $list{$open} = 1;
+    } 
+
+    $list{$cat_id} = 1;
+
+    $mgr->{CGI}->param(-name => "open", -values => join(',', keys %list));
+  }
+
+  $self->show_category_admin($mgr);
+}
+
+sub close_category {
+  my ($self, $mgr) = @_;
+
+  my $cat_id = $mgr->{CGI}->param('cat_id') || "0";
+
+  $mgr->{CGI}->param(-name => "cat_id", -value => "0");
+
+  my @open = split(',', $mgr->{CGI}->param('open') || '');
+  my %list;
+
+  foreach my $open (@open) {
+    next if ($open eq $cat_id);
+
+    $list{$open} = 1;
+  }
+
+  $mgr->{CGI}->param(-name => "open", -values => join(',', keys %list));
+
+  $self->show_category_admin($mgr);
 }
 
 1;

@@ -1,6 +1,7 @@
 <TMPL_INCLUDE lingua_header.tmpl>
 
 <input type="hidden" name="cat_id" value="<TMPL_VAR PAGE_CAT_ID>">
+<input type="hidden" name="open" value="<TMPL_VAR PAGE_OPEN>">
 
 <table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
 <tr valign="top">
@@ -36,7 +37,7 @@
               &nbsp;&nbsp;&nbsp;
             </TMPL_IF>
 
-            <TMPL_VAR PAGE_CAT_NAME>
+            <a class="normal" href="<TMPL_VAR PAGE_CAT_LINK>"><TMPL_VAR PAGE_CAT_NAME></a>
           </li>
      
  

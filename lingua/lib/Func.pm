@@ -142,6 +142,46 @@ SQL
   return @cats;
 }
 
+
+#-----------------------------------------------------------------------------#
+# CALL: $self->get_cat($mgr, $cat_id).                                       #
+#                                                                             #
+#       $mgr     = manager object.                                            #
+#       $dict_id = id of the parent_cat.                                      #
+#-----------------------------------------------------------------------------#
+sub get_cat {
+  my ($self, $mgr, $cat_id) = @_;
+
+  # Language table name from the current system language.
+  my $lang  = $mgr->{SystemLangs}->{$mgr->{Language}};
+
+  # Names for the categories and dictionary table.
+  my $table_cats = $mgr->{Tables}->{CATS};
+  my $table_dict = $mgr->{Tables}->{DICT};
+
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+SELECT c.cat_id, c.text_count, d.$lang, c.cat_count, c.depth
+FROM $table_cats c, $table_dict d
+WHERE d.dict_id = c.lang_id AND c.cat_id = ?
+
+SQL
+
+  unless ($sth->execute($cat_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s] and [%s].".
+	         "Reason: [%s].", $table_cats, $table_dict, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+  # Push all the selected values into an array.
+  my (@cat) = $sth->fetchrow_array();
+
+  $sth->finish();
+
+  return @cat;
+}
+
 #-----------------------------------------------------------------------------#
 # CALL: $self->check_for_user($mgr, $user_type).                              #
 #                                                                             #

@@ -413,4 +413,29 @@ CREATE TABLE lingua_text_header (
         PRIMARY KEY(header_id)
 );
 
+#
+# library: Points
+#
+
+DROP TABLE IF EXISTS lingua_inactiv_points;
+
+CREATE TABLE lingua_inactiv_points (
+  id               INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  userid           INT(10) UNSIGNED DEFAULT '0',
+  insert_date      INT(10) UNSIGNED DEFAULT '0',
+  translation_id   INT(10) UNSIGNED DEFAULT '0',
+  points           INT(10) UNSIGNED DEFAULT '0',
+  PRIMARY KEY(id)
+);
+
+INSERT INTO lingua_user (user_id,username,lastname,firstname,email,points) VALUES
+  (2,"testuser2","nachname2","vorname2","email@email.de",26);
+
+INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (4,1,25);
+INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (3,2,25);
+INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (2,3,25);
+INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (1,4,25);
+INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (2,5,25);
+INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (2,6,25);
+INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (2,7,25);
 

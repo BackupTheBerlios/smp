@@ -17,66 +17,141 @@
   		</td>
   		<td bgcolor="#ababab" width="600">
 
-				<TABLE cellspacing="15">
-
-					<TR>	<td><TMPL_VAR PAGE_LANG_002023></td>
-						<td><TMPL_VAR PAGE_LANG_002100></td>
-						<td><TMPL_VAR PAGE_LANG_002012></TD>
-						<td><TMPL_VAR PAGE_LANG_002033></TD>
-						<td><TMPL_VAR PAGE_LANG_002102></TD>
-						<td><TMPL_VAR PAGE_LANG_002103></td>
-						<td><TMPL_VAR PAGE_LANG_002104></td>
-						<td><TMPL_VAR PAGE_LANG_002105></td>
-						<td><TMPL_VAR PAGE_LANG_002116></td>
-						<td><TMPL_VAR PAGE_LANG_002101></TD>
-						<td><TMPL_VAR PAGE_LANG_002019></TD>
-					</TR>
-					<TR> 	<td><TMPL_VAR TEXT_TITLE></td>
-						<td><TMPL_VAR TEXT_AUTOR></td>
-						<td><TMPL_VAR TEXT_DESCRIPTION></td>
-						<td><TMPL_VAR TEXT_LENGTH></td>
-						<td><TMPL_VAR TEXT_ORIG_LANG></td>
-						<td>
-							<SELECT NAME="text_trans_lang_id" size="1">
-
-							<OPTION value= "<TMPL_VAR TEXT_TRANS_LANG_ID_SELECT>" selected><TMPL_VAR TEXT_TRANS_LANG_NAME_SELECT></option>
-
-							<TMPL_LOOP TEXT_LOOP_TRANS_LANG>
-							<OPTION value= "<TMPL_VAR TEXT_TRANS_LANG_ID>"><TMPL_VAR TEXT_TRANS_LANG_NAME></option>
-					        	</TMPL_LOOP>
-
-					        	</SELECT>
-						</td>
-						<td><TMPL_VAR TEXT_RATING></td>
-						<td><TMPL_VAR TEXT_RATING_NUMBER></td>
-						<td><TMPL_VAR TEXT_SUBMIT_TIME></td>
-						<td><TMPL_VAR TEXT></td>
-						<td><TMPL_VAR TEXT_CAT></TD>
-					</TR>
-
-				</table>
-
-
-				<p>
-					<TMPL_VAR PAGE_LANG_002112><!-- content rating or translation rating-->
-				</p>
-				<table>
-
-					<TR>
-
-						<td><input name=rating type="<TMPL_VAR RADIO_TYPE>" value="5"><TMPL_VAR PAGE_LANG_002107></td>
-						<td><input name=rating type="<TMPL_VAR RADIO_TYPE>" value="4"><TMPL_VAR PAGE_LANG_002108></td>
-						<td><input name=rating type="<TMPL_VAR RADIO_TYPE>" value="3"><TMPL_VAR PAGE_LANG_002109></td>
-						<td><input name=rating type="<TMPL_VAR RADIO_TYPE>" value="2"><TMPL_VAR PAGE_LANG_002110></td>
-						<td><input name=rating type="<TMPL_VAR RADIO_TYPE>" value="1"><TMPL_VAR PAGE_LANG_002111></td>
-						<td><input type="<TMPL_VAR SUBMIT_TYPE>" name="text_rating" value="<TMPL_VAR PAGE_LANG_002113>"></td>
-					</TR>
-				</table>
-				<p>
-					<input type="<TMPL_VAR SUBMIT_TRANS_TYPE>" name="text_trans_contents" value="<TMPL_VAR PAGE_LANG_002106>">
-					<input type="<TMPL_VAR SUBMIT_DELETE_TYPE>" name="delete_text" value="<TMPL_VAR PAGE_LANG_002114>">
-				</p>
-			</td>
+  <h2 align="left"><b><TMPL_VAR PAGE_LANG_002119></b></h2>
+  <table width="100%" border="0">
+    <tr>
+      <td>
+        <table border="0" align="left" width="100%">
+          <tr>
+            <td valign="top" align="left">
+              <table border="0">
+                <tr> <!-- Title -->
+                  <td><TMPL_VAR PAGE_LANG_002023></td>
+                  <td><TMPL_VAR TEXT_TITLE></td>
+                </tr>
+                <tr> <!-- Author -->
+                  <td><TMPL_VAR PAGE_LANG_002100></td>
+                  <td><a class="normal" href="<TMPL_VAR AUTHOR_LINK>"><TMPL_VAR TEXT_AUTOR></a></td>
+                </tr>
+                <tr> <!-- Text-Length -->
+                  <td><TMPL_VAR PAGE_LANG_002033></td>
+                  <td><TMPL_VAR TEXT_LENGTH></td>
+                </tr>
+                <tr> <!-- Original-Language -->
+                  <td><TMPL_VAR PAGE_LANG_002102></td>
+                  <td><TMPL_VAR TEXT_ORIG_LANG></td>
+                </tr>
+                <tr> <!-- Translated-Languages -->
+                  <td><TMPL_VAR PAGE_LANG_002103></td>
+                  <td>
+		    <SELECT NAME="text_trans_lang_id" size="1">
+			<TMPL_LOOP TEXT_LOOP_TRANS_LANG>
+			<OPTION value= "<TMPL_VAR TEXT_TRANS_LANG_ID>"><TMPL_VAR TEXT_TRANS_LANG_NAME></option>
+		      </TMPL_LOOP>
+	            </SELECT>
+                    <input type="<TMPL_VAR SUBMIT_VIEW_TRANS_TYPE>" name="view_trans" value="<TMPL_VAR PAGE_LANG_002118>">
+                  </td>
+                </tr>
+                <tr> <!-- Rating -->
+                  <td><TMPL_VAR PAGE_LANG_002104></td>
+                  <td><TMPL_VAR TEXT_RATING></td>
+                </tr>
+                <tr> <!-- Rating-Number -->
+                  <td><TMPL_VAR PAGE_LANG_002105></td>
+                  <td><TMPL_VAR TEXT_RATING_NUMBER></td>
+                </tr>
+                <tr> <!-- Prepare-Date -->
+                  <td><TMPL_VAR PAGE_LANG_002116></td>
+                  <td><TMPL_VAR TEXT_SUBMIT_TIME></td>
+                </tr>
+                <tr> <!-- Category -->
+                  <td><TMPL_VAR PAGE_LANG_002019></td>
+                  <td><a class="normal" href="<TMPL_VAR CAT_LINK>"><TMPL_VAR TEXT_CAT></a></td>
+                </tr>
+              </table>
+            </td>
+            <td valign="top" align="right">
+              <table border="0">
+                <tr>
+                  <td align="right">
+                    <table border="0">
+                      <tr> <!-- very good radio -->
+                        <td><TMPL_VAR PAGE_LANG_002107></td>
+                        <td>
+                          <input name=rating type="<TMPL_VAR RADIO_TYPE>" value="5">
+                        </td>
+                      </tr>
+                      <tr> <!-- good radio -->
+                        <td><TMPL_VAR PAGE_LANG_002108></td>
+                        <td>
+                          <input name=rating type="<TMPL_VAR RADIO_TYPE>" value="4">
+                        </td>
+                      </tr>
+                      <tr> <!-- ok radio -->
+                        <td><TMPL_VAR PAGE_LANG_002109></td>
+                        <td>
+                          <input name=rating type="<TMPL_VAR RADIO_TYPE>" value="3">
+                        </td>
+                      </tr>
+                      <tr> <!-- bad radio -->
+                        <td><TMPL_VAR PAGE_LANG_002110></td>
+                        <td>
+                          <input name=rating type="<TMPL_VAR RADIO_TYPE>" value="2">
+                        </td>
+                      </tr>
+                      <tr> <!-- very bad radio -->
+                        <td><TMPL_VAR PAGE_LANG_002111></td>
+                        <td>
+                          <input name=rating type="<TMPL_VAR RADIO_TYPE>" value="1">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="<TMPL_VAR SUBMIT_TYPE>" name="text_rating" value="<TMPL_VAR PAGE_LANG_002113>">
+                        </td>
+                        <td>&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td><TMPL_VAR PAGE_LANG_002112>;</td>
+                        <td>&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="<TMPL_VAR SUBMIT_TRANS_TYPE>" name="text_trans_contents" value="<TMPL_VAR PAGE_LANG_002106>">
+                        </td>
+                        <td>&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input type="<TMPL_VAR SUBMIT_DELETE_TYPE>" name="delete_text" value="<TMPL_VAR PAGE_LANG_002114>">
+                        </td>
+                        <td>&nbsp; </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table width="100%" border="0">
+	  <tr> <!-- Description -->
+            <td><TMPL_VAR PAGE_LANG_002012></td>
+            <td><TMPL_VAR TEXT_DESCRIPTION></td>
+          </tr>
+          <tr>
+            <td width="6%" valign="top"><TMPL_VAR PAGE_LANG_002101></td>
+            <td width="94%" align="left" valign="top"><TMPL_VAR TEXT></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+		</td>
 </tr>
 
 </table>

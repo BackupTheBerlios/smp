@@ -15,7 +15,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.11 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.12 $ =~ /(\d+)\.(\d+)/;
 
 #################################################################
 #NAME: parameter($mgr).						#
@@ -61,6 +61,8 @@ elsif ( ($method eq 'trans_desc') || ($method eq 'text_trans') ){ $self->show_tr
 elsif ($method eq 'text_trans_contents'){ $self->show_trans_contents($mgr);}
 
 elsif ($method eq 'text_show'){ $self->show_text_see($mgr);}
+
+elsif ($method eq 'delete_text'){ $self->delete_text($mgr);}
 
 return 1;
 }
@@ -145,8 +147,9 @@ $sth->finish();
 
 else{	$mgr->{TmplData}{TEXT_CAT_NAME_SELECT}= '-----------'; }
 
-my @cat_loop_data= $self->get_below_cats($mgr) ;
- 
+my @cat_loop_data = $self->get_below_cats($mgr) ;
+
+@cat_loop_data = sort {$a->{TEXT_CAT_NAME} cmp $b->{TEXT_CAT_NAME}} @cat_loop_data;#added by Hendrik, sort categories
 
 $mgr->{TmplData}{TEXT_LOOP_CAT}=\@cat_loop_data;
 
@@ -165,15 +168,13 @@ else{ $mgr->{TmplData}{TEXT_LANG_NAME_SELECT}= '-----------'; }
 my @lang_loop_data=();
 my @ray = $mgr->{Func}->get_langs($mgr,'all');
 my $elem;
-
 foreach $elem (@ray){
 my %data;
 $data{TEXT_LANG_ID}= $$elem[0];
 $data{TEXT_LANG_NAME}= $$elem[1];
-
 push(@lang_loop_data,\%data);
-
 }
+@lang_loop_data = sort {$a->{TEXT_LANG_NAME} cmp $b->{TEXT_LANG_NAME}} @lang_loop_data;#added by Hendrik, sort languages
 
 $mgr->{TmplData}{TEXT_LOOP_LANG}=\@lang_loop_data;
 
@@ -679,12 +680,14 @@ my $new_desc = $mgr->{CGI}->param('new_desc') || undef;
 my $mes1_dico = $mgr->{CGI}->param('mes1_dico') || undef;
 my $mes2_dico = $mgr->{CGI}->param('mes2_dico') || undef;
 my $text_trans_contents = $mgr->{CGI}->param('text_trans_contents') || undef; #added by Hendrik
+my $delete_text = $mgr->{CGI}->param('delete_text') || undef; #added by Hendrik
 my $show_text = $mgr->{CGI}->param('show_text') || undef; #added by Hendrik
 
 if (defined $new_text){ $self->show_text_new($mgr); }
 elsif (defined $see_text){ $self->show_text_see($mgr); }
 elsif (defined $new_desc){ $self->show_text_description($mgr); }
 elsif (defined $text_trans_contents){ $self->show_trans_contents($mgr); } #added by Hendrik
+elsif (defined $delete_text){ $self->delete_text($mgr); } #added by Hendrik
 elsif (defined $show_text){ $self->show_text_see($mgr); } #added by Hendrik
 elsif ((defined $mes1_dico) && (defined $mes2_dico) ) {
 
@@ -1301,7 +1304,7 @@ SQL
 #Author: Hendrik Erler(erler@cs.tu-berlin.de)			#
 #################################################################
 sub show_text_rest{
-  my ($self, $mgr, $text_rating_id, $text_rating, $given_text_id, $text_id, $text, $num_words, $lang_id, $submit_time, $user_id, $category_id, $status, $avg_rating, $num_ratings, $current_user_id, $current_user_level) = @_;
+  my ($self, $mgr, $text_rating_id, $text_rating, $given_text_id, $text_id, $text, $num_words, $text_lang_id, $submit_time, $user_id, $category_id, $status, $avg_rating, $num_ratings, $current_user_id, $current_user_level) = @_;
 
 
   $mgr->{TmplData}{TEXT_LENGTH} = $num_words;
@@ -1357,8 +1360,8 @@ sub show_text_rest{
   $mgr->{TmplData}{PAGE_LANG_002114} = $mgr->{Func}->get_text($mgr, 2114);#delete_text_button
   $mgr->{TmplData}{PAGE_LANG_002116} = $mgr->{Func}->get_text($mgr, 2116);#TEXT_SUBMIT_TIME
   $mgr->{TmplData}{PAGE_LANG_002019} = $mgr->{Func}->get_text($mgr, 2019);#TEXT_CAT
-
-
+  $mgr->{TmplData}{PAGE_LANG_002118} = $mgr->{Func}->get_text($mgr, 2118);#View_Translation_Button
+  $mgr->{TmplData}{PAGE_LANG_002119} = $mgr->{Func}->get_text($mgr, 2119);#Titel of Page
 
 #Text-Title################################
   my $table = $mgr->{Tables}->{TEXT_TITLE};
@@ -1366,10 +1369,10 @@ sub show_text_rest{
   my $sth = $dbh->prepare(<<SQL);
 SELECT  header_id, header_text, lang_id, text_id, user_id, submit_time
 FROM   $table
-WHERE  text_id = ?
+WHERE  text_id = ? AND lang_id = ?
 
 SQL
-  unless ($sth->execute($text_id)) {
+  unless ($sth->execute($text_id,$text_lang_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
@@ -1392,10 +1395,10 @@ SQL
   my $sth = $dbh->prepare(<<SQL);
 SELECT desc_id, desc_text, lang_id, text_id, user_id, submit_time
 FROM   $table
-WHERE  text_id = ?
+WHERE  text_id = ? AND lang_id = ?
 
 SQL
-  unless ($sth->execute($text_id)) {
+  unless ($sth->execute($text_id,$text_lang_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
@@ -1432,6 +1435,7 @@ SQL
   my $firstname = @row[3];
   my $email     = @row[4];
   $sth->finish();
+  $mgr->{TmplData}{AUTHOR_LINK} = $mgr->my_url(ACTION => "user", METHOD => "mypage");
   $mgr->{TmplData}{TEXT_AUTOR} = $firstname . " " . $lastname;
 
 
@@ -1445,7 +1449,7 @@ FROM   $table
 WHERE  lang_id = ?
 
 SQL
-  unless ($sth->execute($lang_id)) {
+  unless ($sth->execute($text_lang_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
@@ -1455,8 +1459,7 @@ SQL
   my $lang_name_id = @row[1];
   my $system_lang  = @row[2];
   $sth->finish();
-  $mgr->{TmplData}{TEXT_ORIG_LANG} = $mgr->{Func}->get_text($mgr, $lang_id);
-
+  $mgr->{TmplData}{TEXT_ORIG_LANG} = $mgr->{Func}->get_text($mgr, $lang_name_id);
 
 
 #Translated Languages of this Text##################
@@ -1476,16 +1479,20 @@ SQL
   my $table = $sth->fetchall_arrayref();
   my @lang_loop_data;
   my $row;
+  my %data;
+  $data{TEXT_TRANS_LANG_ID}= $text_lang_id;
+  $data{TEXT_TRANS_LANG_NAME}= $mgr->{Func}->get_text($mgr, $lang_name_id);
+  push(@lang_loop_data,\%data);
   foreach $row (@$table){
     my %data;
     $data{TEXT_TRANS_LANG_ID}= $row[0];
     $data{TEXT_TRANS_LANG_NAME}= $row[1];
     push(@lang_loop_data,\%data);
   }
+  @lang_loop_data = sort {$a->{TEXT_TRANS_LANG_NAME} cmp $b->{TEXT_TRANS_LANG_NAME}} @lang_loop_data;
   $mgr->{TmplData}{TEXT_LOOP_TRANS_LANG}=\@lang_loop_data;
+  $mgr->{TmplData}{SUBMIT_VIEW_TRANS_TYPE}='submit';
   $sth->finish();
-
-
 
 #Category-Name of this Text##################
   my $table = $mgr->{Tables}->{CATS};
@@ -1505,7 +1512,7 @@ SQL
   my $cat_lang_id  = @row[1];
   $sth->finish();
 
-
+  $mgr->{TmplData}{CAT_LINk} = $mgr->my_url(ACTION => "home", METHOD => "show_cat");
   $mgr->{TmplData}{TEXT_CAT} = $mgr->{Func}->get_text($mgr, $cat_lang_id);
 
 }#end show_text_rest
@@ -1637,7 +1644,7 @@ SQL
 
   $self->show_text_original($mgr);
 
-}
+}#end text_original_rating
 
 
 
@@ -1763,7 +1770,25 @@ SQL
 
 $self->show_text_translation($mgr);
 
+}#end text_trans_rating
+
+#################################################################
+#CALL: $self->show_delete_text($mgr)				#
+#								#
+#RETURN: 							#
+#								#
+#DESC: See SQL Statement. 					#
+#								#
+#Author: Hendrik Erler(erler@cs.tu-berlin.de)			#
+#################################################################
+sub delete_text {
+  my ($self, $mgr) = @_;
+  $mgr->{Template} = $mgr->{TmplFiles}->{Text_Delete};
+  $mgr->{TmplData}{PAGE_LANG_002114} = $mgr->{Func}->get_text($mgr, 2114);#delete_text
 }
+
+
+
 1;
 
 

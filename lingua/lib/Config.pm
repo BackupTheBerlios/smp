@@ -55,7 +55,8 @@ $TABLES = {
 	   TEXT_ORIG  => 'lingua_original_text',
 	   TEXT_TRANS => 'lingua_translation_text',
 	   TEXT_DESC  => 'lingua_text_description',
-	   TEXT_TITLE => 'lingua_text_header'
+	   TEXT_TITLE => 'lingua_text_header',
+	   TEXT_RATING =>'lingua_text_rating'
 };
 
 $TMPL = {

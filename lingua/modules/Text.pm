@@ -15,7 +15,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.8 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/;
 
 #################################################################
 #NAME: parameter($mgr).						#
@@ -302,7 +302,7 @@ VALUES (?, ?, ?, ?, ?)
 
 SQL
 
-unless ($sth->execute($original_text, $num_words, $lang_id, $user_id, $text_cat_id )) 
+unless ($sth->execute($original_text, $num_words, $lang_id, $user_id, $text_cat_id ))
     {
 	warn sprintf("[Error:] Trouble adding user to %s. " .
 		     "Reason: [%s].", $table, $dbh->errstr());
@@ -310,7 +310,7 @@ unless ($sth->execute($original_text, $num_words, $lang_id, $user_id, $text_cat_
 	$mgr->fatal_error("Database error.");
     }
 
-$dbh->do("UNLOCK TABLES");   
+$dbh->do("UNLOCK TABLES");
  $sth->finish();
 
  
@@ -680,7 +680,6 @@ my $mes1_dico = $mgr->{CGI}->param('mes1_dico') || undef;
 my $mes2_dico = $mgr->{CGI}->param('mes2_dico') || undef;
 my $text_trans_contents = $mgr->{CGI}->param('text_trans_contents') || undef; #added by Hendrik
 my $show_text = $mgr->{CGI}->param('show_text') || undef; #added by Hendrik
-
 
 if (defined $new_text){ $self->show_text_new($mgr); }
 elsif (defined $see_text){ $self->show_text_see($mgr); }
@@ -1089,8 +1088,11 @@ sub show_text_see {
   my ($self, $mgr) = @_;
   my $text_id = $mgr->{CGI}->param('text_id') || undef;
   my $trans_text_id = $mgr->{CGI}->param('trans_text_id') || undef;
+  my $text_rating = $mgr->{CGI}->param('text_rating') || undef;
 
-  if ($trans_text_id ne undef){ $self->show_text_translation($mgr);}
+  if (defined $text_rating && defined $text_id){ $self->text_original_rating($mgr); }
+  elsif (defined $text_rating && defined $trans_text_id){ $self->text_trans_rating($mgr);}
+  elsif ($trans_text_id ne undef){ $self->show_text_translation($mgr);}
   elsif ($text_id ne undef){ $self->show_text_original($mgr);}
 
 
@@ -1116,8 +1118,8 @@ my ($self, $mgr) = @_;
 
   $mgr->{Template} = $mgr->{TmplFiles}->{Text_Show};
 
-  $mgr->{TmplData}{TEXT_ID} = $text_id;
-  $mgr->{TmplData}{TRANS_TEXT_ID} = $text_id; #Muß noch geändert werden.
+  #$mgr->{TmplData}{TEXT_ID} = $trans_text_id;
+  $mgr->{TmplData}{TRANS_TEXT_ID} = $trans_text_id;
 
   $mgr->{TmplData}{PAGE_LANG_002023} = $mgr->{Func}->get_text($mgr, 2023);
   $mgr->{TmplData}{PAGE_LANG_002100} = $mgr->{Func}->get_text($mgr, 2100);
@@ -1140,26 +1142,26 @@ my ($self, $mgr) = @_;
   $mgr->{TmplData}{PAGE_LANG_002116} = $mgr->{Func}->get_text($mgr, 2116);
 
   #length of Text and Text#############
-  my $table = $mgr->{Tables}->{TEXT_ORIG};
+  my $table = $mgr->{Tables}->{TEXT_TRANS};
 
   my $dbh = $mgr->connect();
   my $sth = $dbh->prepare(<<SQL);
 
-SELECT  original_id, original_text, num_words, lang_id, submit_time, user_id, category_id, status, avg_rating, num_ratings
+SELECT  trans_id, trans_text, num_words, lang_id, submit_time, user_id, category_id, status, avg_rating, num_ratings, original_id
 FROM   $table
-WHERE  original_id = ?
+WHERE  trans_id = ?
 
 SQL
 
-  unless ($sth->execute($text_id)) {
+  unless ($sth->execute($trans_text_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
   }
 
   my @row = $sth->fetchrow_array();
-  my $original_id   = @row[0];
-  my $original_text = @row[1];
+  my $trans_id      = @row[0];
+  my $trans_text    = @row[1];
   my $num_words     = @row[2];
   my $lang_id       = @row[3];
   my $submit_time   = @row[4];
@@ -1168,14 +1170,15 @@ SQL
   my $status        = @row[7];
   my $avg_rating    = @row[8];
   my $num_ratings   = @row[9];
+  my $original_id   = @row[10];
 
   $sth->finish();
 
   $mgr->{TmplData}{TEXT_LENGTH} = $num_words;
-  $mgr->{TmplData}{TEXT} = $original_text;
+  $mgr->{TmplData}{TEXT} = $trans_text;
   $mgr->{TmplData}{TEXT_RATING} = $avg_rating;
   $mgr->{TmplData}{TEXT_RATING_NUMBER} = $num_ratings;
-  $mgr->{TmplData}{TEXT_SUBMIT_TIME} = $submit_time;
+  $mgr->{TmplData}{TEXT_SUBMIT_TIME} = substr($submit_time,6, 2) . "." . substr($submit_time,4, 2) . "." .substr($submit_time,0, 4);
 
   #Title################################
   my $table = $mgr->{Tables}->{TEXT_TITLE};
@@ -1221,7 +1224,7 @@ WHERE  text_id = ?
 
 SQL
 
-  unless ($sth->execute($text_id)) {
+  unless ($sth->execute($trans_text_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
@@ -1349,7 +1352,7 @@ sub show_text_original {
   $mgr->{Template} = $mgr->{TmplFiles}->{Text_Show};
 
   $mgr->{TmplData}{TEXT_ID} = $text_id;
-  $mgr->{TmplData}{TRANS_TEXT_ID} = $text_id; #Muß noch geändert werden.
+  #$mgr->{TmplData}{TRANS_TEXT_ID} = $trans_text_id; #Muß noch geändert werden.
 
   $mgr->{TmplData}{PAGE_LANG_002023} = $mgr->{Func}->get_text($mgr, 2023);
   $mgr->{TmplData}{PAGE_LANG_002100} = $mgr->{Func}->get_text($mgr, 2100);
@@ -1407,7 +1410,7 @@ SQL
   $mgr->{TmplData}{TEXT} = $original_text;
   $mgr->{TmplData}{TEXT_RATING} = $avg_rating;
   $mgr->{TmplData}{TEXT_RATING_NUMBER} = $num_ratings;
-  $mgr->{TmplData}{TEXT_SUBMIT_TIME} = $submit_time;
+  $mgr->{TmplData}{TEXT_SUBMIT_TIME} = substr($submit_time,6, 2) . "." . substr($submit_time,4, 2) . "." .substr($submit_time,0, 4);
 
   #Title################################
   my $table = $mgr->{Tables}->{TEXT_TITLE};
@@ -1564,6 +1567,203 @@ SQL
 
 }
 
+
+#################################################################
+#CALL: $self->show_original_rating($mgr)			#
+#								#
+#RETURN: 							#
+#								#
+#DESC: See SQL Statement. 					#
+#								#
+#Author: Hendrik Erler(erler@cs.tu-berlin.de)			#
+#################################################################
+sub text_original_rating {
+  my ($self, $mgr) = @_;
+  my $rating = $mgr->{CGI}->param('rating') || undef;
+
+  if(defined $rating){
+
+  my $text_id = $mgr->{CGI}->param('text_id') || undef;
+
+
+  my $table = $mgr->{Tables}->{TEXT_ORIG};
+
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+SELECT  original_id, user_id, avg_rating, num_ratings
+FROM   $table
+WHERE  original_id = ?
+
+SQL
+
+  unless ($sth->execute($text_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+  my @row = $sth->fetchrow_array();
+  my $original_id   = @row[0];
+  my $user_id       = @row[1];
+  my $avg_rating    = @row[2];
+  my $num_ratings   = @row[3];
+
+  $sth->finish();
+
+
+  my $table = $mgr->{Tables}->{TEXT_RATING};
+
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+
+INSERT INTO $table (user_id, text_original_id, text_rating)
+VALUES (?, ?, ?)
+
+SQL
+
+  unless ($sth->execute($original_id, $user_id, $rating))
+    {
+	warn sprintf("[Error:] Trouble adding user to %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+  $dbh->do("UNLOCK TABLES");
+
+  $sth->finish();
+
+
+  $avg_rating = (($avg_rating * $num_ratings) + $rating) / ($num_ratings+1);
+  $num_ratings += 1;
+
+  my $table = $mgr->{Tables}->{TEXT_ORIG};
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+UPDATE LOW_PRIORITY $table SET avg_rating=?, num_ratings=?
+WHERE original_id = ?
+
+SQL
+
+  unless ($sth->execute($avg_rating, $num_ratings, $text_id))
+    {
+	warn sprintf("[Error:] Trouble adding user to %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+  $dbh->do("UNLOCK TABLES");
+  $sth->finish();
+
+  }#end if
+
+
+  $self->show_text_original($mgr);
+
+}
+
+
+
+#################################################################
+#CALL: $self->show_trans_rating($mgr)				#
+#								#
+#RETURN: 							#
+#								#
+#DESC: See SQL Statement. 					#
+#								#
+#Author: Hendrik Erler(erler@cs.tu-berlin.de)			#
+#################################################################
+sub text_trans_rating {
+my ($self, $mgr) = @_;
+my $rating = $mgr->{CGI}->param('rating') || undef;
+
+if(defined $rating){
+
+  my $trans_text_id = $mgr->{CGI}->param('trans_text_id') || undef;
+
+
+  my $table = $mgr->{Tables}->{TEXT_TRANS};
+
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+SELECT  trans_id, user_id, avg_rating, num_ratings
+FROM   $table
+WHERE  trans_id = ?
+
+SQL
+
+  unless ($sth->execute($trans_text_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+  my @row = $sth->fetchrow_array();
+  my $trans_id      = @row[0];
+  my $user_id       = @row[1];
+  my $avg_rating    = @row[2];
+  my $num_ratings   = @row[3];
+
+  $sth->finish();
+
+
+  my $table = $mgr->{Tables}->{TEXT_RATING};
+
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+
+INSERT INTO $table (user_id, text_original_id, text_rating)
+VALUES (?, ?, ?)
+
+SQL
+
+  unless ($sth->execute($trans_id, $user_id, $rating))
+    {
+	warn sprintf("[Error:] Trouble adding user to %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+  $dbh->do("UNLOCK TABLES");
+
+  $sth->finish();
+
+
+  $avg_rating = (($avg_rating * $num_ratings) + $rating) / ($num_ratings+1);
+  $num_ratings += 1;
+
+    my $table = $mgr->{Tables}->{TEXT_TRANS};
+    my $dbh = $mgr->connect();
+    my $sth = $dbh->prepare(<<SQL);
+
+UPDATE LOW_PRIORITY $table SET avg_rating = ?, num_ratings = ?
+WHERE trans_id = ?
+
+SQL
+
+  unless ($sth->execute($avg_rating, $num_ratings, $trans_text_id))
+    {
+	warn sprintf("[Error:] Trouble adding user to %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+  $dbh->do("UNLOCK TABLES");
+  $sth->finish();
+}#end if
+
+
+$self->show_text_translation($mgr);
+
+}
 1;
 
 

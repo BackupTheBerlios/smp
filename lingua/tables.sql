@@ -470,8 +470,7 @@ CREATE TABLE lingua_original_text (
 DROP TABLE IF EXISTS lingua_translation_text;
 
 CREATE TABLE lingua_translation_text (
-        trans_id        INT(10) UNSIGNED NOT NULL
-AUTO_INCREMENT,
+        trans_id        INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
         trans_text      MEDIUMBLOB   DEFAULT '',
         num_words       INT(10) UNSIGNED DEFAULT '0',
         lang_id         INT(10) UNSIGNED NOT NULL,
@@ -509,6 +508,19 @@ CREATE TABLE lingua_text_header (
         submit_time     TIMESTAMP,
         PRIMARY KEY(header_id)
 );
+
+DROP TABLE IF EXISTS lingua_text_rating;
+
+CREATE TABLE lingua_text_rating (
+        rating_id        INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+        user_id          INT(10) UNSIGNED DEFAULT '0',
+        text_original_id INT(10) UNSIGNED DEFAULT '0',
+	text_trans_id    INT(10) UNSIGNED DEFAULT '0',
+	text_rating      INT(10) UNSIGNED DEFAULT '0',
+        PRIMARY KEY(rating_id)
+);
+
+
 
 #
 # library: Points

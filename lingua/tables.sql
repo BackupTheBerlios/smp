@@ -563,7 +563,7 @@ DROP TABLE IF EXISTS lingua_inactiv_points;
 CREATE TABLE lingua_inactiv_points (
   id               INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   userid           INT(10) UNSIGNED DEFAULT '0',
-  insert_date      INT(10) UNSIGNED DEFAULT '0',
+  insert_date      DATETIME DEFAULT '0',
   translation_id   INT(10) UNSIGNED DEFAULT '0',
   points           INT(10) UNSIGNED DEFAULT '0',
   PRIMARY KEY(id)

@@ -6,7 +6,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.11 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.12 $ =~ /(\d+)\.(\d+)/;
 
 #
 # this method is called by the manager (main.cgi)
@@ -58,6 +58,11 @@ sub parameter
     elsif ($method eq 'adm_search')  { $self->method_adm_search($mgr); }
     # case 4.2: user-admin page
     elsif ($method eq 'admin')       { $self->method_admin($mgr); }
+    # case 4.3: new block reason
+    elsif ($method eq 'reason_new')  { $self->method_reason_new($mgr); }
+    # case 4.4: edit block reason
+    elsif ($method eq 'reason_edit') { $self->method_reason_edit($mgr); }
+
 
     return 1;
 }
@@ -80,9 +85,13 @@ sub method_reg2
     
     # get user data from CGI
     my $username   = $mgr->{CGI}->param('u_inp_username');
+#        $mgr->unescape($mgr->to_unicode($mgr->{CGI}->param('u_inp_username')));
     my $firstname  = $mgr->{CGI}->param('u_inp_firstname');
+#        $mgr->unescape($mgr->to_unicode($mgr->{CGI}->param('u_inp_firstname')));
     my $lastname   = $mgr->{CGI}->param('u_inp_lastname');
+#        $mgr->unescape($mgr->to_unicode($mgr->{CGI}->param('u_inp_lastname')));
     my $email      = $mgr->{CGI}->param('u_inp_email');
+#        $mgr->unescape($mgr->to_unicode($mgr->{CGI}->param('u_inp_email')));
     my $syslang_id = $mgr->{CGI}->param('u_sel_syslang');
 
     # case 1: user pressed 'next' button on reg1 page 
@@ -288,7 +297,7 @@ sub method_upd_langs
 	}
     }
 	
-    # 3. in case of language change...
+    # 4. in case of language change...
     $self->show_upd_langs($mgr);
 }
 
@@ -372,26 +381,32 @@ sub method_upd_descnew
 }
 
 
+#
+# note: this functions handles 
+#   1. links from text module or user admin page to info page of a user
+#   2. buttons on personal info page itself (i.e. language change for the 
+#      personal description and the reason-for-being-blocked)
+#
 sub method_otherspage
 {
     my ($self, $mgr) = @_;  
     my $user_id = $mgr->{CGI}->param('user_id');
 
+    # something got fucked up?
     if (!defined($user_id))
     {
 	warn sprintf("[Error:] No user_id given for other\'s page.");
 	$mgr->fatal_error("User module error.");
 	$user_id = 1;
     }
-
+    # 1. user selected other language for description
     if (defined($mgr->{CGI}->param('u_sub_descchange')))
     {
 	my $lang_id = $mgr->{CGI}->param('u_sel_desclang');
 	# save this lang_id in session
 	$mgr->{Session}->set(UserDescLangId => $lang_id);
     }
-
-    # just display some other user's info page
+    # 2. no buttons, or the ususal language change for the whole site
     $self->show_mypage($mgr, 'other', $user_id);
 }
 
@@ -429,7 +444,7 @@ sub method_adm_search
 sub method_admin
 {
     my ($self, $mgr) = @_;
-    my $user_id = $mgr->{Session}->get('User_AdmUserId');
+    my $user_id      = $mgr->{Session}->get('User_AdmUserId');
 
     # go to personal info page of user
     if (defined($mgr->{CGI}->param('u_sub_info')))
@@ -441,21 +456,126 @@ sub method_admin
     {
 	$self->show_adm_search($mgr);
     }
+    # change language of block-reason
+    elsif (defined($mgr->{CGI}->param('u_sub_rschange')))
+    {
+	my $rs_langid = $mgr->{CGI}->param('u_sel_rslang');
+	$mgr->{Session}->set(User_AdmLangId => $rs_langid);
+	$self->show_admin_page($mgr, $user_id);
+    }
+    # new reason for blocking
+    elsif (defined($mgr->{CGI}->param('u_sub_rsnew')))
+    {
+	$self->show_reason_new($mgr, $user_id);
+    }
+    # edit reason for blocking
+    elsif (defined($mgr->{CGI}->param('u_sub_rsedit')))
+    {
+	$self->show_reason_edit($mgr, $user_id);
+    }
     # promote a user
-    elsif (defined($mgr->{CGI}->param('u_sub_level')))
+    elsif (defined($mgr->{CGI}->param('u_sub_promote')))
     {
 	my $level = $mgr->{CGI}->param('u_sel_level');
 	$self->upd_level($mgr, $user_id, $level);
+	$self->show_admin_page($mgr, $user_id);
     }
     # block a user
     elsif (defined($mgr->{CGI}->param('u_sub_block')))
     {
-	$self->show_block_page($mgr, $user_id);
+	$self->show_reason_new($mgr, $user_id);
+    }
+    # de-block a user
+    elsif (defined($mgr->{CGI}->param('u_sub_deblock')))
+    {
+	$self->upd_deblock($mgr, $user_id);
+	$self->show_admin_page($mgr, $user_id);
     }
     # language change
     else
     {
 	$self->show_admin_page($mgr, $user_id);
+    }
+}
+
+
+sub method_reason_new
+{
+    my ($self, $mgr) = @_;
+    my $user_id  = $mgr->{Session}->get('User_AdmUserId');
+
+    # 1. admin submitted the reason
+    if (defined($mgr->{CGI}->param('u_sub_reason')))
+    {
+	my $admin_id = $mgr->{Session}->get('UserId');
+	my $lang_id  = $mgr->{CGI}->param('u_sel_rslang');
+	my $reason   = $mgr->{CGI}->param('u_inp_reason');
+	my $error    = $self->check_reason($mgr, $reason);
+
+	if ($error != 0)
+        {
+	    $self->show_reason_new($mgr, $user_id, $error);
+	}
+	else
+        {
+	    # save desc language in Session...
+	    $mgr->{Session}->set(User_AdmLangId => $lang_id);
+	    # add the reason to database
+	    $self->upd_block($mgr, $user_id, $admin_id);
+	    $self->upd_reason($mgr, $user_id, $lang_id, $reason);
+	    $self->show_admin_page($mgr, $user_id);
+	}
+    }
+    # 2. language change
+    else
+    {
+	$self->show_reason_new($mgr, $user_id);
+    }
+}
+
+
+sub method_reason_edit
+{
+    my ($self, $mgr) = @_;
+    my $user_id      = $mgr->{Session}->get('User_AdmUserId');
+
+    # 1. user changed language of reason
+    if (defined($mgr->{CGI}->param('u_sub_rslang')))
+    {
+	my $lang_id = $mgr->{CGI}->param('u_sel_rslang');
+	# save this lang_id in session
+	$mgr->{Session}->set(User_AdmLangId => $lang_id);
+	$self->show_reason_edit($mgr, $user_id);
+    }
+
+    # 2. admin submitted the reason
+    elsif (defined($mgr->{CGI}->param('u_sub_reason')))
+    {
+	my $lang_id = $mgr->{Session}->get('User_AdmLangId');
+	my $reason  = $mgr->{CGI}->param('u_inp_reason');
+	my $error   = $self->check_reason($mgr, $reason);
+
+	if ($error != 0)
+        {
+	    $self->show_reason_edit($mgr, $user_id, $error);
+	}
+	else
+        {
+	    $self->upd_reason($mgr, $user_id, $lang_id, $reason);
+	    $self->show_reason_edit($mgr, $user_id);
+	}
+    }
+
+    # 3. back to admin page
+    elsif (defined($mgr->{CGI}->param('u_sub_back')))
+    {
+	$self->show_admin_page($mgr, $user_id);
+    }
+    
+    # 4. language change
+    else
+    {
+	$self->show_reason_edit($mgr, $user_id);
     }
 }
 
@@ -1076,42 +1196,179 @@ sub show_adm_search
 #
 # fill user-admin page
 # Params: 1. Manager ref
+#         2. user id of user-to-administrate
 # No Return Value
 #
 sub show_admin_page
 {
     my ($self, $mgr, $user_id) = @_;
-
+    my ($username, $firstname, $lastname, $email, $syslang_id, $lasttime, 
+	$regtime, $level, $status) = $self->get_user_info($mgr, $user_id);
+  
     # main template vars
     $mgr->{Template}              = $mgr->{TmplFiles}->{User_Admin};
     $mgr->{Action}                = "user";
     $mgr->{TmplData}{PAGE_METHOD} = 'admin';
     $mgr->{TmplData}{PAGE_TITLE}  = $mgr->{Func}->get_text($mgr, 1174);
 
-    my ($username, $firstname, $lastname, $email, $syslang_id, $lasttime, 
-	$regtime, $level, $status) = $self->get_user_info($mgr, $user_id);
-
     # fill dictionary template vars
     $mgr->{TmplData}{USER_USERNAME} = $username;
     $mgr->{TmplData}{USER_LEVEL}  
         = $mgr->{Func}->get_text($mgr, 1088 + $level);
     $mgr->{TmplData}{USER_STATUS} 
-        = $mgr->{Func}->get_text($mgr, 1187 + $status);
+        = $mgr->{Func}->get_text($mgr, 1196 + $status);
     $mgr->{TmplData}{PAGE_LANG_001174} = $mgr->{Func}->get_text($mgr, 1174);
     $mgr->{TmplData}{PAGE_LANG_001175} = $mgr->{Func}->get_text($mgr, 1175);
     $mgr->{TmplData}{PAGE_LANG_001176} = $mgr->{Func}->get_text($mgr, 1176);
     $mgr->{TmplData}{PAGE_LANG_001177} = $mgr->{Func}->get_text($mgr, 1177);
     $mgr->{TmplData}{PAGE_LANG_001178} = $mgr->{Func}->get_text($mgr, 1178);
-    $mgr->{TmplData}{PAGE_LANG_001179} = $mgr->{Func}->get_text($mgr, 1179);
-    $mgr->{TmplData}{PAGE_LANG_001180} = $mgr->{Func}->get_text($mgr, 1180);
-    $mgr->{TmplData}{PAGE_LANG_001181} = $mgr->{Func}->get_text($mgr, 1181);
-    $mgr->{TmplData}{PAGE_LANG_001182} = $mgr->{Func}->get_text($mgr, 1182);
-    $mgr->{TmplData}{PAGE_LANG_001183} = $mgr->{Func}->get_text($mgr, 1183);
     $mgr->{TmplData}{PAGE_LANG_001184} = $mgr->{Func}->get_text($mgr, 1184);
-    # level select box
-    $mgr->{TmplData}{PAGE_LANG_001088} = $mgr->{Func}->get_text($mgr, 1088);
-    $mgr->{TmplData}{PAGE_LANG_001089} = $mgr->{Func}->get_text($mgr, 1089);
-    $mgr->{TmplData}{PAGE_LANG_001090} = $mgr->{Func}->get_text($mgr, 1090);
+
+    # if user is blocked, show reason
+    if ($status == 2)
+    {
+	$mgr->{TmplData}{USER_IF_BLOCKED} = 1;
+	$self->fill_admin_reason($mgr, $user_id);
+
+	$mgr->{TmplData}{PAGE_LANG_001185} = $mgr->{Func}->get_text($mgr, 1185);
+	$mgr->{TmplData}{PAGE_LANG_001186} = $mgr->{Func}->get_text($mgr, 1186);
+	$mgr->{TmplData}{PAGE_LANG_001187} = $mgr->{Func}->get_text($mgr, 1187);
+	$mgr->{TmplData}{PAGE_LANG_001188} = $mgr->{Func}->get_text($mgr, 1188);
+	$mgr->{TmplData}{PAGE_LANG_001189} = $mgr->{Func}->get_text($mgr, 1189);
+	$mgr->{TmplData}{PAGE_LANG_001190} = $mgr->{Func}->get_text($mgr, 1190);
+	$mgr->{TmplData}{PAGE_LANG_001191} = $mgr->{Func}->get_text($mgr, 1191);
+	$mgr->{TmplData}{PAGE_LANG_001192} = $mgr->{Func}->get_text($mgr, 1192);
+	$mgr->{TmplData}{PAGE_LANG_001193} = $mgr->{Func}->get_text($mgr, 1193);
+    }
+    # else show promote-button and block-button
+    else 
+    {
+	$mgr->{TmplData}{USER_IF_BLOCKED} = 0;
+
+	$mgr->{TmplData}{PAGE_LANG_001179} = $mgr->{Func}->get_text($mgr, 1179);
+	$mgr->{TmplData}{PAGE_LANG_001180} = $mgr->{Func}->get_text($mgr, 1180);
+	$mgr->{TmplData}{PAGE_LANG_001181} = $mgr->{Func}->get_text($mgr, 1181);
+	$mgr->{TmplData}{PAGE_LANG_001182} = $mgr->{Func}->get_text($mgr, 1182);
+	$mgr->{TmplData}{PAGE_LANG_001183} = $mgr->{Func}->get_text($mgr, 1183);
+	# level select box
+	$mgr->{TmplData}{PAGE_LANG_001088} = $mgr->{Func}->get_text($mgr, 1088);
+	$mgr->{TmplData}{PAGE_LANG_001089} = $mgr->{Func}->get_text($mgr, 1089);
+	$mgr->{TmplData}{PAGE_LANG_001090} = $mgr->{Func}->get_text($mgr, 1090);
+    }
+}
+
+
+#
+# fill reason-edit-template
+# Params: 1. Manager ref
+#         2. user id of blocked user
+#         3. error dict id (optional)
+# No Return Value
+#
+sub show_reason_edit
+{
+    my ($self, $mgr, $user_id, $error) = @_;
+
+    #--- get data -------------------------------------------------------------#
+    # get language id of reason from session
+    my $rs_langid = $mgr->{Session}->get('User_AdmLangId');
+
+    # get languages of all reasons for this user
+    my $rslangs = $self->get_reasonlangs($mgr, $user_id);
+
+    # get user's description (in desired language)
+    my $reason;
+    my $rs_langid_2;
+    ($reason, $rs_langid_2)
+        = $self->get_reason($mgr, $user_id, $rs_langid, $rslangs);
+
+    # if desired desc does not occured, something got fucked up
+    if ($rs_langid != $rs_langid_2)
+    {
+	warn sprintf("[Error:] attempt to retrieve nonexisting reason " .
+		     "in show_reason_edit()");
+    }
+
+    #--- fill template  -------------------------------------------------------#
+    # main template vars
+    $mgr->{Template} = $mgr->{TmplFiles}->{User_ReasonEdit};
+    $mgr->{Action} = "user";
+    $mgr->{TmplData}{PAGE_TITLE}  = $mgr->{Func}->get_text($mgr, 1204);
+    $mgr->{TmplData}{PAGE_METHOD} = 'reason_edit';
+
+    # error?
+    if (defined($error))
+    {
+	$mgr->{TmplData}{USER_IF_REASON_ERR} = 1;
+	$mgr->{TmplData}{PAGE_LANG_001212} = $mgr->{Func}->get_text($mgr, 1212);
+	$mgr->{TmplData}{USER_ERROR_REASON} 
+	    = $mgr->{Func}->get_text($mgr, $error);
+    }
+    else
+    {
+	$mgr->{TmplData}{USER_IF_REASON_ERR} = 0;
+    }	
+	
+    # language select box
+    $self->fill_lang_select($mgr, $rslangs, undef, $rs_langid);
+    # reason
+    $mgr->{TmplData}{USER_REASON} = $reason;
+
+    # fill dictionary template vars
+    $mgr->{TmplData}{PAGE_LANG_001204} = $mgr->{Func}->get_text($mgr, 1204);
+    $mgr->{TmplData}{PAGE_LANG_001205} = $mgr->{Func}->get_text($mgr, 1205);
+    $mgr->{TmplData}{PAGE_LANG_001206} = $mgr->{Func}->get_text($mgr, 1206);
+    $mgr->{TmplData}{PAGE_LANG_001207} = $mgr->{Func}->get_text($mgr, 1207);
+    $mgr->{TmplData}{PAGE_LANG_001208} = $mgr->{Func}->get_text($mgr, 1208);
+    $mgr->{TmplData}{PAGE_LANG_001209} = $mgr->{Func}->get_text($mgr, 1209);
+}
+
+
+#
+# fill new-reason-template
+# Params: 1. Manager ref
+#         2. user id of blocked user
+#         3. error dict id (optional)
+# No Return Value
+#
+sub show_reason_new
+{
+    my ($self, $mgr, $user_id, $error) = @_;
+
+    # get languages of all reasons for this user
+    my $rslangs = $self->get_reasonlangs($mgr, $user_id);
+
+    my @langs = $mgr->{Func}->get_langs($mgr);
+
+    # main template vars
+    $mgr->{Template}              = $mgr->{TmplFiles}->{User_ReasonNew};
+    $mgr->{Action}                = "user";
+    $mgr->{TmplData}{PAGE_TITLE}  = $mgr->{Func}->get_text($mgr, 1216);
+    $mgr->{TmplData}{PAGE_METHOD} = 'reason_new';
+
+    # error?
+    if (defined($error))
+    {
+	$mgr->{TmplData}{USER_IF_REASON_ERR} = 1;
+	$mgr->{TmplData}{PAGE_LANG_001212} = $mgr->{Func}->get_text($mgr, 1212);
+	$mgr->{TmplData}{USER_ERROR_REASON} 
+	    = $mgr->{Func}->get_text($mgr, $error);
+    }
+    else
+    {
+	$mgr->{TmplData}{USER_IF_REASON_ERR} = 0;
+    }	
+	
+    # language selection: all except the ones that have been entered before
+    $self->fill_lang_select($mgr, \@langs, $rslangs);
+
+    # fill dictionary template vars
+    $mgr->{TmplData}{PAGE_LANG_001216} = $mgr->{Func}->get_text($mgr, 1216);
+    $mgr->{TmplData}{PAGE_LANG_001217} = $mgr->{Func}->get_text($mgr, 1217);
+    $mgr->{TmplData}{PAGE_LANG_001218} = $mgr->{Func}->get_text($mgr, 1218);
+    $mgr->{TmplData}{PAGE_LANG_001219} = $mgr->{Func}->get_text($mgr, 1219);
+    $mgr->{TmplData}{PAGE_LANG_001220} = $mgr->{Func}->get_text($mgr, 1220);
+    $mgr->{TmplData}{PAGE_LANG_001221} = $mgr->{Func}->get_text($mgr, 1221);
 }
 
 ### PAGE DISPLAY AUXILARY FUNCTIONS ############################################
@@ -1173,17 +1430,20 @@ sub fill_langlvl_loop
 # fill languages for new language selection on language update page
 # Params: 1. Manager ref.
 #         2. ref to language names-and-ids, as returned from Func->get_langs
-#         3. user's languages as 2-D-array-ref (which are excluded in loop)
-#            (optional)
+#         3. languages-to-exclude as 2-D-array-ref (optional)
 #         4. default selectd language (optional)
+#         5. lang loop index (optional, if more than one loop on page)
+#            corresponds to template loop index  
+#            (e.g. USER_LOOP_LANG_0, USER_LOOP_LANG_1, ...)
 # No Return Value
 #
 sub fill_lang_select
 {
-    my ($self, $mgr, $langs, $mylangs, $default) = @_;
+    my ($self, $mgr, $langs, $mylangs, $default, $loop_num) = @_;
     my $lang;
     my @loop;
 
+    # fill select box options
     foreach $lang (@$langs)
     {
 	# see if this language is to be excluded
@@ -1216,7 +1476,51 @@ sub fill_lang_select
 	push(@loop, \%loop_row);
     }
 
-    $mgr->{TmplData}{USER_LOOP_LANG} = \@loop;
+    # now set loop values in template
+    if (defined($loop_num)) 
+    { 
+	$mgr->{TmplData}{"USER_LOOP_LANG_$loop_num"} = \@loop;
+    }
+    else
+    { 
+	$mgr->{TmplData}{USER_LOOP_LANG} = \@loop;
+    }
+}
+
+
+#
+# show reason for blocking on admin page
+# Params: 1. Manager ref.
+#         2. user id of blocked user
+# No Return Value
+#
+sub fill_admin_reason
+{
+    my ($self, $mgr, $user_id) = @_;
+
+    # get language id of reason from session (if set before)
+    my $rs_langid = $mgr->{Session}->get('User_AdmLangId');
+
+    # get languages of all block-reasons for this user
+    my $rslangs = $self->get_reasonlangs($mgr, $user_id);
+
+    # get reason (in desired language, if exists, else in current 
+    #   syslang, else in any other.
+    my $reason;
+    ($reason, $rs_langid)
+        = $self->get_reason($mgr, $user_id, $rs_langid, $rslangs);
+
+    # now fill template: language select box and reason
+    $self->fill_lang_select($mgr, $rslangs, undef, $rs_langid);
+    # fill reason
+    $mgr->{TmplData}{USER_REASON} = $reason;
+
+# debug: no user should be blocked without reason! :)
+    if (length($reason) == 0)
+    {
+	warn sprintf("[Error:] show_admin_page: missing reason-of-blocking ".
+		     "(user_id %d, lang_id %d)", $user_id, $rs_langid);
+    }
 }
 
 ### UPDATE DATABASE FUNCTIONS ##################################################
@@ -1237,7 +1541,7 @@ sub add_user
 	$syslang_id) = @_;
     
     # check precondition: is all data correct?
-    # if not simply do not add user to database!
+    # if not, simply do not add user to database!
     if ($self->check_reg($mgr, $username, $firstname, $lastname, $email,
 			 $syslang_id) != 0)
     {
@@ -1289,7 +1593,6 @@ sub add_newlang
 
     my $dbh   = $mgr->connect();
     my $table = $mgr->{Tables}->{USER_LANG};
-    my $result_row;   # a row (ref) resulting from a query
 
     $dbh->do("LOCK TABLES $table READ");
     my $sth   = $dbh->prepare(<<SQL);
@@ -1510,7 +1813,6 @@ sub upd_desc
 
     my $dbh   = $mgr->connect();
     my $table = $mgr->{Tables}->{USER_DESC};
-    my $result_row;   # a row (ref) resulting from a query
 
     # first, see if a description in this language already exists
     $dbh->do("LOCK TABLES $table READ");
@@ -1601,6 +1903,292 @@ SQL
     $dbh->do("UNLOCK TABLES");    
 }
 
+
+#
+# updates the level of a user (used by admin for promotion / degrading)
+# Params: 1. Manager ref
+#         2. user id 
+#         3. the level (0 - 2)
+# No Return value
+#
+sub upd_level
+{
+    my ($self, $mgr, $user_id, $level) = @_;
+
+    if ($level < 0 or $level > 2)
+    {
+	warn sprintf("[Error:] user level in upd_level() out of range.");
+	return;
+    }
+
+    my $dbh   = $mgr->connect();
+    my $table = $mgr->{Tables}->{USER};
+
+    $dbh->do("LOCK TABLES $table WRITE");
+    my $sth   = $dbh->prepare(<<SQL);
+
+UPDATE $table
+SET level = ?
+WHERE user_id = ?
+
+SQL
+
+# !!! bug?
+# 1 + $level produces correct entry in database (no idea why)
+# !!!
+    unless ($sth->execute(1 + $level, $user_id))
+    {
+	warn sprintf("[Error:] Trouble updating %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+    $dbh->do("UNLOCK TABLES");
+}
+
+
+#
+# blocks a user (if not blocked yet)
+# Params: 1. Manager ref
+#         2. user id of user-to-block
+#         3. user id of admin
+# No Return value
+#
+sub upd_block
+{
+    my ($self, $mgr, $user_id, $admin_id) = @_;
+
+    my $dbh   = $mgr->connect();
+    my $table = $mgr->{Tables}->{USER_BLOCK};
+
+    # first, see if this user has been blocked yet
+    $dbh->do("LOCK TABLES $table READ");
+    my $sth   = $dbh->prepare(<<SQL);
+
+SELECT user_id
+FROM $table
+WHERE user_id = ?
+
+SQL
+
+    unless ($sth->execute($user_id))
+    {
+	warn sprintf("[Error:] Trouble selecting from %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+    $dbh->do("UNLOCK TABLES");
+
+    # if user has been blocked, just return.
+    if ($sth->fetchrow_array())
+    {
+	$sth->finish();
+	return;
+    }
+
+    # else block user;
+    # 1. blocked-table
+    $dbh->do("LOCK TABLES $table WRITE");
+    $sth   = $dbh->prepare(<<SQL);
+
+INSERT INTO $table (user_id, blocked_by, block_time)
+VALUES (?, ?, ?)
+
+SQL
+
+    unless ($sth->execute($user_id, $admin_id, time())) 
+    {
+	warn sprintf("[Error:] Trouble inserting into %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+    $dbh->do("UNLOCK TABLES");
+    
+    # 2. user table
+    $table = $mgr->{Tables}->{USER};
+    $dbh->do("LOCK TABLES $table WRITE");
+    $sth   = $dbh->prepare(<<SQL);
+
+UPDATE $table 
+SET status = ?
+WHERE user_id = ?
+
+SQL
+
+    unless ($sth->execute('2', $user_id)) 
+    {
+	warn sprintf("[Error:] Trouble updating %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+    $dbh->do("UNLOCK TABLES");
+}
+
+
+#
+# updates or adds a reason
+# Params: 1. Manager ref  
+#         2. User ID
+#         3. language index  
+#         4. reason
+# No Return value
+#
+sub upd_reason
+{
+    my ($self, $mgr, $user_id, $lang_id, $reason) = @_;
+
+    my $dbh   = $mgr->connect();
+    my $table = $mgr->{Tables}->{USER_REASON};
+
+    # first, see if a description in this language already exists
+    $dbh->do("LOCK TABLES $table READ");
+    my $sth   = $dbh->prepare(<<SQL);
+
+SELECT lang_id
+FROM $table
+WHERE user_id = ? AND lang_id = ?
+
+SQL
+
+    unless ($sth->execute($user_id, $lang_id)) 
+    {
+	warn sprintf("[Error:] Trouble selecting from %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+    $dbh->do("UNLOCK TABLES");
+
+    # if reason exists, update it - or delete it, if $desc is empty
+    if ($sth->fetchrow_array())
+    {
+	$sth->finish();
+	$dbh->do("LOCK TABLES $table WRITE");
+
+	$sth   = $dbh->prepare(<<SQL);
+
+UPDATE $table
+SET block_reason = ?
+WHERE user_id = ? AND lang_id = ?
+
+SQL
+        unless ($sth->execute($reason, $user_id, $lang_id)) 
+        {
+	    warn sprintf("[Error:] Trouble updating %s. " .
+		         "Reason: [%s].", $table, $dbh->errstr());
+	    $dbh->do("UNLOCK TABLES");
+	    $mgr->fatal_error("Database error.");
+	}
+	$dbh->do("UNLOCK TABLES");
+
+	# ok, we're done
+	return;
+    }
+
+    # else add new reason
+    $sth->finish();
+    $dbh->do("LOCK TABLES $table WRITE");
+    $sth = $dbh->prepare(<<SQL);
+
+INSERT INTO $table (user_id, lang_id, block_reason)
+VALUES (?, ?, ?)
+
+SQL
+
+    unless ($sth->execute($user_id, $lang_id, $reason)) 
+    {
+	warn sprintf("[Error:] Trouble updating %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+    $dbh->do("UNLOCK TABLES");    
+}
+
+
+#
+# De-blocks a user - status OK, entry in lingua_user_blocked and all reasons 
+#   are removed.
+# ! does not verify anything !
+# Params: 1. manager ref  
+#         2. user id
+# No Return value
+#
+sub upd_deblock
+{
+    my ($self, $mgr, $user_id) = @_;
+
+    my $dbh   = $mgr->connect();
+    my $table = $mgr->{Tables}->{USER};
+
+    # 1. set status = OK in user table
+    $dbh->do("LOCK TABLES $table WRITE");
+    my $sth   = $dbh->prepare(<<SQL);
+
+UPDATE $table
+SET status = ?
+WHERE user_id = ?
+
+SQL
+
+    unless ($sth->execute('0', $user_id)) 
+    {
+	warn sprintf("[Error:] Trouble updating %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+    $dbh->do("UNLOCK TABLES");    
+
+    # 2. delete entry in blocked table
+    $table = $mgr->{Tables}->{USER_BLOCK};
+    $dbh->do("LOCK TABLES $table WRITE");
+    $sth   = $dbh->prepare(<<SQL);
+
+DELETE FROM $table
+WHERE user_id = ?
+
+SQL
+
+    unless ($sth->execute($user_id)) 
+    {
+	warn sprintf("[Error:] Trouble deleting from %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+    $dbh->do("UNLOCK TABLES");    
+
+    # 3. delete reasons from reason table
+    $table = $mgr->{Tables}->{USER_REASON};
+    $dbh->do("LOCK TABLES $table WRITE");
+    $sth   = $dbh->prepare(<<SQL);
+
+DELETE FROM $table
+WHERE user_id = ?
+
+SQL
+
+    unless ($sth->execute($user_id)) 
+    {
+	warn sprintf("[Error:] Trouble deleting from %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+    $dbh->do("UNLOCK TABLES");    
+}
+
 ### GET DATA FROM DATABASE FUNCTIONS ###########################################
 
 #
@@ -1653,7 +2241,7 @@ SQL
 sub get_mylangs_and_levels
 {
     my ($self, $mgr, $user_id) = @_;
-    my $dbh = $mgr->connect();
+    my $dbh   = $mgr->connect();
     my $table = $mgr->{Tables}->{USER_LANG};
 
     $dbh->do("LOCK TABLES $table READ");
@@ -1690,7 +2278,7 @@ SQL
 sub get_desclangs
 {
     my ($self, $mgr, $user_id) = @_;
-    my $dbh = $mgr->connect();
+    my $dbh   = $mgr->connect();
     my $table = $mgr->{Tables}->{USER_DESC};
 
     $dbh->do("LOCK TABLES $table READ");
@@ -1774,6 +2362,120 @@ sub get_desc
     my $sth = $dbh->prepare(<<SQL);
 
 SELECT desc_text
+FROM $table
+WHERE user_id = ? AND lang_id = ? 
+
+SQL
+
+    unless ($sth->execute($user_id, $lang_id1)) 
+    {
+	warn sprintf("[Error:] Trouble selecting from %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+    $dbh->do("UNLOCK TABLES");
+
+    my $result = $sth->fetchrow_arrayref();
+    $sth->finish();
+    return ($result->[0], $lang_id1);
+}
+
+
+#
+# selects languages of all blocking reasons for a user 
+# Params: 1. Manager ref
+#         2. user id
+# Returns a ref to a 2-d-array of language ids and lang names
+#
+sub get_reasonlangs
+{
+    my ($self, $mgr, $user_id) = @_;
+    my $dbh = $mgr->connect();
+    my $table = $mgr->{Tables}->{USER_REASON};
+
+    $dbh->do("LOCK TABLES $table READ");
+    my $sth = $dbh->prepare(<<SQL);
+
+SELECT lang_id
+FROM $table
+WHERE user_id = ? 
+
+SQL
+
+    unless ($sth->execute($user_id)) 
+    {
+	warn sprintf("[Error:] Trouble selecting from %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+    $dbh->do("UNLOCK TABLES");
+
+    my $result = $sth->fetchall_arrayref();
+    my $lang;
+    foreach $lang (@$result)
+    {
+	$lang->[1] = $self->get_lang_name($mgr, $lang->[0]);
+    }
+    $sth->finish();
+    return $result;
+}
+
+
+#
+# retrieves the blocking reason in a language that fits best:
+#   try the supplied desc_langid first, then current syslang, then default
+# Params: 1. Manager ref
+#         2. user id
+#         3. desired reason language id
+#         4. ref to array of language ids of all reasons for this user
+# Returns a list: (the description, desc lang id)
+#
+sub get_reason
+{
+    my ($self, $mgr, $user_id, $rs_langid, $rslangs) = @_;
+    my $lang_id1 = 0;   # first choice of description lang id
+    my $lang_id2 = 0;   # second choice (in case first choice is 0)
+
+    # search for first and second choice of desc lang id
+    if (defined($rs_langid))
+    {
+	my $id;
+	foreach $id (@$rslangs)
+        {
+	    if ($id->[0] == $rs_langid) 
+	    {
+		$lang_id1 = $id->[0];
+		last;
+	    }
+	    if ($id->[0] == $mgr->{Language})
+            {
+		$lang_id2 = $id;
+	    }
+	}
+    }
+
+    # determine desc lang id (into $lang_id1)
+    if ($lang_id1 == 0) 
+    {
+	$lang_id1 = $lang_id2;
+    }
+    if (defined($rslangs) and $lang_id1 == 0)
+    { 
+	$lang_id1 = $rslangs->[0]->[0];
+    }
+
+    # get desired reason
+    my $dbh   = $mgr->connect();
+    my $table = $mgr->{Tables}->{USER_REASON};
+
+    $dbh->do("LOCK TABLES $table READ");
+    my $sth = $dbh->prepare(<<SQL);
+
+SELECT block_reason
 FROM $table
 WHERE user_id = ? AND lang_id = ? 
 
@@ -1987,10 +2689,8 @@ sub check_desc
 {
     my ($self, $mgr, $desc) = @_;
 
-    if (length($desc) > 400)
-    {
-	return 1153;
-    }
+    if (length($desc) > 400) { return 1153; }
+
     return 0;
 }
 
@@ -2044,6 +2744,24 @@ SQL
     # arw... not found
     $sth->finish();
     return (0, 1170);
+}
+
+
+#
+# checks reason (not null characters and less than 400)
+# Params: 1. Manager ref
+#         2. reason
+# Returns 0 if reason is correct
+#         else an error dictionary id
+#
+sub check_reason
+{
+    my ($self, $mgr, $reason) = @_;
+
+    if (length($reason) == 0)  { return 1214; }
+    if (length($reason) > 400) { return 1213; }
+
+    return 0;
 }
 
 ### Auxiliary Functions ########################################################
@@ -2165,6 +2883,7 @@ sub send_passwd
 }
 
 1;
+
 
 
 

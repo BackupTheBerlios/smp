@@ -61,6 +61,12 @@ SQL
   return @langs;
 }
 
+#-----------------------------------------------------------------------------#
+# CALL: $self->get_lang($mgr, $lang_id).                                      #
+#                                                                             #
+#       $mgr     = manager object.                                            #
+#       $lang_id = id of the choosen lang.                                    #
+#-----------------------------------------------------------------------------#
 sub get_lang {
   my ($self, $mgr, $lang_id) = @_;
 
@@ -213,6 +219,43 @@ SQL
   $sth->finish();
 
   return @cat;
+}
+
+#-----------------------------------------------------------------------------#
+# CALL: $self->get_cat_texts($mgr, $cat_id).                                  #
+#                                                                             #
+#       $mgr    = manager object.                                             #
+#       $cat_id = category id.                                                #
+#-----------------------------------------------------------------------------#
+sub get_cat_texts {
+  my ($self, $mgr, $cat_id) = @_;
+
+  my $table_text = $mgr->{Tables}->{TEXT};
+
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+SELECT text_id, text_header, text_desc, lang_id, user_id, avg_rating, num_ratings
+FROM $table_text
+WHERE category_id = ? AND parent_id = '0' AND status = '1'
+
+SQL
+
+  unless ($sth->execute($cat_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+	         "Reason: [%s].", $table_text, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+  my @texts;
+
+  while (my ($id, $header, $desc, $name, $uid, $rating, $num_rat) = $sth->fetchrow_array()) {
+    push (@texts, [$id, $header, $desc, $name, $uid, $rating,  $num_rat]);
+  }
+
+  $sth->finish();
+
+  return @texts;
 }
 
 #-----------------------------------------------------------------------------#

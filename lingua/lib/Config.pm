@@ -74,9 +74,11 @@ $TMPL = {
          User_Admin           => 'lingua_user_admin.tmpl',
          User_Reg1            => 'lingua_user_reg1.tmpl',
          User_Reg2            => 'lingua_user_reg2.tmpl',
-         User_Reg3            => 'lingua_user_reg3.tmpl', 
+         User_Reg3            => 'lingua_user_reg3.tmpl',
 	 Text_New             => 'lingua_text_new.tmpl',
-         Text_New_Ok          => 'lingua_text_new_ok.tmpl'
+         Text_New_Ok          => 'lingua_text_new_ok.tmpl',
+	 Text_New_Upload      => 'lingua_text_new_upload.tmpl',
+	 Text_Cat_Show        => 'lingua_text_cat_show.tmpl'
 };
 
 1;

@@ -48,7 +48,7 @@ use fields (
 use vars qw(%FIELDS $VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.10 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.11 $ =~ /(\d+)\.(\d+)/;
 
 &handler();
 
@@ -85,9 +85,10 @@ sub handler {
 			       TransPoints         => $lib::Config::CONFIG->{TransPoints},
 			       Tree                => lib::Tree->new(),
 			       UserData            => {
-						       UserId      => undef,
-						       UserLevel   => undef,
-						       UserName    => undef
+						       UserId    => undef,
+						       UserLevel => undef,
+						       UserName  => undef,
+						       UserLang  => undef,
 						       }
 			      );
 
@@ -257,9 +258,13 @@ sub set_lang {
   } else {
     my $lang = $self->{CGI}->param('lang') || 'de';
 
-    foreach my $tmp (keys %{$self->{SystemLangs}}) {
-      if ($lang eq $self->{SystemLangs}->{$tmp}) {
-	$self->{Language} = $tmp;
+    if (defined $self->{CGI}->param('login')) {
+      $self->{Language} = $self->{UserData}->{UserLang};
+    } else {
+      foreach my $tmp (keys %{$self->{SystemLangs}}) {
+	if ($lang eq $self->{SystemLangs}->{$tmp}) {
+	  $self->{Language} = $tmp;
+	}
       }
     }
   }
@@ -295,7 +300,8 @@ SQL
       if (@data) {
 	my $sid = $self->{Session}->start_session(UserId      => $data[0],
 						  UserLevel   => $data[3],
-						  UserName    => $data[1]);
+						  UserName    => $data[1],
+						  UserLang    => $data[4]);
 
 	$self->{Language}                = $data[4];
 	$self->{LoginOk}                 = 1;
@@ -303,6 +309,7 @@ SQL
 	$self->{UserData}->{UserId}      = $data[0];
 	$self->{UserData}->{UserLevel}   = $data[3];
 	$self->{UserData}->{UserName}    = $data[1];
+	$self->{UserData}->{UserLang}    = $data[4];
 
 	$dbh->do("LOCK TABLES $table WRITE");
 	$sth = $dbh->prepare(<<SQL);
@@ -337,6 +344,7 @@ SQL
       $self->{UserData}->{UserId}      = undef;
       $self->{UserData}->{UserLevel}   = undef;
       $self->{UserData}->{UserName}    = undef;
+      $self->{UserData}->{UserLang}    = undef;
 
       return "home";
     }
@@ -369,11 +377,12 @@ sub check_session {
     }
 
     if ($check) {
-      $self->{LoginOk}                 = 1;
-      $self->{SessionId}               = $sid;
-      $self->{UserData}->{UserId}      = $self->{Session}->get("UserId");
-      $self->{UserData}->{UserLevel}   = $self->{Session}->get("UserLevel");
-      $self->{UserData}->{UserName}    = $self->{Session}->get("UserName");
+      $self->{LoginOk}               = 1;
+      $self->{SessionId}             = $sid;
+      $self->{UserData}->{UserId}    = $self->{Session}->get("UserId");
+      $self->{UserData}->{UserLevel} = $self->{Session}->get("UserLevel");
+      $self->{UserData}->{UserName}  = $self->{Session}->get("UserName");
+      $self->{UserData}->{UserLang}  = $self->{Session}->get("UserLang");
 
       return 1;
     }

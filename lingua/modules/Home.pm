@@ -5,7 +5,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.12 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)\.(\d+)/;
 
 #-----------------------------------------------------------------------------#
 # CALL:   $self->parameter($mgr).                                             #
@@ -60,7 +60,7 @@ sub show_tree {
     }
   }
 
-  my $cat_id = $mgr->{CGI}->param('cat_id') || "0";
+  my $cat_id = $mgr->{CGI}->param('cat_id') || '0';
   my $count  = 0;
   my (%list, @result, @open);
 
@@ -81,31 +81,6 @@ sub show_tree {
   ($count, @result) = $mgr->{Tree}->create_tree($mgr, $cat_id, \%list, $count, \@result, $mode);
 
   $mgr->{TmplData}{PAGE_LOOP_CATS} = \@result;
-}
-
-sub show_text_data {
-  my ($self, $mgr, $cat_id) = @_;
-
-  my $page  = $mgr->{CGI}->param('page')   || 0;
-  my @data  = $mgr->{Func}->get_original_texts($mgr, $cat_id);
-  my $count = 0;
-  my @result;
-
-  foreach my $tmp (@data) {
-    $result[$count]{PAGE_TEXT_TITLE} = @$tmp[1];
-    $count++;
-  }
-
-  return \@result;
-}
-
-sub fill_text_header {
-  my ($self, $mgr) = @_;
-
-  $mgr->{TmplData}{PAGE_LANG_000024} = $mgr->{Func}->get_text($mgr, 24);
-  $mgr->{TmplData}{PAGE_LANG_000025} = $mgr->{Func}->get_text($mgr, 25);
-  $mgr->{TmplData}{PAGE_LANG_000026} = $mgr->{Func}->get_text($mgr, 26);
-  $mgr->{TmplData}{PAGE_LANG_000027} = $mgr->{Func}->get_text($mgr, 27);
 }
 
 1;

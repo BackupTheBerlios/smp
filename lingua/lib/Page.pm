@@ -86,6 +86,10 @@ sub fill_lang_part {
   my @page_system_lang;
 
   foreach my $lang (@langs) {
+    if ($lang->[0] == $mgr->{Language}) {
+      $page_system_lang[$count]{PAGE_IF_SYSTEM_LANG} = 1;
+    }
+
     $page_system_lang[$count]{PAGE_SYSTEM_LANG_ID}   = $lang->[0];
     $page_system_lang[$count]{PAGE_SYSTEM_LANG_NAME} = $lang->[1];
 

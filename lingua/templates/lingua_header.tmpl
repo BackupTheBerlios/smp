@@ -8,7 +8,7 @@
 	td, tr, p, br, nobr, center, div {
 		font-family: Arial Unicode MS, Helvetica, Arial, Verdana;
 		font-size: 12pt;
-		color: #000000;
+		color: #ffffff;
 	}
 
 	span.alert {
@@ -28,13 +28,13 @@
 	}
 
 	a:link    { color: #ffffff; text-decoration: underline; }
-	a:active  { color: #bababa; text-decoration: underline; }
+	a:active  { color: #ffffff; text-decoration: underline; }
 	a:visited { color: #ffffff; text-decoration: underline; }
 </style>
 </head>
-<body text="#000000" bgcolor="#ffffff">
+<body text="#000000" bgcolor="#31639C">
 
-<form action="<TMPL_VAR PAGE_SCRIPT>" method="post">
+<form action="<TMPL_VAR PAGE_SCRIPT>" method="post" enctype="multipart/form-data">
 
 <input type="hidden" name="action" value="<TMPL_VAR PAGE_ACTION>">
 <input type="hidden" name="sid" value="<TMPL_VAR PAGE_SID>">
@@ -42,6 +42,6 @@
 <input type="hidden" name="method" value="<TMPL_VAR PAGE_METHOD>">
 <input type="hidden" name="open" value="<TMPL_VAR PAGE_OPEN>">
 
-<table cellspacing="10" cellpadding="0" border="0" align="center" bgcolor="#cecece">
+<table cellspacing="10" cellpadding="0" border="0" align="center" bgcolor="#31639C">
 <tr>
   <td>

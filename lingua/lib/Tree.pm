@@ -35,16 +35,18 @@ sub create_tree {
     if ($mode eq "admin") {
       # someting for cat administration ...
     } else {
+      ### STATUS der Texte???
       if ($cat->[2] > 0) {
 	$result[$count]{PAGE_CAT_TEXT} = 1;
 	$result[$count]{PAGE_CAT_LINK} = sprintf("%s&cat_id=%s",
-						 $mgr->my_url(METHOD => "show_text"),
+						 $mgr->my_url(ACTION => "text",
+							      METHOD => "show_texts"),
 						 $cat->[0]);
       }
     }
 
     if (defined $list{$cat->[0]}) {
-      $result[$count]{PAGE_CAT_NAME}     = $mgr->to_unicode($cat->[1]);
+      $result[$count]{PAGE_CAT_NAME}     = $cat->[1];
 
       # Create a link for closing the category.
       $result[$count]{PAGE_CLOSE_BUTTON} = 1;
@@ -101,7 +103,7 @@ sub create_tree {
 	}
       }
 
-      $result[$count]{PAGE_CAT_NAME} = $mgr->to_unicode($cat->[1]);
+      $result[$count]{PAGE_CAT_NAME} = $cat->[1];
       $count++;
     }
   }

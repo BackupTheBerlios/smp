@@ -119,7 +119,14 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7010',
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7011',
                                                         'You have not enough Points for this text:',
                                                         'Ihnen fehlen noch Punkte für diesen Text:');
-INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7012', 'Languages', 'Sprache');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7012', 'Source language', 'Quellsprache');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7017', 'Destiny language', 'Zielsprache');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7018',
+                                                        'Source language and destiny languagemay not be the same.',
+                                                        'Quellsprache und Zielsprache dürfen nicht gleich sein.');
+
+### text module (upload)
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7016', 'File', 'Datei');
 
 ### text module (new_ok)
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7013',
@@ -588,10 +595,11 @@ CREATE TABLE lingua_text (
 	text_content    MEDIUMBLOB NOT NULL,
         num_words       INT(10) UNSIGNED DEFAULT '0',
         lang_id         INT(10) UNSIGNED NOT NULL,
+	lang_trans_id   INT(10) UNSIGNED DEFAULT '0',
         submit_time     TIMESTAMP,
         user_id         INT(10) UNSIGNED DEFAULT '0',
         category_id     INT(10) UNSIGNED DEFAULT '0',
-        status          INT(10) UNSIGNED DEFAULT '0',
+        status          INT(10) UNSIGNED DEFAULT '1',
         avg_rating      DOUBLE DEFAULT '0',
         num_ratings     INT(10) UNSIGNED DEFAULT '0',
         PRIMARY KEY(text_id)

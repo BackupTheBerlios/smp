@@ -7,7 +7,7 @@ use strict;
 
 
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.28 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.29 $ =~ /(\d+)\.(\d+)/;
 
 
 
@@ -1896,7 +1896,9 @@ sub show_text_see {
 
   $mgr->{Template} = $mgr->{TmplFiles}->{Text_Show};
 
-  if (defined $text_id){ $self->show_text($mgr);}
+  if (defined $text_id){
+    $self->show_text($mgr);
+  }
 }
 
 
@@ -1977,20 +1979,28 @@ SQL
   $mgr->{TmplData}{PAGE_LANG_007123} = $mgr->{Func}->get_text($mgr, 7123);#TEXT_CAT
   $mgr->{TmplData}{PAGE_LANG_007118} = $mgr->{Func}->get_text($mgr, 7118);#View_Translation_Button
   $mgr->{TmplData}{PAGE_LANG_007119} = $mgr->{Func}->get_text($mgr, 7119);#Titel of Page
-  $mgr->{TmplData}{TEXT_TITLE} = $text_header;
+  $mgr->{TmplData}{TEXT_TITLE} = $mgr->escape($text_header);
   $mgr->{TmplData}{TEXT_LANGUAGE} = $self->lang_name($mgr, $lang_id);
-  $mgr->{TmplData}{TEXT_DESCRIPTION} = $text_desc;
+  $mgr->{TmplData}{TEXT_DESCRIPTION} = $mgr->escape($text_desc);
   $mgr->{TmplData}{TEXT_LENGTH} = $num_words;
-  $mgr->{TmplData}{TEXT} = $text_content;
+  $mgr->{TmplData}{TEXT} = $mgr->escape($text_content);
   $mgr->{TmplData}{PARENT_ID} = $parent_id;
 
 
 
-#User-handlig
-  if($mgr->{UserData}->{UserId} == undef){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'hidden';}
-  elsif($current_user_level == 0){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';}
-  elsif($current_user_level > 0){
-    $mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'submit'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';
+#User-handlig for Delete-Button and Transalation-Button
+  if(!(defined $mgr->{UserData}->{UserId})){
+    $mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden';
+    $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'hidden';
+  }elsif($current_user_level == 0){
+    $mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden';
+    $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';
+    $mgr->{TmplData}{TEXT_TO_TRANS_DOWNLOAD} = 'text_to_trans_download';
+  }elsif($current_user_level > 0){
+    $mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'submit';
+    $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';
+    $mgr->{TmplData}{TEXT_TO_TRANS_DOWNLOAD} = 'text_to_trans_download';
+    $mgr->{TmplData}{DELETE_TEXT} = 'delete_text';
   }
 
 #test wether current user rated this text#############
@@ -2052,19 +2062,18 @@ SQL
   $mgr->{TmplData}{TEXT_LOOP_TRANS_LANG}=\@lang_loop_data;
   $mgr->{TmplData}{SUBMIT_VIEW_TRANS_TYPE}='submit';
 
-#translation Request
+#translation Request. Show only if an request exist and if not translated in the request language
   my $row;
   my $trans_request = 0;
   foreach $row (@lang_loop_data){
-    if($self->lang_name($mgr,$row->{TEXT_TRANS_LANG_NAME}) == $self->lang_name($mgr,$lang_trans_id)){
+    if($row->{TEXT_TRANS_LANG_NAME} eq $mgr->{Func}->get_lang($mgr, $lang_trans_id)){
       $trans_request = 1;
     }
   }
 
-  if( $trans_request == 1){
-  }else{
-    $mgr->{TmplData}{TRANS_REQUEST} = $self->lang_name($mgr, $lang_trans_id);
-    $mgr->{TmplData}{PAGE_LANG_007126} = $mgr->{Func}->get_text($mgr, 7126);#Translation Request
+  if($lang_trans_id > 0 && $trans_request == 0){
+    $mgr->{TmplData}{TRANS_REQUEST} = $mgr->{Func}->get_lang($mgr, $lang_trans_id);
+    $mgr->{TmplData}{PAGE_LANG_007126} =$mgr->{Func}->get_text($mgr, 7126);#Translation Request
   }
 
 #fill category-name of this Text##################
@@ -2084,7 +2093,7 @@ SQL
 
 
 #show text-rating-radio-buttons only if user not owner by this text and if user haven't rated this text
-  if($current_user_id == $user_id || $text_rating_id == $given_text_id) {
+  if($current_user_id == $user_id || $text_rating_id == $given_text_id || !(defined $mgr->{UserData}->{UserId})) {
     $mgr->{TmplData}{RADIO_TYPE} = 'hidden';
     $mgr->{TmplData}{SUBMIT_TYPE} = 'hidden';
 
@@ -2107,14 +2116,95 @@ SQL
   }
 
 #Author of this Text#####################
-  if($user_id ne $current_user_id){
+  if($user_id ne $current_user_id && defined $mgr->{UserData}->{UserId}){
     $mgr->{TmplData}{PAGE_LANG_007100} = $mgr->{Func}->get_text($mgr, 7100);#Author
-    $mgr->{TmplData}{AUTHOR_LINK} = $mgr->my_url(ACTION => "user", METHOD => "mypage");
+    $mgr->{TmplData}{AUTHOR_LINK} = $mgr->my_url(ACTION => "user", METHOD => "otherspage") . '&user_id=' . $user_id;
     $mgr->{TmplData}{TEXT_AUTOR} = $self->get_author($mgr, $user_id);
   }
   $mgr->{TmplData}{AUTHOR_ID} =$user_id ;
 }#end show_text
 
+#-----------------------------------------------------------------------------#
+#CALL: $self->get_original_text($mgr, text_id)                                #
+#                                                                             #
+#RETURN:                                                                      #
+#                                                                             #
+#DESC: rekursiv call to get the root original text                            #
+#                                                                             #
+#                                                                             #
+#Author: Hendrik Erler(erler@cs.tu-berlin.de)                                 #
+#-----------------------------------------------------------------------------#
+sub decrement_category_entry{
+  my ($self, $mgr, $text_id) = @_;
+
+# get category_id of this text
+  my $table = $mgr->{Tables}->{TEXT};
+  my $dbh = $mgr->connect();
+  $dbh->do("LOCK TABLES $table WRITE");
+  my $sth = $dbh->prepare(<<SQL);
+SELECT category_id
+FROM   $table
+WHERE  text_id = ?
+
+SQL
+  unless ($sth->execute($text_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+    $dbh->do("UNLOCK TABLES");
+  }
+  my @row = $sth->fetchrow_array();
+  my $TEXT_category_id = $row[0];
+  $dbh->do("UNLOCK TABLES");
+  $sth->finish();
+
+
+#get text_count from the category where this text is contain
+  $table = $mgr->{Tables}->{CATS};
+  $dbh = $mgr->connect();
+  $dbh->do("LOCK TABLES $table WRITE");
+  $sth = $dbh->prepare(<<SQL);
+SELECT text_count
+FROM   $table
+WHERE  cat_id = ?
+
+SQL
+  unless ($sth->execute($TEXT_category_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+    $dbh->do("UNLOCK TABLES");
+  }
+  @row = $sth->fetchrow_array();
+  my $CATS_text_count=$row[0];
+  $dbh->do("UNLOCK TABLES");
+  $sth->finish();
+
+#decrement text_count and put the new value into Table CATS
+  $CATS_text_count = $CATS_text_count - 1;
+
+  $table = $mgr->{Tables}->{CATS};
+  $dbh = $mgr->connect();
+  $dbh->do("LOCK TABLES $table WRITE");
+  $sth = $dbh->prepare(<<SQL);
+UPDATE LOW_PRIORITY $table SET text_count=?
+WHERE cat_id= ?
+
+SQL
+
+    unless ($sth->execute($CATS_text_count, $TEXT_category_id))
+    {
+	  warn sprintf("[Error:] Trouble adding user to %s. " .
+	  	     "Reason: [%s].", $table, $dbh->errstr());
+	  $dbh->do("UNLOCK TABLES");
+	  $mgr->fatal_error("Database error.");
+	  $dbh->do("UNLOCK TABLES");
+    }
+
+    $dbh->do("UNLOCK TABLES");
+    $sth->finish();
+
+}#end decrement_category_entry
 
 #-----------------------------------------------------------------------------#
 #CALL: $self->get_original_text($mgr, text_id)                                #
@@ -2220,9 +2310,9 @@ SQL
     $mgr->fatal_error("Database error.");
   }
   my @row = $sth->fetchrow_array();
+  $sth->finish();
   my $lastname  = $row[1];
   my $firstname = $row[2];
-  $sth->finish();
   return $firstname . " " . $lastname;
 }#end get_author
 
@@ -2308,7 +2398,7 @@ SQL
     my %data;
     #$data{TEXT_ID}= $row->[1];
     $data{TEXT_LINK}= $mgr->my_url(ACTION => "text", METHOD => "text_show") . '&text_id=' . $row->[1];
-    $data{TEXT_HEADER}= $row->[2];
+    $data{TEXT_HEADER}= $mgr->escape($row->[2]);
     $data{TEXT_LANG}= $self->lang_name($mgr,$row->[3]);
     $data{TEXT_CAT}= $mgr->{Func}->get_text($mgr, $self->cat_lang_id($mgr,$row->[4]));
     $data{TEXT_TIME}= substr($row->[5],6, 2) . "." . substr($row->[5],4, 2) . "." .substr($row->[5],0, 4);
@@ -2366,7 +2456,7 @@ SQL
     my %data;
     #$data{TEXT_ID}= $row->[1];
     $data{TEXT_LINK}= $mgr->my_url(ACTION => "text", METHOD => "text_show") . '&text_id=' . $row->[1];
-    $data{TEXT_HEADER}= $row->[2];
+    $data{TEXT_HEADER}= $mgr->escape($row->[2]);
     $data{TEXT_LANG}= $self->lang_name($mgr,$row->[3]);
     $data{TEXT_CAT}= $mgr->{Func}->get_text($mgr, $self->cat_lang_id($mgr,$row->[4]));
     $data{TEXT_TIME}= substr($row->[5],6, 2) . "." . substr($row->[5],4, 2) . "." .substr($row->[5],0, 4);
@@ -2420,7 +2510,7 @@ SQL
 
 #if user not rated this text and selected an ratingvalue then insert this rating
 #and if the userlevel of this user 1 or 2
-  if(defined $rating && $TEXT_RATING_text_id eq undef && $current_user_level > 0){
+  if(defined $rating && $TEXT_RATING_text_id eq undef && $mgr->{UserData}->{UserId} ne undef){
 
 
     $table = $mgr->{Tables}->{TEXT};
@@ -2602,15 +2692,36 @@ sub delete_all {
 
   my $row;
 
+  my $table = $mgr->{Tables}->{TEXT};
+  my $dbh = $mgr->connect();
+  $dbh->do("LOCK TABLES $table WRITE");
+  my $sth = $dbh->prepare(<<SQL);
+SELECT category_id
+FROM   $table
+WHERE  text_id = ?
+
+SQL
+  unless ($sth->execute($text_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+    $dbh->do("UNLOCK TABLES");
+  }
+  my @row = $sth->fetchrow_array();
+  my $TEXT_category_id = $row[0];
+  $dbh->do("UNLOCK TABLES");
+  $sth->finish();
+
 
 # delete all translated texts
   foreach $row (@lang_loop_data){
 
 #DELETE Translations of Original-Text##################
-  my $table = $mgr->{Tables}->{TEXT};
+  $self->decrement_category_entry($mgr,$row->{TEXT_TRANS_LANG_ID});
+  $table = $mgr->{Tables}->{TEXT};
   my $dbh = $mgr->connect();
   $dbh->do("LOCK TABLES $table WRITE");
-  my $sth = $dbh->prepare(<<SQL);
+  $sth = $dbh->prepare(<<SQL);
 DELETE LOW_PRIORITY
 FROM   $table
 WHERE  text_id = ?
@@ -2624,13 +2735,14 @@ SQL
   }
   $dbh->do("UNLOCK TABLES");
   $sth->finish();
-}
+}#end foreach
 
 #DELETE Original-Text##################
-  my $table = $mgr->{Tables}->{TEXT};
-  my $dbh = $mgr->connect();
+  $self->decrement_category_entry($mgr,$text_orig_id);
+  $table = $mgr->{Tables}->{TEXT};
+  $dbh = $mgr->connect();
   $dbh->do("LOCK TABLES $table WRITE");
-  my $sth = $dbh->prepare(<<SQL);
+  $sth = $dbh->prepare(<<SQL);
 DELETE LOW_PRIORITY
 FROM   $table
 WHERE  text_id = ?
@@ -2643,6 +2755,7 @@ SQL
     $mgr->fatal_error("Database error.");
   }
   $sth->finish();
+
 
 #DELETE Ratings of Original Text ##################
   $table = $mgr->{Tables}->{TEXT_RATING};
@@ -2700,7 +2813,7 @@ SQL
   $mgr->{TmplData}{PAGE_LANG_007301} = $mgr->{Func}->get_text($mgr, 7301);#Category of deleted Text
   $mgr->{TmplData}{PAGE_LANG_007302} = $mgr->{Func}->get_text($mgr, 7302);#Author of deleted Text
 
-  $mgr->{TmplData}{CAT_LINk} = $mgr->my_url(ACTION => "home", METHOD => "show_cat");
+  $mgr->{TmplData}{CAT_LINk} = $mgr->my_url(ACTION => "text", METHOD => "show_texts") . '&cat_id=' . $TEXT_category_id;
   $mgr->{TmplData}{TEXT_CAT} = $mgr->{Func}->get_text($mgr, $cat_lang_id);
 
 
@@ -2718,12 +2831,12 @@ SQL
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
   }
-  my @row = $sth->fetchrow_array();
+  @row = $sth->fetchrow_array();
   my $lastname  = $row[1];
   my $firstname = $row[2];
   $sth->finish();
 
-  $mgr->{TmplData}{AUTHOR_LINK} = $mgr->my_url(ACTION => "user", METHOD => "mypage");
+  $mgr->{TmplData}{AUTHOR_LINK} = $mgr->my_url(ACTION => "user", METHOD => "otherspage") . '&user_id=' . $author_id;
   $mgr->{TmplData}{TEXT_AUTOR} = $firstname . " " . $lastname;
 
 }#delete_all
@@ -2744,11 +2857,62 @@ sub delete_trans {
   my $author_id     = $mgr->{CGI}->param('author_id') || undef;
   my $cat_lang_id   = $mgr->{CGI}->param('cat_lang_id') || undef;
 
-#DELETE Translation##################
+#get parent_id and category_id of text which have to delete
   my $table = $mgr->{Tables}->{TEXT};
   my $dbh = $mgr->connect();
   $dbh->do("LOCK TABLES $table WRITE");
   my $sth = $dbh->prepare(<<SQL);
+SELECT category_id, parent_id
+FROM   $table
+WHERE  text_id = ?
+
+SQL
+  unless ($sth->execute($text_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+    $dbh->do("UNLOCK TABLES");
+  }
+  my @row = $sth->fetchrow_array();
+  my $TEXT_category_id = $row[0];
+  my $TEXT_parent_id = $row[1];
+  $dbh->do("UNLOCK TABLES");
+  $sth->finish();
+
+#get childs of this text##############
+  $table = $mgr->{Tables}->{TEXT};
+  $dbh = $mgr->connect();
+  $dbh->do("LOCK TABLES $table WRITE");
+  $sth = $dbh->prepare(<<SQL);
+SELECT text_id
+FROM   $table
+WHERE  parent_id = ?
+
+SQL
+  unless ($sth->execute($text_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+    $dbh->do("UNLOCK TABLES");
+  }
+  my $rowtable = $sth->fetchall_arrayref();
+  $dbh->do("UNLOCK TABLES");
+  $sth->finish();
+
+#set new parent_id for childs
+  #@row;
+  my $row;
+  foreach $row(@$rowtable){
+    $self->set_parent_id($mgr, $row->[0], $TEXT_parent_id);
+  }
+
+
+#DELETE Translation##################
+  $self->decrement_category_entry($mgr,$text_id);
+  $table = $mgr->{Tables}->{TEXT};
+  $dbh = $mgr->connect();
+  $dbh->do("LOCK TABLES $table WRITE");
+  $sth = $dbh->prepare(<<SQL);
 DELETE LOW_PRIORITY
 FROM   $table
 WHERE  text_id = ?
@@ -2796,7 +2960,7 @@ SQL
   $mgr->{TmplData}{PAGE_LANG_007301} = $mgr->{Func}->get_text($mgr, 7301);#Category of deleted Text
   $mgr->{TmplData}{PAGE_LANG_007302} = $mgr->{Func}->get_text($mgr, 7302);#Author of deleted Text
 
-  $mgr->{TmplData}{CAT_LINk} = $mgr->my_url(ACTION => "home", METHOD => "show_cat");
+  $mgr->{TmplData}{CAT_LINk} = $mgr->my_url(ACTION => "text", METHOD => "show_texts") . '&cat_id=' . $TEXT_category_id;
   $mgr->{TmplData}{TEXT_CAT} = $mgr->{Func}->get_text($mgr, $cat_lang_id);
 
 
@@ -2814,19 +2978,56 @@ SQL
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
   }
-  my @row = $sth->fetchrow_array();
+  @row = $sth->fetchrow_array();
   my $username  = $row[1];
   my $lastname  = $row[2];
   my $firstname = $row[3];
   my $email     = $row[4];
   $sth->finish();
 
-  $mgr->{TmplData}{AUTHOR_LINK} = $mgr->my_url(ACTION => "user", METHOD => "mypage");
+  $mgr->{TmplData}{AUTHOR_LINK} = $mgr->my_url(ACTION => "user", METHOD => "otherspage") . '&user_id=' . $author_id;
   $mgr->{TmplData}{TEXT_AUTOR} = $firstname . " " . $lastname;
 
   #$self->show_text_see($mgr)
 
 }#delete_trans
+
+#-----------------------------------------------------------------------------#
+#CALL: $self->set_parent_id($mgr,$text_id)                                    #
+#                                                                             #
+#RETURN:  lang_name correspond to lang_id                                     #
+#                                                                             #
+#DESC: 	Is called if presssed button for showing this Text in                 #
+#	other Languages                                                       #
+#                                                                             #
+#Author: Hendrik Erler(erler@cs.tu-berlin.de)                                 #
+#-----------------------------------------------------------------------------#
+sub set_parent_id{
+  my ($self, $mgr, $text_id, $parent_id) = @_;
+
+  my $table = $mgr->{Tables}->{TEXT};
+  my $dbh = $mgr->connect();
+    $dbh->do("LOCK TABLES $table WRITE");
+  my $sth = $dbh->prepare(<<SQL);
+
+UPDATE LOW_PRIORITY $table SET parent_id = ?
+WHERE text_id= ?
+
+SQL
+
+    unless ($sth->execute($parent_id, $text_id))
+    {
+	  warn sprintf("[Error:] Trouble adding user to %s. " .
+	  	     "Reason: [%s].", $table, $dbh->errstr());
+	  $dbh->do("UNLOCK TABLES");
+	  $mgr->fatal_error("Database error.");
+    }
+
+    $dbh->do("UNLOCK TABLES");
+    $sth->finish();
+
+}#end lang_name
+
 
 #-----------------------------------------------------------------------------#
 #CALL: $self->lang_name($mgr,$lang_id)                                        #

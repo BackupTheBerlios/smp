@@ -642,6 +642,8 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('1170', 'there is no user with that username.', 'diesen Benutzernamen gibt es nicht.', 'Cet utilisateur n existe pas');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('1171', 'this is not a valid username.', 'dies ist kein gültiger Benutzername.', 'Ce nom n est pas valable');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('1172', 'you cannot administer yourself..', 'Sie können sich nicht selbst verwalten.', '...');
 
 # user admin page (1174 - 1184)
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES

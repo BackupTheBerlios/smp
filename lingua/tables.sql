@@ -266,6 +266,32 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
        ('1100', 'Your LINGUA login data', 'Ihre LINGUA-Zugangs-Daten');
 
+# system language update (1110 - 1112)
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+       ('1110', 'Personal Page of', 'Pers&ouml;nliche Seite von', 'Page personnelle de');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1111', 'Here, you can change your system language', '&Auml;ndern der Systemsprache');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1112', 'Change', '&Auml;ndern');
+
+# language update (1115 - 1121)
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+       ('1115', 'Personal Page of', 'Pers&ouml;nliche Seite von', 'Page personnelle de');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1116', 'Here, you can edit the languages you speak', 'Hier k&ouml;nnen Sie Ihre Sprachen bearbeiten');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1117', 'Language', 'Sprache');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1118', 'Degree of knowledge', 'Kenntnisstand');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1119', 'Change', '&Auml;ndern');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1120', 'Add a Language', 'Eine Sprache hinzuf&uuml;gen');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1121', 'Add', 'Hinzuf&uuml;gen');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1122', 'Back', 'Zur&uuml;ck');
+
 
 # Gesperrt ...
 

@@ -1,12 +1,3 @@
-<!------------------------------------------------------------------------------>
-<!-- NAME: lingua_test_new.tmpl				 			>				
-<!-- 				 				 		>
-<!-- DESC: Used to put a new text  						> 							 >
-<!--										>
-<!-- Author: Giovanni Ngapout(ngapout@cs.tu-berlin.de)		 		>
-<!------------------------------------------------------------------------------>
-
-
 <TMPL_INCLUDE lingua_header.tmpl>
 </form>
 
@@ -15,7 +6,7 @@
 <input type="hidden" name="sid" value="<TMPL_VAR PAGE_SID>">
 <input type="hidden" name="lang" value="<TMPL_VAR PAGE_LANG>">
 
-<input type="hidden" name="method" value="text_direction">
+<input type="hidden" name="text_method" value="text_direction">
 
 <table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
 	<tr valign="top">
@@ -39,13 +30,14 @@
 			
 				var mytable = document.textform.mytext.value.split(" ");
 								
-				longueur = (document.textform.mytext.value.length - mytable.length) + 1;
+				longueur = mytable.length;
 				wert = max - longueur;
 
 				if (wert < 0) {				
-					alert("<TMPL_VAR PAGE_LANG_002017> " + max + " <TMPL_VAR PAGE_LANG_002018>");
-					document.textform.mytext.value = document.textform.mytext.value.substring(0,max+mytable.length-1);													
-				
+					//alert("<TMPL_VAR PAGE_LANG_002017> " + max + " <TMPL_VAR PAGE_LANG_002018>");
+					//document.textform.mytext.value = document.textform.mytext.value.substring(0,max+mytable.length-1);													
+				        document.textform.textcounter.value = max - longueur;
+					document.textform.freicounter.value = longueur;
 
 					 }
 				else { 	
@@ -113,7 +105,7 @@
 						
 						</TD>
 						<TD colspan="2"><font size=3 color=red><b><TMPL_VAR TEXT_MES_002031></b> <br></font>
-						<TEXTAREA NAME="mytext"rows="20" cols="80" OnFocus="CountMax();" OnClick="CountMax();" ONCHANGE="CountMax();" onKeydown="CountMax();" onKeyup="CountMax();" ><TMPL_VAR TEXT></TEXTAREA></TD>
+						<TEXTAREA NAME="mytext"rows="20" cols="80"> <TMPL_VAR TEXT></TEXTAREA></TD>
 					</TR>
 					<TR>
 						<TD ALIGN="right">&nbsp;</TD>
@@ -140,6 +132,9 @@
   		</td>
 	</tr>
 </table>
-
 <TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
 

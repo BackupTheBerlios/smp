@@ -51,7 +51,11 @@ $TABLES = {
            USER       => 'lingua_user',
            USER_BLOCK => 'lingua_user_blocked',
            USER_DESC  => 'lingua_user_desc',
-           USER_LANG  => 'lingua_user_lang'
+           USER_LANG  => 'lingua_user_lang',
+	   TEXT_ORIG  => 'lingua_original_text',
+	   TEXT_TRANS => 'lingua_translation_text',
+	   TEXT_DESC  => 'lingua_text_description',
+	   TEXT_TITLE => 'lingua_text_header'
 };
 
 $TMPL = {
@@ -72,6 +76,9 @@ $TMPL = {
 };
 
 1;
+
+
+
 
 
 

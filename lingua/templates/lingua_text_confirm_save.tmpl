@@ -1,11 +1,3 @@
-<!------------------------------------------------------------------------------>
-<!-- NAME: lingua_test_message.tmpl				 		>				
-<!-- 				 				 		>
-<!-- DESC: Used to send a Message to the user (Ex. Text or Desc. confirmation)  > 							 >
-<!--										>
-<!-- Author: Giovanni Ngapout(ngapout@cs.tu-berlin.de)		 		>
-<!------------------------------------------------------------------------------>
-
 <TMPL_INCLUDE lingua_header.tmpl>
 
 <input type="hidden" name="title" value="<TMPL_VAR TEXT_TITLE>">
@@ -18,7 +10,7 @@
 <input type="hidden" name="freicounter" value="<TMPL_VAR FREI_COUNTER>">
 
 
-<input type="hidden" name="method" value="text_confirm_save">
+<input type="hidden" name="text_method" value="text_confirm_save">
 
 <table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
 	<tr valign="top">
@@ -33,6 +25,9 @@
   		<td bgcolor="#ababab" width="600">
 
 				<TABLE cellspacing="2">
+					
+				<!--	<TR>	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td> -->
+
 
 					<TMPL_LOOP TEXT_LOOP_MES>					
 					<TR > 	<td>&nbsp;</td> 
@@ -60,24 +55,6 @@
 </table>
 
 <TMPL_INCLUDE lingua_footer.tmpl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

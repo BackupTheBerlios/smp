@@ -1,15 +1,7 @@
-<!------------------------------------------------------------------------------>
-<!-- NAME: lingua_test_description.tmpl				 		>				
-<!-- 				 				 		>
-<!-- DESC: Used to put another description of a text in another language        > 							 >
-<!--										>
-<!-- Author: Giovanni Ngapout(ngapout@cs.tu-berlin.de)		 		>
-<!------------------------------------------------------------------------------>
-
 <TMPL_INCLUDE lingua_header.tmpl>
 
 <input type="hidden" name="text_id" value="<TMPL_VAR TEXT_ID>">
-<input type="hidden" name="method" value="text_description">
+<input type="hidden" name="text_method" value="text_description">
 
 <table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
 	<tr valign="top">
@@ -26,7 +18,7 @@
 				<TABLE CELLPADDING="5" >
 					<TR> 
 						<TD align="right" valign="top"><br><TMPL_VAR PAGE_LANG_002008> &nbsp;&nbsp;<font color="red">*</font></td>
-						<td colspan="2"> <font size=3 color=red><b><TMPL_VAR TEXT_LANG_MES_002009></b> <br></font>
+						<td colspan="2"> <font size=3 color=red><b><TMPL_VAR TEXT_LANG_MES_002009> <TMPL_VAR TEXT_LANG_MES_002045></b> <br></font>
 						<SELECT NAME="text_desc_lang_id" size="1">
 						<OPTION value= "<TMPL_VAR TEXT_LANG_ID_SELECT>" selected><TMPL_VAR TEXT_LANG_NAME_SELECT></option>
 
@@ -66,3 +58,8 @@
 </table>
 
 <TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+

@@ -1,18 +1,9 @@
-<!------------------------------------------------------------------------------>
-<!-- NAME: lingua_test_upload.tmpl			 			>				
-<!-- 				 				 		>
-<!-- DESC: Used to upload a new text  						> 							 >
-<!--										>
-<!-- Author: Giovanni Ngapout(ngapout@cs.tu-berlin.de)		 		>
-<!------------------------------------------------------------------------------>
-
 <TMPL_INCLUDE lingua_header.tmpl>
-
 <input type="hidden" name="title" value="<TMPL_VAR TEXT_TITLE>">
 <input type="hidden" name="text_desc" value="<TMPL_VAR TEXT_DESCRIPTION>">
 <input type="hidden" name="text_desc_lang_id" value="<TMPL_VAR TEXT_LANG>">
 <input type="hidden" name="text_cat_id" value="<TMPL_VAR TEXT_CAT>">
-<input type="hidden" name="method" value="text_upload">
+<input type="hidden" name="text_method" value="text_upload">
 
 <table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
 	<tr valign="top">
@@ -25,48 +16,21 @@
     			<TMPL_INCLUDE lingua_left.tmpl>
   		</td>
 </form>
+
   		<td bgcolor="#ababab" width="600">
     			
 
 
 
-			<script language="JavaScript">
-			<!--
-				
-			function CheckMe()
-			{
 			
-				var mytable = document.formup.file.value.split("/");
-								
-				var filename = mytable[mytable.length-1] ;
-				mytable = filename.split(".");
-				filename = mytable[mytable.length-1] ;
-				filename =filename.substring(0,filename.length-1);
-									
-				if (filename=="txt") {
-					return true;}
-				else {
-					
-					if (filename.length==0) {
-					
-						alert("<TMPL_VAR PAGE_LANG_002000>")
-						return true;
-						} else {
-					alert("<TMPL_VAR PAGE_LANG_002001>\n" + "<TMPL_VAR PAGE_LANG_002002>" + filename );
-					return false;}
 
-					}				
-			}
-			//-->
-			</SCRIPT>
-
-<FORM name="formup"  ENCTYPE="multipart/form-data" method="post" onsubmit="return CheckMe();">
+<FORM name="formup"  ENCTYPE="multipart/form-data" method="post">
 
 <input type="hidden" name="title" value="<TMPL_VAR TEXT_TITLE>">
 <input type="hidden" name="text_desc" value="<TMPL_VAR TEXT_DESCRIPTION>">
 <input type="hidden" name="text_desc_lang_id" value="<TMPL_VAR TEXT_LANG>">
 <input type="hidden" name="text_cat_id" value="<TMPL_VAR TEXT_CAT>">
-<input type="hidden" name="method" value="text_upload">
+<input type="hidden" name="text_method" value="text_upload">
 
 <input type="hidden" name="action" value="<TMPL_VAR PAGE_ACTION>">
 <input type="hidden" name="sid" value="<TMPL_VAR PAGE_SID>">
@@ -76,24 +40,32 @@
         <TABLE CELLSPACING="5">
           <TR>
             <TD VALIGN="middle"><TMPL_VAR PAGE_LANG_002003></TD>
-            <TD> <INPUT NAME="file" TYPE="file" SIZE="50" MAXLENGTH="100000" ACCEPT="text/*" OnClick="CountMax();"> </TD>
+            <TD> <INPUT NAME="file" TYPE="file" SIZE="50" MAXLENGTH="100000" ACCEPT="text/*" > </TD>
           </TR>
           <TR>
             <TD> <INPUT TYPE="submit" name="sendup" value="<TMPL_VAR PAGE_LANG_002004>" > </TD>
           </TR>
+
          </TABLE>
 </FORM>
   			
   		</td>
 	</tr>
 	<tr>
-  		<td colspan="2">
-
-  		</td>
+  		<td colspan="2" > </td>
 	</tr>
 </table>
 
+<form method="post">
 <TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
 
 
 

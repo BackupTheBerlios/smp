@@ -15,7 +15,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/;
 
 #################################################################
 #NAME: parameter($mgr).						#
@@ -38,38 +38,27 @@ sub parameter {
   $mgr->{Page}->fill_user_part($mgr);
   $mgr->{Page}->fill_lang_part($mgr);
 
-my $method = $mgr->{CGI}->param('method') || 'trans_desc'; #'text_new';
+my $method = $mgr->{CGI}->param('text_method') || 'text_new';
 
-if ($method eq 'text_new'){
-  $self->show_text_new($mgr);}
+if ($method eq 'text_new'){ $self->show_text_new($mgr);}
 
-elsif ($method eq 'text_direction'){
-  $self->check_text_direction($mgr);}
+elsif ($method eq 'text_direction'){ $self->check_text_direction($mgr);}
 
-elsif ($method eq 'text_upload'){
-  $self->show_text_upload($mgr);}
+elsif ($method eq 'text_upload'){ $self->show_text_upload($mgr);}
 
-elsif ($method eq 'text_description'){
-  $self->show_text_description($mgr);}
+elsif ($method eq 'text_description'){ $self->show_text_description($mgr);}
 
-elsif ($method eq 'text_message'){
-  $self->show_text_message($mgr);}
+elsif ($method eq 'text_message'){ $self->show_text_message($mgr);}
 
-elsif ($method eq 'text_message_way'){
-  $self->show_way($mgr);}
+elsif ($method eq 'text_message_way'){ $self->show_way($mgr);}
 
-elsif ($method eq 'text_confirm_save'){
-  $self->show_text_confirm_save($mgr);}
+elsif ($method eq 'text_confirm_save'){ $self->show_text_confirm_save($mgr);}
 
-elsif ($method eq 'create_text'){
-  $self->show_text_new($mgr);}
+elsif ($method eq 'create_text'){ $self->show_text_new($mgr);}
 
+elsif ( ($method eq 'trans_desc') || ($method eq 'text_trans') ){ $self->show_trans_desc($mgr);}
 
-elsif ( ($method eq 'trans_desc') || ($method eq 'text_trans') ){
-  $self->show_trans_desc($mgr);}
-
-elsif ($method eq 'text_trans_contents'){
-  $self->show_trans_contents($mgr);}
+elsif ($method eq 'text_trans_contents'){ $self->show_trans_contents($mgr);}
 
 return 1;
 }
@@ -89,28 +78,28 @@ return 1;
 #########################################################################################################################
 
 sub show_text_new {
-my ($self, $mgr,$cat_mes, $lang_mes, $title_mes, $text_mes) = @_;
+my ($self, $mgr,$cat_mes, $lang_mes, $title_mes, $text_mes, $text_from_file , $text_length) = @_;
 
 my $title = $mgr->{CGI}->param('title') || "";
 my $text_desc = $mgr->{CGI}->param('text_desc') || "";
 
 my $text_cat_id = $mgr->{CGI}->param('text_cat_id') || undef;
 my $text_lang_id = $mgr->{CGI}->param('text_desc_lang_id') || undef;
-my $file = $mgr->{CGI}->param('file') || undef;
+#my $file = $mgr->{CGI}->param('file') || undef;
 my $mytext = $mgr->{CGI}->param('mytext') || undef;
 my $submit = $mgr->{CGI}->param('send') || undef;
 
 $mgr->{Template} = $mgr->{TmplFiles}->{Text_New};
 
 if (defined $submit){
-if ((defined $cat_mes) and ($cat_mes==1)){
-	$mgr->{TmplData}{TEXT_CAT_MES_002020}= $mgr->{Func}->get_text($mgr, 2020);}
-if ((defined $lang_mes) and ($lang_mes==1)){
-	$mgr->{TmplData}{TEXT_LANG_MES_002022}= $mgr->{Func}->get_text($mgr, 2022);}
-if ((defined $title_mes) and ($title_mes==1)){
-	$mgr->{TmplData}{TEXT_TITLE_MES_002024}= $mgr->{Func}->get_text($mgr, 2024);}
-if ((defined $text_mes) and ($text_mes==1)){
-	$mgr->{TmplData}{TEXT_MES_002031}=$mgr->{Func}->get_text($mgr, 2031);}
+	if ((defined $cat_mes) and ($cat_mes==1)){
+		$mgr->{TmplData}{TEXT_CAT_MES_002020}= $mgr->{Func}->get_text($mgr, 2020);}
+	if ((defined $lang_mes) and ($lang_mes==1)){
+		$mgr->{TmplData}{TEXT_LANG_MES_002022}= $mgr->{Func}->get_text($mgr, 2022);}
+	if ((defined $title_mes) and ($title_mes==1)){
+		$mgr->{TmplData}{TEXT_TITLE_MES_002024}= $mgr->{Func}->get_text($mgr, 2024);}
+	if ((defined $text_mes) and ($text_mes==1)){
+		$mgr->{TmplData}{TEXT_MES_002031}=$mgr->{Func}->get_text($mgr, 2031);}
 }
 
 $mgr->{TmplData}{TEXT_TITLE}=$title;
@@ -187,36 +176,25 @@ push(@lang_loop_data,\%data);
 $mgr->{TmplData}{TEXT_LOOP_LANG}=\@lang_loop_data;
 
 ###################### In Bearbeitung #######################################
-my $punkt=100;
-$mgr->{TmplData}{TEXT_MAX_VAL}= $punkt;
-my $text;
-my $mylength;
-my $act_val;
+my $punkt;
+$mgr->{TmplData}{TEXT_MAX_VAL}= '-';
 
-if (defined $mytext){
-	$text=$mytext;
-	$mylength= length($text);
-	$act_val= $punkt -length($text);}
+my $act_val ;
 
-else{
 
-	if (defined $file){
-			$text="Text uploaden: OK";
-	
-		if (($punkt - length($text))<0) {
-			$text = "Text zu lang @§$&%&!!";}
+if (!defined $text_from_file) { 
+	if (defined $mytext) { $text_from_file=$mytext;}
+	else { $text_from_file=''; }
+}
 
-		$mylength= length($text);
-		$act_val= $punkt -length($text);
-	}else{
-		$mylength=0;
-		$act_val=$punkt;
-	     }
-    }
+if (defined $text_length) { 
+}else{ $text_length=0;}
 
-$mgr->{TmplData}{TEXT}= $text;
-$mgr->{TmplData}{TEXT_LENG}= $mylength;
-$mgr->{TmplData}{TEXT_ACT_VAL}= $act_val;
+$act_val = $punkt - $text_length;
+
+$mgr->{TmplData}{TEXT}=  $text_from_file;
+$mgr->{TmplData}{TEXT_LENG}= '-';
+$mgr->{TmplData}{TEXT_ACT_VAL}= '-';
 
 }
 
@@ -299,20 +277,54 @@ else {
 sub text_save {
 my ($self, $mgr) = @_;
 
+my $original_text = $mgr->{CGI}->param('mytext') || undef;
+my $lang_id = $mgr->{CGI}->param('text_desc_lang_id') || undef;
+my $original_text = $mgr->{CGI}->param('mytext') || undef;
+my $user_id =$mgr->{Session}->get("UserId");
+my $text_cat_id = $mgr->{CGI}->param('text_cat_id') || undef;
+
+#$num_words=text_receive alexander
+my $num_words;
+
 my $text_desc = $mgr->{CGI}->param('text_desc') || undef;
 
-my $text_id;
+my $table = $mgr->{Tables}->{TEXT_ORIG};
+my $dbh   = $mgr->connect(); 
+my $sth;
 
-### save text  #######
+$dbh->do("LOCK TABLES $table WRITE");
+$sth = $dbh->prepare(<<SQL);
 
-	$self->title_save($mgr, $text_id);
-	if (defined $text_desc) {$self->description_save($mgr, $text_id);}
+INSERT INTO $table (original_text, num_words, lang_id, user_id, category_id )
+VALUES (?, ?, ?, ?, ?)
 
+SQL
+
+unless ($sth->execute($original_text, $num_words, $lang_id, $user_id, $text_cat_id )) 
+    {
+	warn sprintf("[Error:] Trouble adding user to %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+$dbh->do("UNLOCK TABLES");   
+ $sth->finish();
+
+ 
+# get text_id
+my $text_id = $sth->{mysql_insertid};
+
+
+$self->title_save($mgr, $text_id, $lang_id);
+if (defined $text_desc) {$self->description_save($mgr, $text_id, $lang_id);}
+
+return $text_id;
 }
 
 
 #################################################################################################
-#CALL: $self->title_save($mgr, $text_id).									#						
+#CALL: $self->title_save($mgr, $text_id, $lang_id).									#						
 #
 #DESC:  Save a title of a text, a translation or a description								#
 #      												#
@@ -320,14 +332,40 @@ my $text_id;
 #################################################################################################
 
 sub title_save{
-my ($self, $mgr, $text_id) = @_;
+my ($self, $mgr, $text_id, $lang_id) = @_;
+
+my $header_text = $mgr->{CGI}->param('title') || undef;
+my $user_id =$mgr->{Session}->get("UserId");
+
+my $table = $mgr->{Tables}->{TEXT_TITLE};
+my $dbh   = $mgr->connect(); 
+my $sth;
+
+$dbh->do("LOCK TABLES $table WRITE");
+$sth = $dbh->prepare(<<SQL);
+
+INSERT INTO $table (header_text, lang_id, text_id, user_id)
+VALUES (?, ?, ?, ?)
+
+SQL
+
+unless ($sth->execute($header_text, $lang_id, $text_id, $user_id )) 
+    {
+	warn sprintf("[Error:] Trouble adding user to %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+$dbh->do("UNLOCK TABLES");   
+ $sth->finish();
 
 }
 
 
 
 #################################################################################################
-#CALL: $self->description_save($mgr, $text_id).							#						
+#CALL: $self->description_save($mgr, $text_id, $lang_id).							#						
 #
 #DESC: Save a Description of a text, a translation or a description				#
 #      												#
@@ -335,7 +373,33 @@ my ($self, $mgr, $text_id) = @_;
 #################################################################################################
 
 sub description_save{
-my ($self, $mgr, $text_id) = @_;
+my ($self, $mgr, $text_id, $lang_id) = @_;
+
+my $desc_text = $mgr->{CGI}->param('text_desc') || undef;
+my $user_id =$mgr->{Session}->get("UserId");
+
+my $table = $mgr->{Tables}->{TEXT_DESC};
+my $dbh   = $mgr->connect(); 
+my $sth;
+
+$dbh->do("LOCK TABLES $table WRITE");
+$sth = $dbh->prepare(<<SQL);
+
+INSERT INTO $table (desc_text, lang_id, text_id, user_id)
+VALUES (?, ?, ?, ?)
+
+SQL
+
+unless ($sth->execute($desc_text, $lang_id, $text_id, $user_id )) 
+    {
+	warn sprintf("[Error:] Trouble adding user to %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+$dbh->do("UNLOCK TABLES");   
+ $sth->finish();
 
 }
 
@@ -356,15 +420,47 @@ my $textcat = $mgr->{CGI}->param('text_cat_id') || "";
 my $textlang = $mgr->{CGI}->param('text_desc_lang_id') || "";
 my $description = $mgr->{CGI}->param('text_desc') || "";
 my $submit = $mgr->{CGI}->param('sendup') || undef;
+my $filename = $mgr->{CGI}->param('file') || undef;
+
+my $text_from_file;
+my $text_length;
+
+my $buff;
+#my $bytes_read;
+my $size;
+
+if (defined $submit){
+	
+	if (defined $filename){
+			
+#		while ($bytes_read = read($file_path, $buff, 2048)) {
+#                	$text_length += $bytes_read;
+#                	binmode $filename;
+#              		print $filename $buff;
+#	       	}
+
+#Fehlerbehandlung
+#check codierung
+
+		while(my $lign = <$filename> ){
+
+		     $text_from_file .= $lign ;
+		}; 
 
 
-if (defined $submit){ $self->show_text_new($mgr);}
-else{
+#check points
+		
+ 		$self->show_text_new($mgr, 0, 0, 0, 0, $text_from_file, $text_length);
 
+		#$mgr->{TmplData}{PAGE_LANG_002000} = $mgr->{Func}->get_text($mgr, 2000);
+		#$mgr->{TmplData}{PAGE_LANG_002001} = $mgr->{Func}->get_text($mgr, 2001);
+		#$mgr->{TmplData}{PAGE_LANG_002002} = $mgr->{Func}->get_text($mgr, 2002);
 
-$mgr->{TmplData}{PAGE_LANG_002000} = $mgr->{Func}->get_text($mgr, 2000);
-$mgr->{TmplData}{PAGE_LANG_002001} = $mgr->{Func}->get_text($mgr, 2001);
-$mgr->{TmplData}{PAGE_LANG_002002} = $mgr->{Func}->get_text($mgr, 2002);
+	}else{$self->show_text_new($mgr);}
+	
+
+}else{
+
 $mgr->{TmplData}{PAGE_LANG_002003} = $mgr->{Func}->get_text($mgr, 2003);
 $mgr->{TmplData}{PAGE_LANG_002004} = $mgr->{Func}->get_text($mgr, 2004);
 
@@ -411,23 +507,73 @@ my $text_id = $mgr->{CGI}->param('text_id') || undef;
 
 if ( (((defined $title) && (defined $desc))  && (defined $desc_lang_id)) && (defined $submit) ) {
 
-	#if (defined $text_id){
-	#	$self->description_save($mgr, $text_id);
-	#	$self->title_save($mgr, $text_id);
-
-		##### Confirmation###########
-		my $mes1_002015= $mgr->{Func}->get_text($mgr, 2015); 
-		my $mes2_002016= $mgr->{Func}->get_text($mgr, 2016); 
-
-		$mgr->{TmplData}{TEXT_MES1_DICO} = 2015;
-		$mgr->{TmplData}{TEXT_MES2_DICO} = 2016;
-
-		$self->show_text_message($mgr, $mes1_002015, $mes2_002016);
-	#} else { 
-		#### ERROR '################
-	#}
+	if ($text_id){
+	# chech if text_id are in the template
+		my $check_lang_id = $self->get_text_desc_langs($mgr, $text_id, $desc_lang_id);
+		
+		if (!$check_lang_id){
+		# chech if the actual text_desc are in the DB
 	
+			$self->description_save($mgr, $text_id, $desc_lang_id);
+			$self->title_save($mgr, $text_id, $desc_lang_id);
 
+			##### Confirmation###########
+			my $mes1_002015= $mgr->{Func}->get_text($mgr, 2015); 
+			my $mes2_002016= $mgr->{Func}->get_text($mgr, 2016); 
+		
+			$mgr->{TmplData}{TEXT_ID} = $text_id;
+			$mgr->{TmplData}{TEXT_MES1_DICO} = 2015;
+			$mgr->{TmplData}{TEXT_MES2_DICO} = 2016;
+
+			$self->show_text_message($mgr, $mes1_002015, $mes2_002016);
+		}else { 
+		
+
+			if (defined $desc_lang_id ){
+				$mgr->{TmplData}{TEXT_LANG_ID_SELECT} = $desc_lang_id;
+				my $nr = $self->get_lang_name_id($mgr,$desc_lang_id);
+				my $lang_name = $mgr->{Func}->get_text($mgr, $nr);
+			
+				$mgr->{TmplData}{TEXT_LANG_NAME_SELECT}= $lang_name ; }
+
+			else{ $mgr->{TmplData}{TEXT_LANG_NAME_SELECT}= '-----------'; }
+	
+				$mgr->{TmplData}{TEXT_TITLE} = $title; 
+				$mgr->{TmplData}{TEXT_DESC} = $desc; 
+				$mgr->{TmplData}{TEXT_ID} = $text_id;
+	
+				#setze le loop_lang
+				my @lang_loop_data=();
+				my @ray = $mgr->{Func}->get_langs($mgr,'all');
+				my $elem;
+	
+				foreach $elem (@ray){
+					my %data;
+					$data{TEXT_LANG_ID}= $$elem[0];
+					$data{TEXT_LANG_NAME}= $$elem[1];
+	
+					push(@lang_loop_data,\%data); 
+				}
+ 
+				$mgr->{TmplData}{TEXT_LOOP_LANG}=\@lang_loop_data;
+	
+				$mgr->{TmplData}{PAGE_LANG_002008} = $mgr->{Func}->get_text($mgr, 2008);
+    				$mgr->{TmplData}{PAGE_LANG_002010} = $mgr->{Func}->get_text($mgr, 2010);
+				$mgr->{TmplData}{PAGE_LANG_002012} = $mgr->{Func}->get_text($mgr, 2012);
+				$mgr->{TmplData}{PAGE_LANG_002014} = $mgr->{Func}->get_text($mgr, 2014);	
+				$mgr->{TmplData}{PAGE_LANG_002026} = $mgr->{Func}->get_text($mgr, 2026);
+				$mgr->{TmplData}{PAGE_LANG_002027} = $mgr->{Func}->get_text($mgr, 2027);
+		
+				$mgr->{TmplData}{TEXT_LANG_MES_002045} = $mgr->{Func}->get_text($mgr, 2045);	
+	
+				$mgr->{Template} = $mgr->{TmplFiles}->{Text_Description};
+
+		}
+	
+	}else{
+	#### Error tmpl. ####
+	## Text_id is not in the template. The teyt can not be save
+	}
 }else{
 	
 
@@ -440,9 +586,9 @@ if ( (((defined $title) && (defined $desc))  && (defined $desc_lang_id)) && (def
 
 	else{ $mgr->{TmplData}{TEXT_LANG_NAME_SELECT}= '-----------'; }
 
-$mgr->{TmplData}{TEXT_TITLE} = $title; 
-$mgr->{TmplData}{TEXT_DESC} = $desc; 
-
+	$mgr->{TmplData}{TEXT_TITLE} = $title; 
+	$mgr->{TmplData}{TEXT_DESC} = $desc; 
+	$mgr->{TmplData}{TEXT_ID} = $text_id;
 
 	#setze le loop_lang
 	my @lang_loop_data=();
@@ -573,17 +719,19 @@ my $text_desc = $mgr->{CGI}->param('text_desc') || undef;
 my $text_change = $mgr->{CGI}->param('text_change') || undef;
 my $text_save = $mgr->{CGI}->param('text_save') || undef;
 
+my $text_id;
+
 if (defined $text_change){$self->show_text_new($mgr);}
 elsif (defined $text_save){
 		
-		$self->text_save($mgr);
+		$text_id = $self->text_save($mgr);
 		##### Confirmation###########
 		my $mes1_002035= $mgr->{Func}->get_text($mgr, 2035); 
 		my $mes2_002036= $mgr->{Func}->get_text($mgr, 2036); 
 
 		$mgr->{TmplData}{TEXT_MES1_DICO} = 2035;
 		$mgr->{TmplData}{TEXT_MES2_DICO} = 2036;
-
+		$mgr->{TmplData}{TEXT_ID} = $text_id;
 		$self->show_text_message($mgr, $mes1_002035, $mes2_002036);
  
 }else{
@@ -883,8 +1031,49 @@ SQL
 }
 
 
+#################################################################
+#CALL: $self->get_text_desc_langs($mgr, $text_id, $lang_id).		#
+#								#
+#RETURN: @langs_id all languages of the present descriptions of the text
+#								#
+#DESC: See SQL Statement. 					#
+#								#
+#Author: Giovanni Ngapout(ngapout@cs.tu-berlin.de)		#
+#################################################################
+
+sub get_text_desc_langs {
+  my ($self, $mgr, $text_id, $lang_id) = @_;
+
+  my $table = $mgr->{Tables}->{TEXT_DESC};
+
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+SELECT lang_id
+FROM   $table
+WHERE  text_id = ? AND lang_id = ?
+
+SQL
+
+  unless ($sth->execute($text_id, $lang_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+  my $langs_id = $sth->fetchrow_array();
+
+  $sth->finish();
+
+  return $langs_id;
+}
+
 
 
 
 1;
+
+
+
+
 

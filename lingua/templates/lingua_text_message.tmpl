@@ -1,15 +1,7 @@
-<!------------------------------------------------------------------------------>
-<!-- NAME: lingua_test_message.tmpl				 		>				
-<!-- 				 				 		>
-<!-- DESC: Used to send a Message to the user (Ex. Text or Desc. confirmation)  > 							 >
-<!--										>
-<!-- Author: Giovanni Ngapout(ngapout@cs.tu-berlin.de)		 		>
-<!------------------------------------------------------------------------------>
-
 <TMPL_INCLUDE lingua_header.tmpl>
 
-<input type="hidden" name="text_id" value="">
-<input type="hidden" name="method" value="text_message_way">
+<input type="hidden" name="text_id" value="<TMPL_VAR TEXT_ID>">
+<input type="hidden" name="text_method" value="text_message_way">
 <input type="hidden" name="mes1_dico" value="<TMPL_VAR TEXT_MES1_DICO>">
 <input type="hidden" name="mes2_dico" value="<TMPL_VAR TEXT_MES2_DICO>">
 
@@ -54,4 +46,26 @@
 </table>
 
 <TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

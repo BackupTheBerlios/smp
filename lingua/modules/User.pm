@@ -5,7 +5,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/;
 
 #
 # this method is called by the manager (main.cgi)
@@ -61,7 +61,7 @@ SET email = ?
 WHERE user_id = ?
 
 SQL
-    
+
     unless ($sth->execute($email, $mgr->{Session}->get("UserId"))) 
     {
 	warn sprintf("[Error:] Trouble updating column firstname in %s. " .

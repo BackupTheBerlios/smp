@@ -26,10 +26,10 @@ sub get_langs {
   my $table_lang = $mgr->{Tables}->{LANG};
   my $dbh        = $mgr->connect();
 
-  my $more;
+  my $more = "";
 
   # If $mode equal system, then we only select the syste, languages.
-  if ($mode eq "system") {
+  if ((defined $mode) && ($mode eq "system")) {
     $more = "AND l.system_lang = '1'";
   }
 

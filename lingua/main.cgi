@@ -41,7 +41,7 @@ use fields (
 use vars qw(%FIELDS $VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/;
 
 &handler();
 
@@ -79,9 +79,11 @@ sub handler {
 						       }
 			      );
 
-  my ($check, $class, $lang, $param);
+  my ($check, $class, $lang, $param, $tmp);
 
   $param          = $self->{CGI}->param('action') || $self->{DefaultAction};
+  $tmp            = $self->check_login();
+  $param          = $tmp if ($tmp);
   $self->{Action} = $param;
 
   foreach my $module (@{$self->{Modules}}) {
@@ -120,7 +122,7 @@ sub handler {
   }
 
   $self->set_lang();
-  $self->check_login();
+#  $self->check_login();
 
   if ($class->can("parameter")) {
     # $self->check_session();
@@ -294,6 +296,8 @@ SQL
       $self->{UserData}->{UserId}      = undef;
       $self->{UserData}->{UserLevel}   = undef;
       $self->{UserData}->{UserName}    = undef;
+
+      return "home";
     }
   }
 }

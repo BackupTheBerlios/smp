@@ -5,7 +5,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/;
 
 sub parameter {
   my ($self, $mgr) = @_;
@@ -21,6 +21,8 @@ sub parameter {
   if (defined $method) {
     if ($method eq "cat_admin") {
       $self->show_category_admin($mgr);
+    } elsif ($method eq "show_cat") {
+      $self->show_categories($mgr);
     }
   } else {
     $self->show_categories($mgr);

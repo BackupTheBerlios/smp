@@ -1,16 +1,5 @@
 <TMPL_INCLUDE lingua_header.tmpl>
 
-<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
-<tr valign="top">
-  <td colspan="2">
-    <TMPL_INCLUDE lingua_logo.tmpl>
-  </td>
-</tr>
-<tr valign="top">
-  <td width="200">
-    <TMPL_INCLUDE lingua_left.tmpl>
-  </td>
-  <td bgcolor="#31639C" width="600">
 
     <TMPL_UNLESS USER_IF_ME>
       <input type="hidden" name="user_id" value="<TMPL_VAR USER_USERID>">
@@ -29,13 +18,13 @@
       </div>
     </TMPL_IF>
 
-    <table cellspacing="0" cellpadding="2" border="0" width="600">
+    <table cellspacing="0" cellpadding="2" border="0" width="100%">
 
       <colgroup>
-        <col width="100">
-        <col width="200">
-        <col width="200">
-        <col width="100">
+        <col width="15%">
+        <col width="35%">
+        <col width="35%">
+        <col width="15%">
       </colgroup>
       
       <tr>
@@ -148,13 +137,13 @@
       </div>
     </TMPL_IF>
 
-    <table cellspacing="0" cellpadding="2" border="0" width="600">
+    <table cellspacing="0" cellpadding="2" border="0" width="100%">
 
       <colgroup>
-        <col width="100">
-        <col width="200">
-        <col width="200">
-        <col width="100">
+        <col width="15%">
+        <col width="35%">
+        <col width="35%">
+        <col width="15%">
       </colgroup>
 
       <!-- all languages and levels of this user -->
@@ -209,13 +198,13 @@
 
     <TMPL_ELSE>
 
-      <table cellspacing="0" cellpadding="2" border="0" width="600">
+    <table cellspacing="0" cellpadding="2" border="0" width="100%">
 
-        <colgroup>
-          <col width="100">
-          <col width="400">
-          <col width="100">
-        </colgroup>
+      <colgroup>
+        <col width="15%">
+        <col width="70">
+        <col width="15%">
+      </colgroup>
 
         <tr>
           <!-- description-language selection -->
@@ -232,7 +221,7 @@
                    value="<TMPL_VAR PAGE_LANG_001076>">
           </td>
           <!-- description -->
-          <td>
+          <td align="center">
             <span class="normal">
 	      <textarea name="u_inp_desc" readonly
 	                rows="8" cols="55"><TMPL_VAR USER_DESC></textarea>
@@ -289,14 +278,6 @@
       <TMPL_VAR PAGE_LANG_001073>
     </a>
 
-  </td>
-</tr>
-<tr>
-  <td colspan="2">
-
-  <td>
-</tr>
-</table>
 
 <TMPL_INCLUDE lingua_footer.tmpl>
 

@@ -1,134 +1,163 @@
 <table cellspacing="0" cellpadding="0" border="0" width="100%">
-<tr>
-  <td>
-    <ul>
-      <li><a class="normal" href="<TMPL_VAR PAGE_LEFT_LINK_HOME>">Home</a></li>
-      <li><a class="normal" href="<TMPL_VAR PAGE_LEFT_LINK_HELP>"><TMPL_VAR PAGE_LANG_002001></a></li>
-    </ul>
-  </td>
-</tr>
-<tr>
-  <td>
-    <hr noshade></td>
-</tr>
-<tr>
-  <td>
-    <span class="normal">
-      <b><TMPL_VAR PAGE_LANG_000005><b>
-    </span>
-    <br>
-    <center>
-    <select name="system_langs">
-    <TMPL_LOOP PAGE_LOOP_SYSTEM_LANG>
-      <option value="<TMPL_VAR PAGE_SYSTEM_LANG_ID>" <TMPL_IF PAGE_IF_SYSTEM_LANG>selected</TMPL_IF>>
-        <TMPL_VAR PAGE_SYSTEM_LANG_NAME></option>
-    </TMPL_LOOP>
-    </select>
-    <br>
-    <input type="submit" name="change_lang" value="<TMPL_VAR PAGE_LANG_000006>">
-    </center>
-  </td>
-<tr>
-<tr>
-  <td>
-    <hr noshade></td>
-</tr>
-<tr>
-  <td>
-    <span class="normal">
-      <b><TMPL_VAR PAGE_LANG_009000><b>
-    </span>
-    <br>
-    <center>
-    <select name="search_langs">
-    <TMPL_LOOP PAGE_LOOP_SYSTEM_LANG>
-      <option value="<TMPL_VAR PAGE_SYSTEM_LANG_ID>" <TMPL_IF PAGE_IF_SYSTEM_LANG>selected</TMPL_IF>>
-        <TMPL_VAR PAGE_SYSTEM_LANG_NAME></option>
-    </TMPL_LOOP>
-    </select>
-    <br>
-    </nobr>
-    <input type="text" name="search_text" value="" size="11">
-    <input type="submit" name="action" value="<TMPL_VAR PAGE_LANG_009001>">
-    </center>
-    </nobr>
-  </td>
-<tr>
-<tr>
-  <td>
-    <hr noshade></td>
-</tr>
 
-<TMPL_IF PAGE_IF_LOGIN>
-<tr>
-  <td>
-    <a class="normal" href="<TMPL_VAR PAGE_REGISTER_LINK>"><TMPL_VAR PAGE_LEFT_REGISTER></a>
+<!-- Language Selection -->
+<fieldset>
+  <legend>
+    <span class="menu">
+      <b><TMPL_VAR PAGE_LANG_000501></b>
+    </span>
+  </legend>
+
+  <div align="center">
+    <select name="system_langs">
+      <TMPL_LOOP PAGE_LOOP_SYSTEM_LANG>
+        <option value="<TMPL_VAR PAGE_SYSTEM_LANG_ID>" <TMPL_IF PAGE_IF_SYSTEM_LANG>selected</TMPL_IF>>
+          <TMPL_VAR PAGE_SYSTEM_LANG_NAME></option>
+      </TMPL_LOOP>
+    </select>
     <br>
-    <TMPL_IF PAGE_LOGIN_ERROR>
+
+    <input type="submit" name="change_lang" value="<TMPL_VAR PAGE_LANG_000502>">
+  </div>
+</fieldset>
+<br>
+
+<!-- Navigation -->
+<fieldset>
+  <legend>
+    <span class="menu">
+      <b><TMPL_VAR PAGE_LANG_000503></b>
+    </span>    
+  </legend>
+
+  <ul>
+    <li><a class="menu" href="<TMPL_VAR PAGE_LEFT_LINK_HOME>"><TMPL_VAR PAGE_LANG_000504></a></li>
+
+    <TMPL_UNLESS PAGE_IF_LOGIN>
+      <li><a class="menu" href="<TMPL_VAR PAGE_LEFT_LINK_PERS>"><TMPL_VAR PAGE_LANG_000505></a></li>
+
+      <TMPL_IF PAGE_USER_TYPE_0>
+      </TMPL_IF>
+
+      <TMPL_IF PAGE_USER_TYPE_1>
+      </TMPL_IF>
+
+      <TMPL_IF PAGE_USER_TYPE_2>
+        <li><a class="menu" href="<TMPL_VAR PAGE_LEFT_LINK_CAT>"><TMPL_VAR PAGE_LANG_000506></a></li>
+        <li><a class="menu" href="<TMPL_VAR PAGE_LEFT_LINK_ADM>"><TMPL_VAR PAGE_LANG_000507></a></li>
+      </TMPL_IF>
+
+    </TMPL_UNLESS>
+
+    <li><a class="menu" href="<TMPL_VAR PAGE_LEFT_LINK_HELP>"><TMPL_VAR PAGE_LANG_000508></a></li>
+    <li><a class="menu" href="<TMPL_VAR PAGE_LEFT_LINK_CONT>"><TMPL_VAR PAGE_LANG_000509></a></li>
+  </ul>
+</fieldset>
+<br>
+
+<!-- Text search -->
+<fieldset>
+  <legend>
+    <span class="menu">
+      <b><TMPL_VAR PAGE_LANG_000510></b>
+    </span>
+  </legend>
+
+  <span class="menu">
+    <TMPL_VAR PAGE_LANG_000511>
+  </span>
+   
+  <div align="center">
+    <select name="search_langs">
+      <TMPL_LOOP PAGE_LOOP_SYSTEM_LANG>
+        <option value="<TMPL_VAR PAGE_SYSTEM_LANG_ID>" <TMPL_IF PAGE_IF_SYSTEM_LANG>selected</TMPL_IF>>
+          <TMPL_VAR PAGE_SYSTEM_LANG_NAME>
+        </option>
+      </TMPL_LOOP>
+    </select>
+    <br>
+  </div>
+
+  <span class="menu">
+    <TMPL_VAR PAGE_LANG_000512>
+  </span>
+  <br>
+
+  <div align="center">
+    <input type="text" name="search_text" value="" size="20">
+    <br>
+    <input type="submit" name="action" value="<TMPL_VAR PAGE_LANG_000513>">
+  </div>
+</fieldset>
+<br>
+
+<!-- Login -->
+<TMPL_IF PAGE_IF_LOGIN>
+<fieldset>
+  <legend>
+    <span class="menu">
+      <b><TMPL_VAR PAGE_LANG_000514></b>
+    </span>
+  </legend>
+
+  <a class="menu" href="<TMPL_VAR PAGE_REGISTER_LINK>"><TMPL_VAR PAGE_LANG_000515></a>
+  <br>
+  <TMPL_IF PAGE_LOGIN_ERROR>
     <span class="alert"> 
       <TMPL_VAR PAGE_LOGIN_ERROR>
     <span>
-    </TMPL_IF>
-    <br>
-    <span class="normal"><TMPL_VAR PAGE_LANG_000003></span>:
-    <br>
-    <center><input type="text" name="login_username" value="<TMPL_VAR PAGE_USERNAME>"></center>
-    <span class="normal"><TMPL_VAR PAGE_LANG_000004></span>:
-    <br>
-    <center><input type="password" name="login_password" value="<TMPL_VAR PAGE_PASSWORD>"></center>
-    <p>
-    <input type="submit" name="login" value="<TMPL_VAR PAGE_LANG_000007>">
-    </p>
-  </td>
-</tr>
+  </TMPL_IF>
+  <br>
+
+  <span class="menu"><TMPL_VAR PAGE_LANG_000516>:</span>
+  <br>
+  <div align="center">
+    <input type="text" name="login_username" value="<TMPL_VAR PAGE_USERNAME>" size="20">
+  </div>
+
+  <span class="menu"><TMPL_VAR PAGE_LANG_000517>:</span>
+  <br>
+
+  <div align="center">
+    <input type="password" name="login_password" value="<TMPL_VAR PAGE_PASSWORD>" size="20">
+    <br><br>
+
+    <input type="submit" name="login" value="<TMPL_VAR PAGE_LANG_000518>">
+  </div>
+</fieldset>
+<br>
+
+<!-- user area of a logged-in-user -->
 <TMPL_ELSE>
-<tr>
-  <td>
-    <span class="normal">
-    <b><TMPL_VAR PAGE_LANG_000003></b>:
-    <TMPL_VAR PAGE_USERNAME>
+<fieldset>
+  <legend>
+    <span class="menu">
+      <b><TMPL_VAR PAGE_LANG_000520></b>
     </span>
-  </td>
-</tr>
-<tr>
-  <td>
-    <span class="normal">
-    <b><TMPL_VAR PAGE_LANG_000008></b>:
+  </legend>
+
+  <span class="menu">
+    <b><TMPL_VAR PAGE_LANG_000516></b>:
+    <TMPL_VAR PAGE_USERNAME>
+  </span>
+  <br>
+
+  <span class="menu">
+    <b><TMPL_VAR PAGE_LANG_000521></b>:
     <TMPL_VAR PAGE_ALL_POINTS>
     <br>
-    <b><TMPL_VAR PAGE_LANG_000009></b>:
+    <b><TMPL_VAR PAGE_LANG_000522></b>:
     <TMPL_VAR PAGE_POINTS>
-    </span>
-    <hr noshade>
-    <input type="submit" name="logout" value="<TMPL_VAR PAGE_LANG_000011>">
-  </td>
-</tr>
-<tr>
-  <td>
-    <hr noshade></td>
-</tr>
-<tr>
-  <td>
-    <ul>
-      <li><a class="normal" href="<TMPL_VAR PAGE_USER_LINK>"><TMPL_VAR PAGE_LANG_000010></a></li>
-      <br>
+  </span>
+</fieldset>
+<br>
 
-  <TMPL_IF PAGE_USER_TYPE_0>
+<fieldset>
+  <div align="center">
+    <input type="submit" name="logout" value="<TMPL_VAR PAGE_LANG_000523>">
+  </div>
+</fieldset>
 
-  </TMPL_IF>
-
-  <TMPL_IF PAGE_USER_TYPE_1>
-
-  </TMPL_IF>
-
-  <TMPL_IF PAGE_USER_TYPE_2>
-    <li><a class="normal" href="<TMPL_VAR PAGE_USER_ADMIN_LINK>"><TMPL_VAR PAGE_LANG_001200></a></li>
-    <li><a class="normal" href="<TMPL_VAR PAGE_CATEGORY_ADMIN>"><TMPL_VAR PAGE_LANG_000014></a></li>
-  </TMPL_IF>
-
-    </ul>
-  </td>
-</tr>
 </TMPL_IF>
 
 </table>

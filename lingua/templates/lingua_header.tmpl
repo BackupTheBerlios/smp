@@ -1,38 +1,57 @@
 <html>
 <head>
-	<title><TMPL_VAR PAGE_TITLE></title>
-	<meta http-equiv="Content-type" content="text/html; charset=<TMPL_VAR PAGE_CHARSET>">
+  <title><TMPL_VAR PAGE_TITLE></title>
+  <meta http-equiv="Content-type" content="text/html; charset=<TMPL_VAR PAGE_CHARSET>">
+  
+  <style type="text/css">
 
-	<style type="text/css">
-	a.small, a.normal, a.big, span.alert, span.small, span.normal, span.big,
-	td, tr, p, br, nobr, center, div {
-		font-family: Arial Unicode MS, Helvetica, Arial, Verdana;
-		font-size: 12pt;
-		color: #ffffff;
-	}
+    a.small, a.normal, a.big, a.menu, 
+    span.alert, span.small, span.normal, span.big, span.menu,
+    h1, h2, h3
+    {
+      font-family: Arial Unicode MS, Helvetica, Arial, Verdana;
+    }
 
-	span.alert {
-		color: #ff0000;
-	}
+    a.small, span.small { 
+      font-size: 10pt; 
+      color: #ffffff;
+    }
 
-	a.small, span.small {
-		font-size: 8pt;
-	}
+    a.normal, span.normal, h3 {
+      font-size: 12pt; 
+      color: #ffffff;
+    }
 
-	a.normal, span.normal {
-		font-size: 10pt;
-	}
+    a.big, span.big, h2 {
+      font-size: 16pt; 
+      color: #ffffff;
+    }
 
-	a.big, span.big, span.error {
-		font-size: 12pt;
-	}
+    h1 {
+      font-size: 18pt; 
+      color: #ffffff;
+    }
 
-	a:link    { color: #ffffff; text-decoration: underline; }
-	a:active  { color: #ffffff; text-decoration: underline; }
-	a:visited { color: #ffffff; text-decoration: underline; }
-</style>
+    a.menu, span.menu {
+      font-size: 12pt;
+      color: #000000; 
+    }
+
+    span.alert, span.error {
+      font-size: 12pt;
+      color: #ff0000;
+    }
+
+    a:link    { text-decoration: underline; }
+    a:active  { text-decoration: underline; }
+    a:visited { text-decoration: underline; }
+
+  </style>
+
 </head>
-<body text="#000000" bgcolor="#31639C">
+
+
+<body text="ffffff" bgcolor="#ffffff"> 
 
 <form action="<TMPL_VAR PAGE_SCRIPT>" method="post" enctype="multipart/form-data">
 
@@ -42,7 +61,46 @@
 <input type="hidden" name="method" value="<TMPL_VAR PAGE_METHOD>">
 <input type="hidden" name="open" value="<TMPL_VAR PAGE_OPEN>">
 
-<table cellspacing="10" cellpadding="0" border="0" align="center" bgcolor="#31639C" width="100%">
+<!-- table for outer border -->
+<table cellspacing="0" cellpadding="0" border="0" align="center" bgcolor="#31649D" width="100%">
 <tr>
   <td>
+
+    <!-- main table: 1 top row, 2 main columns and 1 row and 1 column as separators -->
+    <table cellspacing="0" cellpadding="5" border="0" width="100%" align="center">
+
+      <!-- top row: logo -->
+      <tr valign="center">
+        <td colspan="2" height="110" bgcolor="#31649D" align="center" valign="center">
+          <TMPL_INCLUDE lingua_logo.tmpl>
+        </td>
+      </tr>
+
+      <!-- red separator bar -->
+      <tr>
+        <td colspan="2" height="10" bgcolor="#f9d852">
+        </td>
+      </tr>
+
+      <!-- main row: left menu and right texts area etc. -->
+      <tr valign="top">
+
+        <!-- menu -->
+        <td width="180" bgcolor="#f9d852"> <!-- 4ed33f -->
+          <TMPL_INCLUDE lingua_left.tmpl>
+        </td>
+
+	<!-- separator -->
+<!--
+        <td width="10" height="600" bgcolor="#ff9900"></td>
+//-->
+	<!-- main text area -->
+        <td width="*" height="500" bgcolor="#31649D">
+
+<!-- ordinary templates start here ------------------------------------------->
+
+
+
+
+
 

@@ -1,0 +1,142 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<input type="hidden" name="u_inp_rslang" value="<TMPL_VAR USER_RSLANG>">
+<input type="hidden" name="user_id" value="<TMPL_VAR USER_USERID>">
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#31639C" width="600">
+
+    <h1 align="center"><TMPL_VAR PAGE_LANG_001224></h1>
+
+    <div align="center">
+      <span class="normal">
+        <b><TMPL_VAR PAGE_LANG_001225></b>
+      </span>
+    </div>
+    <br><br>
+
+    <table cellspacing="0" cellpadding="2" border="0" width="600">
+
+      <colgroup>
+        <col width="100">
+        <col width="200">
+        <col width="200">
+        <col width="100">
+      </colgroup>
+
+      <tr>
+        <td></td>
+        <td>
+          <span class="normal"><TMPL_VAR PAGE_LANG_001226>:</span>
+        </td>
+        <td>
+          <span class="normal"><TMPL_VAR USER_BLOCKED_BY></span>
+        </td>
+        <td></td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td></td>
+        <td>
+          <a href="mailto:<TMPL_VAR USER_BLOCK_EMAIL>">
+	    <TMPL_VAR USER_BLOCK_EMAIL>
+          </a>
+        </td>
+        <td></td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td>
+          <span class="normal"><TMPL_VAR PAGE_LANG_001227>:</span>
+        </td>
+        <td>
+          <span class="normal"><TMPL_VAR USER_BLOCK_TIME></span>
+        </td>
+        <td></td>
+      </tr>
+
+    </table>
+
+    <br>
+    <div align="center">
+      <span class="normal">
+        <b><TMPL_VAR PAGE_LANG_001228></b>
+      </span>
+    </div>
+    <br>
+
+    <table cellspacing="0" cellpadding="2" border="0" width="600">
+
+      <colgroup>
+        <col width="100">
+        <col width="400">
+        <col width="100">
+      </colgroup>
+
+      <tr>
+        <td></td>
+        <td>
+          <!-- reason-language selection -->
+          <select name="u_sel_rslang" size="1">
+            <TMPL_LOOP NAME="USER_LOOP_LANG">
+              <option value="<TMPL_VAR USER_OPTVAL_LANG>" <TMPL_VAR USER_DEF_LANG>>
+                <TMPL_VAR USER_OPT_LANG>
+            </TMPL_LOOP>
+          </select>
+
+          <!-- language change submit button -->
+          <input type="submit" name="u_sub_rslang"
+                 value="<TMPL_VAR PAGE_LANG_001229>">
+
+        </td>
+	<td></td>
+      </tr>
+
+      <!-- reason -->
+      <tr>
+        <td></td>
+        <td>
+          <span class="normal">
+	    <textarea name="u_inp_reason"  
+	              rows="8" cols="55"><TMPL_VAR USER_REASON></textarea>
+          </span>
+        </td>
+        <td></td>
+      </tr>
+
+    </table>
+
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  <td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -7,7 +7,7 @@ use strict;
 
 
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.33 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.34 $ =~ /(\d+)\.(\d+)/;
 
 
 
@@ -42,7 +42,7 @@ sub parameter {
   } elsif ($method eq "upload_back") {
     $self->text_new($mgr, "upload_back");
 
-  } elsif ($method eq "show_texts") {
+  } elsif ($method eq "show_texts" || defined $mgr->{CGI}->param('show_texts')) {
     $self->show_texts($mgr);
 
  } elsif ($method eq "text_trans" || defined $mgr->{CGI}->param('text_trans')) {
@@ -639,6 +639,8 @@ sub show_texts {
     my $cat_id  = $mgr->{CGI}->param('cat_id') || '0';
     my $page_id = $mgr->{CGI}->param('page') || '0';
     $self->fill_text_header($mgr, $cat_id);
+
+    $mgr->{TmplData}{CAT_ID} = $cat_id; #by Hendrik
 
     my @texts = $mgr->{Func}->get_cat_texts($mgr, $cat_id);
     my $count = 0;

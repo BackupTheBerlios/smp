@@ -7,7 +7,7 @@ use strict;
 
 
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.30 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.31 $ =~ /(\d+)\.(\d+)/;
 
 
 
@@ -203,7 +203,8 @@ sub text_new {
   my $mgr  = shift;
   my $mode = shift || '';
 
-  my $cat_id          = $mgr->{CGI}->param('cat_id') || '';
+  my $cat_id          = $mgr->{CGI}->param('cat_id') || undef;
+
   my $text_lang       = $mgr->{CGI}->param('text_lang') || '1';
   my $text_lang_trans = $mgr->{CGI}->param('text_lang_trans') || '1';
 
@@ -276,7 +277,6 @@ sub text_new {
     $mgr->{Session}->del("TextHeader");
     $mgr->{Session}->del("TextDesc");
 
-
   } else {
     $mgr->{Session}->set("TextCatId", $cat_id);
   }
@@ -326,6 +326,7 @@ sub text_new {
 
 $mgr->{TmplData}{PAGE_TITLE}  = $mgr->{Func}->get_text($mgr, 8003);
   $mgr->{Template}                       = $mgr->{TmplFiles}->{Text_New};
+  
  
 }
 
@@ -592,10 +593,11 @@ my $text_lang_trans	= $mgr->{Session}->get("TextLangTransOk");
   my @cat = $mgr->{Func}->get_cat($mgr, $cat_id);
 
   $mgr->{TmplData}{TEXT_ERROR}           = $mgr->{Func}->get_text($mgr, 7013);
-  $mgr->{TmplData}{TEXT_BACK}            =  $self->get_javascript_url_back();
+  $mgr->{TmplData}{TEXT_BACK}            = $mgr->my_url(ACTION => "home"); #$self->get_javascript_url_back();
   $mgr->{TmplData}{PAGE_LANG_007001}     = $mgr->{Func}->get_text($mgr, 7001);
   $mgr->{TmplData}{PAGE_LANG_007000}     = $mgr->{Func}->get_text($mgr, 7000);
   $mgr->{TmplData}{TEXT_CAT_NAME}        = $cat[2];
+  $mgr->{TmplData}{CAT_LINK}		 = $mgr->my_url(ACTION => "text", METHOD => "show_texts") . '&cat_id=' . $cat_id;
   $mgr->{TmplData}{PAGE_LANG_007002}     = $mgr->{Func}->get_text($mgr, 7002);
   $mgr->{TmplData}{PAGE_LANG_007003}     = $mgr->{Func}->get_text($mgr, 7003);
   $mgr->{TmplData}{PAGE_LANG_007004}     = $mgr->{Func}->get_text($mgr, 7004);
@@ -697,7 +699,7 @@ sub get_text {
 
   my $sth        = $dbh->prepare(<<SQL);
 
-SELECT t.category_id, t.lang_id, t.text_header, t.text_desc, t.text_content  
+SELECT t.category_id, t.lang_id, t.text_header, t.text_desc, t.text_content, parent_id
 FROM   $table_text t
 WHERE  t.text_id = ?
 
@@ -753,34 +755,13 @@ sub get_text_langs {
 
   my $dbh        = $mgr->connect();
 
+# Search languages in Table_Text
+  #prüfe ob Übersetzung oder Original Text
   my $sth        = $dbh->prepare(<<SQL);
 
-SELECT lang_id
+SELECT parent_id
 FROM   $table
-WHERE  text_id = ? OR parent_id = ?
-
-SQL
-
-  unless ($sth->execute($text_id, $text_id)) {
-    warn sprintf("[Error:] Trouble selecting data from [%s] and [%s].".
-	         "Reason: [%s].", $table, $dbh->errstr());
-    $mgr->fatal_error("Database error.");
-  }
-
-  my @text_langs;
-	while (my $lang_id  = $sth->fetchrow_array()) {
-
-	push (@text_langs, $lang_id);    
-  }
-
-
-$table = $mgr->{Tables}->{TEXT_RES};
-
-$sth        = $dbh->prepare(<<SQL);
-
-SELECT lang_trans_id 
-FROM   $table
-WHERE  text_id = ? AND art='2'
+WHERE  text_id = ?
 
 SQL
 
@@ -790,10 +771,123 @@ SQL
     $mgr->fatal_error("Database error.");
   }
 
-	while (my $lang_id  = $sth->fetchrow_array()) {
+my $parent_id = $sth->fetchrow_array();
+my $search_id;
+my $is_orig;
+my @text_langs;
+my @text_ids;
 
+#setze ID zu suchen
+if ($parent_id > 0){ 
+	$search_id = $parent_id;
+	$is_orig = 0;
+}else{ 
+	$search_id = $text_id; 
+	$is_orig = 1;
+}
+
+#Suche alle Sprachen in Table_Text
+if ($is_orig == 1){
+#Originaler Text
+$sth = $dbh->prepare(<<SQL);
+
+SELECT lang_id
+FROM   $table
+WHERE  text_id = ? OR parent_id = ?
+
+SQL
+
+  unless ($sth->execute($search_id, $search_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s] and [%s].".
+	         "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+	while (my $lang_id  = $sth->fetchrow_array()) {
+		push (@text_langs, $lang_id);    
+	}
+}else{
+#Übersetzung
+$sth = $dbh->prepare(<<SQL);
+
+SELECT lang_id, text_id
+FROM   $table
+WHERE  text_id = ? OR parent_id = ?
+
+SQL
+
+  unless ($sth->execute($search_id, $search_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s] and [%s].".
+	         "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+	while (my ($lang_id, $text_text_id ) = $sth->fetchrow_array()) {
+		push (@text_langs, $lang_id);    
+		push (@text_ids, $text_text_id);
+	}
+
+}# Ende Search language in Table_text
+
+
+$table = $mgr->{Tables}->{TEXT_RES};
+
+#Suche in Text_Res------------------
+if ($is_orig == 1){
+#Originaler Text
+
+$sth        = $dbh->prepare(<<SQL);
+
+SELECT lang_trans_id 
+FROM   $table
+WHERE  text_id = ? AND art='2'
+
+SQL
+
+
+  unless ($sth->execute($text_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s] and [%s].".
+	         "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+	while (my $lang_id  = $sth->fetchrow_array()) {
 	push (@text_langs, $lang_id);    
   }
+
+}else{
+#Übersetzung
+
+my $select_condition;
+my $id;
+	foreach $id (@text_ids) {
+	
+$sth        = $dbh->prepare(<<SQL);
+
+SELECT lang_trans_id 
+FROM   $table
+WHERE  text_id = ? AND art='2'
+
+SQL
+
+
+  unless ($sth->execute($id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s] and [%s].".
+	         "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+	while (my $lang_id  = $sth->fetchrow_array()) {
+		push (@text_langs, $lang_id);    
+	}
+
+
+
+     }#Ende foreach
+
+
+}#Ende search languages in Text_res
+
 
   $sth->finish();
 
@@ -821,6 +915,10 @@ my $translator_id = $mgr->{UserData}->{UserId} || undef;
 
 my $cat_id 	= $mgr->{Session}->get("TextTransCatID") || undef;
 my $trans_data 	= $mgr->{Session}->get("TextTransArt")   || undef;
+my $parent_text_id = $mgr->{Session}->get("TextTransParentID") || undef;
+
+if ($parent_text_id > 0){$text_id = $parent_text_id;}
+
 my ($trans_art, $text_res_id, $res_id);
 
 my $translation_id ;
@@ -884,7 +982,7 @@ if ( ($text_id) and ($trans_head ) and ($trans_desc ) and ($trans_text ) and ($t
 	$sth->finish();
 
 	$translation_id = $sth->{mysql_insertid};
-}
+}else{return;}
 #FIN Traduction
 
 #Effacer la traduction chez le Benutzer
@@ -981,6 +1079,7 @@ $mgr->{Session}->set("TransTextCatOk", $cat_id);
 $mgr->{Session}->set("TransTextLangOk", $text_lang);
 $mgr->{Session}->set("TransTransLangTransOk", $trans_lang);
 $mgr->{Session}->set("TransTransPointsOk", $points);
+$mgr->{Session}->set("TransTextIDOk", $text_id);
 
 $self->text_trans_insert_ok($mgr);
 
@@ -1126,6 +1225,10 @@ if (defined $text_id ){
 		#fill normal template
 	
 		my @cat = $mgr->{Func}->get_cat($mgr, $text_array[0]);
+
+		$mgr->{Session}->set("TextTransCatID", $text_array[0]);
+		$mgr->{Session}->set("TextTransParentID", $text_array[5]);
+
 		$mgr->{TmplData}{TEXT_CAT}    = $cat[2];
 		$mgr->{TmplData}{TEXT_LANG}   = $mgr->{Func}->get_lang($mgr, $text_array[1]);
 		$mgr->{TmplData}{TEXT_HEADER} = $mgr->escape($text_array[2]);
@@ -1300,24 +1403,26 @@ my $cat_id 		= $mgr->{Session}->get("TransTextCatOk");
 my $text_lang 		= $mgr->{Session}->get("TransTextLangOk");
 my $trans_lang  	= $mgr->{Session}->get("TransTransLangTransOk");
 my $points  		= $mgr->{Session}->get("TransTransPointsOk");
+my $text_id 		= $mgr->{Session}->get("TransTextIDOk");
 
-  my @cat = $mgr->{Func}->get_cat($mgr, $cat_id);
+my @cat = $mgr->{Func}->get_cat($mgr, $cat_id);
 
 
   $mgr->{TmplData}{TEXT_TRANS_ERROR}   	 = $mgr->{Func}->get_text($mgr, 8032);
-  $mgr->{TmplData}{TEXT_BACK} = $self->get_javascript_url_back();
+  $mgr->{TmplData}{TEXT_BACK} 		 = $mgr->my_url(ACTION => "text", METHOD => "text_show") . '&text_id=' . $text_id;
   $mgr->{TmplData}{PAGE_LANG_007001}     = $mgr->{Func}->get_text($mgr, 7001);
   $mgr->{TmplData}{PAGE_LANG_007000}     = $mgr->{Func}->get_text($mgr, 7000);
   $mgr->{TmplData}{PAGE_LANG_007012}     = $mgr->{Func}->get_text($mgr, 7012);
   $mgr->{TmplData}{PAGE_LANG_007017}     = $mgr->{Func}->get_text($mgr, 7017);
   $mgr->{TmplData}{PAGE_LANG_007014}     = $mgr->{Func}->get_text($mgr, 7014);
-  $mgr->{TmplData}{PAGE_LANG_007015}     = $mgr->{Func}->get_text($mgr, 7015);
+  $mgr->{TmplData}{PAGE_LANG_008047}     = $mgr->{Func}->get_text($mgr, 8047);
   $mgr->{TmplData}{PAGE_LANG_008007}     = $mgr->{Func}->get_text($mgr, 8007);
   $mgr->{TmplData}{PAGE_LANG_008008}     = $mgr->{Func}->get_text($mgr, 8008);
 
 
 
   $mgr->{TmplData}{TEXT_CAT_NAME}        = $cat[2];
+  $mgr->{TmplData}{CAT_LINK}		 = $mgr->my_url(ACTION => "text", METHOD => "show_texts") . '&cat_id=' . $cat_id;
   $mgr->{TmplData}{TEXT_HEADER}          = $mgr->escape($text_header);
   $mgr->{TmplData}{TRANS_HEADER}         = $mgr->escape($trans_header);
   $mgr->{TmplData}{TEXT_LANG_NAME}       = $mgr->{Func}->get_lang($mgr, $text_lang);
@@ -1485,7 +1590,21 @@ my $day  = substr($time, 6, 2);
 }   
 
 
+sub get_text_link{
+my ($self, $mgr, $method ,$text_id) = @_;
 
+my $link = sprintf("%s?action=%s&lang=%s&sid=%s&method=%s&text_id=%s",
+			$mgr->{ScriptName},
+			$mgr->{Action},
+			$mgr->{SystemLangs}->{$mgr->{Language}},
+			$mgr->{SessionId}, 
+			$method, 
+			$text_id);
+
+  return $link;
+
+
+}
 
 
 sub show_text_user_message{
@@ -1518,7 +1637,7 @@ while (my ($res_id, $text_id, $lang_trans_id, $submit_time, $art, $text_header )
 
 $loop_data[$counter]{TEXT_RES_DATE} = $self->time_string($submit_time);
 $loop_data[$counter]{TEXT_HEADER}   =  $mgr->escape($text_header);
-$loop_data[$counter]{TEXT_HEADER_LINKS}='wwwwwwwwwwwwww';
+$loop_data[$counter]{TEXT_HEADER_LINKS} = $self->get_text_link($mgr,'text_show',$text_id);
 my $lan_name = $mgr->{Func}->get_lang($mgr, $lang_trans_id);
 
 	if ($art == 0){
@@ -1651,7 +1770,7 @@ if ($text_id){
 	if ($submit_download){
 		if ($trans_lang){
 		my $lan_name = $mgr->{Func}->get_lang($mgr, $trans_lang);
-		my @text_langs_check =   $self->get_text_langs($mgr, $text_id);
+		my @text_langs_check = $self->get_text_langs($mgr, $text_id);
 
 			if (!(grep(/$trans_lang/, @text_langs_check))){ 				
 
@@ -1880,7 +1999,7 @@ $sth->finish();
 }
 
 #-----------------------------------------------------------------------------#
-#CALL: $self->show_text_see($mgr)                                             #
+#CALL: $self->show_text($mgr)                                                 #
 #                                                                             #
 #RETURN:                                                                      #
 #                                                                             #
@@ -1904,7 +2023,7 @@ sub show_text_see {
 
 
 #-----------------------------------------------------------------------------#
-#CALL: $self->show_text($mgr)                                                 #
+#CALL: $self->show_text_original($mgr)                                        #
 #                                                                             #
 #RETURN:                                                                      #
 #                                                                             #
@@ -1915,8 +2034,8 @@ sub show_text_see {
 sub show_text{
   my ($self, $mgr) = @_;
   my $given_text_id = $mgr->{CGI}->param('text_id') || undef;
-  my $current_user_id = $mgr->{UserData}->{UserId} || undef;
-  my $current_user_level = $mgr->{Session}->get('UserLevel') || undef;
+  my $current_user_id = $mgr->{Session}->get('UserId');
+  my $current_user_level = $mgr->{Session}->get('UserLevel');
 
 #if selected another language in language-Box
   if ($mgr->{CGI}->param('method') eq 'view_trans' || defined $mgr->{CGI}->param('view_trans')){
@@ -1989,7 +2108,7 @@ SQL
 
 
 #User-handlig for Delete-Button and Transalation-Button
-  if(!(defined $mgr->{UserData}->{UserId}) || !(defined $current_user_level)){
+  if(!(defined $mgr->{UserData}->{UserId})){
     $mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden';
     $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'hidden';
   }elsif($current_user_level == 0){
@@ -2021,7 +2140,7 @@ SQL
   }
 
   @row = $sth->fetchrow_array();
-  my $text_rating_id  = $row[1] || 0;
+  my $text_rating_id  = $row[1];
   my $text_rating     = $row[2];
 
   $sth->finish();
@@ -2093,16 +2212,15 @@ SQL
 
 
 #show text-rating-radio-buttons only if user not owner by this text and if user haven't rated this text
-  if(!(defined $mgr->{UserData}->{UserId}) || $current_user_id == $user_id || $text_rating_id == $given_text_id ) {
+  if($current_user_id == $user_id || $text_rating_id == $given_text_id || !(defined $mgr->{UserData}->{UserId})) {
     $mgr->{TmplData}{RADIO_TYPE} = 'hidden';
     $mgr->{TmplData}{SUBMIT_TYPE} = 'hidden';
-    if(defined $text_rating){
-      if($text_rating == 1 ){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7111); }
-      elsif($text_rating == 2){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7110);}
-      elsif($text_rating == 3){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7109);}
-      elsif($text_rating == 4){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7108); }
-      elsif($text_rating == 5){ $mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7107);}
-    }  
+
+    if($text_rating == 1 ){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7111); }
+    elsif($text_rating == 2){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7110);}
+    elsif($text_rating == 3){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7109);}
+    elsif($text_rating == 4){$mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7108); }
+    elsif($text_rating == 5){ $mgr->{TmplData}{PAGE_LANG_007112} = $mgr->{Func}->get_text($mgr, 7117) . " " . $mgr->{Func}->get_text($mgr, 7107);}
   }
   else{
     $mgr->{TmplData}{PAGE_LANG_007107} = $mgr->{Func}->get_text($mgr, 7107);
@@ -2126,7 +2244,7 @@ SQL
 }#end show_text
 
 #-----------------------------------------------------------------------------#
-#CALL: $self->decrement_category_entry($mgr, text_id)                         #
+#CALL: $self->get_original_text($mgr, text_id)                                #
 #                                                                             #
 #RETURN:                                                                      #
 #                                                                             #
@@ -2286,7 +2404,7 @@ SQL
 
 
 #-----------------------------------------------------------------------------#
-#CALL: $self->get_author($mgr, $user_id)                                      #
+#CALL: $self->cat_lang_id($mgr)                                               #
 #                                                                             #
 #RETURN: $firstname . " " . $lastname;                                        #
 #                                                                             #
@@ -2319,7 +2437,7 @@ SQL
 
 
 #-----------------------------------------------------------------------------#
-#CALL: $self->cat_lang_id($mgr, $category_id)                                 #
+#CALL: $self->cat_lang_id($mgr)                                               #
 #                                                                             #
 #RETURN: cat_lang_id                                                          #
 #                                                                             #
@@ -2469,7 +2587,7 @@ SQL
 
 
 #-----------------------------------------------------------------------------#
-#CALL: $self->text_rating($mgr)                                               #
+#CALL: $self->show_rating($mgr)                                               #
 #                                                                             #
 #RETURN:                                                                      #
 #                                                                             #
@@ -2480,7 +2598,7 @@ SQL
 sub text_rating {
   my ($self, $mgr) = @_;
   my $rating = $mgr->{CGI}->param('rating') || undef;
-  my $user_id =$mgr->{Session}->get("UserId") || undef;
+  my $user_id =$mgr->{Session}->get("UserId");
   my $text_id = $mgr->{CGI}->param('text_id') || undef;
   my $current_user_level = $mgr->{Session}->get('UserLevel');
 
@@ -2510,8 +2628,9 @@ SQL
   $sth->finish();
 
 #if user not rated this text and selected an ratingvalue then insert this rating
-#and if the UserId is defined(User is logged)
-  if(defined $mgr->{UserData}->{UserId} && defined $rating && !(defined $TEXT_RATING_text_id)){
+#and if the userlevel of this user 1 or 2
+  if(defined $rating && $TEXT_RATING_text_id eq undef && $mgr->{UserData}->{UserId} ne undef){
+
 
     $table = $mgr->{Tables}->{TEXT};
     $dbh = $mgr->connect();
@@ -2993,7 +3112,7 @@ SQL
 }#delete_trans
 
 #-----------------------------------------------------------------------------#
-#CALL: $self->set_parent_id($mgr,$text_id, $parent_id)                        #
+#CALL: $self->set_parent_id($mgr,$text_id)                                    #
 #                                                                             #
 #RETURN:  lang_name correspond to lang_id                                     #
 #                                                                             #
@@ -3085,6 +3204,7 @@ sub sort_uml{
 }
 
 1;
+
 
 
 

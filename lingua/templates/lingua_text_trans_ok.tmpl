@@ -17,7 +17,7 @@
     <table cellspacing="5" cellpadding="0" border="0" width="100%" align="center">
     <tr>
       <td>
-	<a class="normal" onclick="<TMPL_VAR TEXT_BACK>"><TMPL_VAR PAGE_LANG_007001></a>
+	<a class="normal" href="<TMPL_VAR TEXT_BACK>"><TMPL_VAR PAGE_LANG_007001></a> 	
       </td>
       <td>
         <TMPL_IF TEXT_TRANS_ERROR>
@@ -32,7 +32,7 @@
         <TMPL_VAR PAGE_LANG_007000>: 
       </td>
       <td>
-        <TMPL_VAR TEXT_CAT_NAME>
+       <a class="normal" href="<TMPL_VAR CAT_LINK>"> <TMPL_VAR TEXT_CAT_NAME> </a> 
       </td>
     </tr>
     <tr>
@@ -61,7 +61,7 @@
     </tr>
     <tr>
       <td>
-        <TMPL_VAR PAGE_LANG_007015>:
+        <TMPL_VAR PAGE_LANG_008047>:
       </td>
       <td>
         <TMPL_VAR TRANS_POINT>
@@ -96,6 +96,8 @@
 </table>
 
 <TMPL_INCLUDE lingua_footer.tmpl>
+
+
 
 
 

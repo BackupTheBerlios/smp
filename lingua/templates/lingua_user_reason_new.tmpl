@@ -1,0 +1,109 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#31639C" width="600">
+
+    <h1 align="center"><TMPL_VAR PAGE_LANG_001216></h1>
+
+    <br>
+
+    <div align="center">
+      <span class="normal">
+        <b><TMPL_VAR PAGE_LANG_001217></b><br>
+        <TMPL_VAR PAGE_LANG_001218>
+      </span>
+
+      <br><br>
+
+      <TMPL_IF USER_IF_REASON_ERR>
+        <span class="alert">
+          <b><TMPL_VAR PAGE_LANG_001212></b><br>
+          <b><TMPL_VAR USER_ERROR_REASON></b>
+	  <br><br>
+        </span>
+      </TMPL_IF>
+
+      <span class="normal">
+        <TMPL_VAR PAGE_LANG_001219>
+      </span>
+
+      <br><br>
+
+      <!-- reason-language selection -->
+      <select name="u_sel_rslang" size="1">
+        <TMPL_LOOP NAME="USER_LOOP_LANG">
+          <option value="<TMPL_VAR USER_OPTVAL_LANG>" <TMPL_VAR USER_DEF_LANG>>
+            <TMPL_VAR USER_OPT_LANG>
+        </TMPL_LOOP>
+      </select>
+
+      <br><br>
+
+      <span class="normal">
+        <TMPL_VAR PAGE_LANG_001220>
+      </span>
+
+      <br><br>
+
+    </div>
+
+    <table cellspacing="0" cellpadding="2" border="0" width="600">
+
+      <colgroup>
+        <col width="100">
+        <col width="400">
+        <col width="100">
+      </colgroup>
+
+      <!-- reason -->
+      <tr>
+        <td></td>
+        <td>
+          <span class="normal">
+	    <textarea name="u_inp_reason" rows="8" cols="55"></textarea>
+          </span>
+        </td>
+        <td></td>
+      </tr>
+
+    </table>
+
+    <br><br>
+
+    <div align="center">
+      <input type="submit" name="u_sub_reason"
+             value="<TMPL_VAR PAGE_LANG_001221>">
+    </div>
+
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  <td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+
+
+
+
+

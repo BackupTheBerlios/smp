@@ -18,6 +18,7 @@
       <td>
         <TMPL_IF PAGE_CAT_ADMIN>
           <TMPL_VAR PAGE_LANG_000015>
+          (<a class="normal" href="<TMPL_VAR CAT_ADMIN_START_NEW>"><TMPL_VAR PAGE_LANG_006000></a>)
         </TMPL_IF>
         <ul> 
         <TMPL_LOOP PAGE_LOOP_CATS>
@@ -41,6 +42,21 @@
             <span class="normal">
               <TMPL_IF PAGE_CAT_ADMIN>
                 <TMPL_VAR PAGE_CAT_NAME>
+                (
+                  [<a class="normal" href="<TMPL_VAR CAT_ADMIN_NEW_CAT>"><TMPL_VAR PAGE_LANG_006000></a>]
+                  [<a class="normal" href="<TMPL_VAR CAT_ADMIN_CHANGE_CAT>"><TMPL_VAR PAGE_LANG_006001></a>]
+                  <TMPL_IF IF_CAT_ADMIN_DELETE_CAT>
+                    [<a class="normal" href="<TMPL_VAR CAT_ADMIN_DELETE_CAT>"><TMPL_VAR PAGE_LANG_006002></a>]
+                  <TMPL_ELSE>
+                    [<TMPL_VAR PAGE_LANG_006002>]
+                  </TMPL_IF>                  
+
+                  <TMPL_IF CAT_ADMIN_LOCK>
+                    [<a class="normal" href="<TMPL_VAR CAT_ADMIN_LOCK_CAT>"><TMPL_VAR PAGE_LANG_006003></a>]
+                  <TMPL_ELSE>
+                    [<a class="normal" href="<TMPL_VAR CAT_ADMIN_UNLOCK_CAT>"><TMPL_VAR PAGE_LANG_006004></a>]
+                  </TMPL_IF>
+                )
               <TMPL_ELSE>
 
                 <TMPL_IF PAGE_CAT_TEXT>

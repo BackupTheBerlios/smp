@@ -10,7 +10,7 @@ use fields (
 use strict;
 use vars qw(%FIELDS $VERSION);
  
-$VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/;
 
 #====================================================================================================#
 # SYNOPSIS: new($class, %par);
@@ -84,11 +84,12 @@ sub kill_session {
 	# Wurde eine Sessionid uebergeben?
 	$sid = $self->{Sid} unless ($sid);
 
-	my (%sessions, $dir_file, $pag_file);
+	my (%sessions, $dir_file, $pag_file, $db_file);
 
 	# Pfad zum loeschen zusammen bauen.
 	$dir_file = sprintf("%s/%s.dir", $self->{SessDir}, $sid);
 	$pag_file = sprintf("%s/%s.pag", $self->{SessDir}, $sid);
+	$db_file  = sprintf("%s/%s.db",  $self->{SessDir}, $sid);
 
 	# Session aus der Gesamt Session Datei loeschen.
 	dbmopen %sessions, sprintf("%s/%s", $self->{SessDir}, $self->{SessFile}), 0644 
@@ -99,6 +100,7 @@ sub kill_session {
 	# Eigentliche Sessiondateien loeschen.
 	unlink $dir_file if (-e $dir_file);
 	unlink $pag_file if (-e $pag_file);
+	unlink $db_file  if (-e $db_file);
 
 	1;
 }

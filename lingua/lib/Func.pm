@@ -28,7 +28,7 @@ sub get_langs {
 
   my $more = "";
 
-  # If $mode equal system, then we only select the syste, languages.
+  # If $mode equal system, then we only select the syste, languages.]
   if ((defined $mode) && ($mode eq "system")) {
     $more = "AND l.system_lang = '1'";
   }
@@ -157,7 +157,7 @@ sub get_cats {
   my $dbh = $mgr->connect();
   my $sth = $dbh->prepare(<<SQL);
 
-SELECT c.cat_id, c.text_count, d.$lang, c.cat_count, c.depth
+SELECT c.cat_id, c.text_count, d.$lang, c.cat_count, c.depth, c.status
 FROM $table_cats c, $table_dict d
 WHERE d.dict_id = c.lang_id AND c.parent_id = ?
 
@@ -172,8 +172,8 @@ SQL
   my @cats;
 
   # Push all the selected values into an array.
-  while (my ($cid, $count, $name, $cats, $depth) = $sth->fetchrow_array()) {
-    push (@cats, [$cid, $name, $count, $cats, $depth]);
+  while (my ($cid, $count, $name, $cats, $depth, $status) = $sth->fetchrow_array()) {
+    push (@cats, [$cid, $name, $count, $cats, $depth, $status]);
   }
 
   $sth->finish();
@@ -201,7 +201,7 @@ sub get_cat {
   my $dbh = $mgr->connect();
   my $sth = $dbh->prepare(<<SQL);
 
-SELECT c.cat_id, c.text_count, d.$lang, c.cat_count, c.depth, c.parent_id
+SELECT c.cat_id, c.text_count, d.$lang, c.cat_count, c.depth, c.parent_id, c.status, c.lang_id
 FROM $table_cats c, $table_dict d
 WHERE d.dict_id = c.lang_id AND c.cat_id = ?
 

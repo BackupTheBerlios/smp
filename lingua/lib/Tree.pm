@@ -13,12 +13,19 @@ sub new {
 sub create_tree {
   my ($self, $mgr, $cat_id, $list, $count, $result, $mode) = @_;
 
-  my %list     = %$list;
-  my @result   = @$result;
-  my @cats     = $mgr->{Func}->get_cats($mgr, $cat_id);
-  my $new_text = $mgr->{Func}->get_text($mgr, 6000);
+  my %list        = %$list;
+  my @result      = @$result;
+  my @cats        = $mgr->{Func}->get_cats($mgr, $cat_id);
+  my $new_text    = $mgr->{Func}->get_text($mgr, 6000);
+  my $change_text = $mgr->{Func}->get_text($mgr, 6001);
+  my $delete_text = $mgr->{Func}->get_text($mgr, 6002);
+  my $lock_text   = $mgr->{Func}->get_text($mgr, 6003);
+  my $unlock_text = $mgr->{Func}->get_text($mgr, 6004);
 
   foreach my $cat (@cats) {
+    # Only in the administration mode show all categories.
+    next if (($cat->[5] != 1) && ($mode ne "admin"));
+
     if ($cat->[3] != 0) {
       $result[$count]{PAGE_BUTTON} = 1;
     }
@@ -32,11 +39,51 @@ sub create_tree {
       $result[$count]{PAGE_LANG_006000}       = $new_text;
     }
 
+    # For the administration mode.
     if ($mode eq "admin") {
-      # someting for cat administration ...
+      $result[$count]{PAGE_CAT_ADMIN}       = 1;
+      $result[$count]{CAT_ADMIN_NEW_CAT}    = sprintf("%s&cat_id=%s",
+						      $mgr->my_url(METHOD => "new_cat",
+								   MODE   => "admin"),
+						      $cat->[0]);
+      $result[$count]{PAGE_LANG_006000}     = $new_text;
+      $result[$count]{CAT_ADMIN_CHANGE_CAT} = sprintf("%s&cat_id=%s",
+						      $mgr->my_url(METHOD => "change_cat",
+								   MODE   => "admin"),
+						      $cat->[0]);
+      $result[$count]{PAGE_LANG_006001}     = $change_text;
+
+      # Only if we dont have cats and texts in this category, we make a delete link.
+      if (($cat->[2] == 0) && ($cat->[3] == 0)) {
+	$result[$count]{IF_CAT_ADMIN_DELETE_CAT} = 1;
+	$result[$count]{CAT_ADMIN_DELETE_CAT}    = sprintf("%s&cat_id=%s",
+							   $mgr->my_url(METHOD => "delete_cat",
+									MODE   => "admin"),
+							   $cat->[0]);
+      }
+
+      $result[$count]{PAGE_LANG_006002}     = $delete_text;
+
+      # Locking and unlocking for the choosen category.
+      if ($cat->[5] == 1) {
+	$result[$count]{CAT_ADMIN_LOCK}       = 1;
+	$result[$count]{CAT_ADMIN_LOCK_CAT}   = sprintf("%s&cat_id=%s",
+						        $mgr->my_url(METHOD => "lock_cat",
+								     MODE   => "admin"),
+						        $cat->[0]);
+	$result[$count]{PAGE_LANG_006003}     = $lock_text;
+      } else {
+	$result[$count]{CAT_ADMIN_UNLOCK_CAT} = sprintf("%s&cat_id=%s",
+							$mgr->my_url(METHOD => "unlock_cat",
+								     MODE   => "admin"),
+							$cat->[0]);
+	$result[$count]{PAGE_LANG_006004}     = $unlock_text;
+      }
     } else {
-      ### STATUS der Texte???
-      if ($cat->[2] > 0) {
+
+      my $check_status = $self->check_text_status($mgr, $cat->[0]);
+
+      if (($cat->[2] > 0) && ($check_status != 0)) {
 	$result[$count]{PAGE_CAT_TEXT} = 1;
 	$result[$count]{PAGE_CAT_LINK} = sprintf("%s&cat_id=%s",
 						 $mgr->my_url(ACTION => "text",
@@ -108,6 +155,14 @@ sub create_tree {
     }
   }
 
+  # For the administration mode. Startcategory with a new category link.
+  if ($mode eq "admin") {
+    $mgr->{TmplData}{CAT_ADMIN_START_NEW} = sprintf("%s&cat_id=0",
+						    $mgr->my_url(METHOD => "cat_new",
+								 MODE   => "admin"));
+    $mgr->{TmplData}{PAGE_LANG_006000} = $new_text;
+  }
+
   return ($count, @result);
 }
 
@@ -176,6 +231,32 @@ sub close_tree {
   } else {
     $mgr->{CGI}->param(open => join(',', keys %list));
   }
+}
+
+sub check_text_status {
+  my ($self, $mgr, $cat_id) = @_;
+
+  my $text_table = $mgr->{Tables}->{TEXT};
+  my $dbh        = $mgr->connect();
+  my $sth        = $dbh->prepare(<<SQL);
+
+SELECT COUNT(*) AS check_status
+FROM $text_table
+WHERE status = '1'
+
+SQL
+
+  unless ($sth->execute()) {
+    warn sprintf("[Error:] Trouble selecting data from [%s]. Reason: [%s].", 
+		 $text_table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+  my $check = $sth->fetchrow_array();
+
+  $sth->finish();
+
+  return $check;
 }
 
 1;

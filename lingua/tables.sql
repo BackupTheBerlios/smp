@@ -22,9 +22,9 @@ DROP TABLE IF EXISTS lingua_dictionary;
 
 CREATE TABLE lingua_dictionary (
         dict_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-        en      BLOB,
-        de      BLOB,
-        fr      BLOB,
+        en      TEXT,
+        de      TEXT,
+        fr      TEXT,
         PRIMARY KEY (dict_id)
 );
 
@@ -49,7 +49,7 @@ INSERT INTO lingua_dictionary (en, de, fr) VALUES ('french', 'französich', 'fran
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('swahili', 'swahili', 'swahili' );
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('lingala', 'lingala', 'lingala' );
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('arabisch', 'arabisch', 'arabe' );
-INSERT INTO lingua_dictionary (en, de, fr) VALUES ('holland', 'neederland', 'hollandais');
+INSERT INTO lingua_dictionary (en, de, fr) VALUES ('neederland', 'holland', 'hollandais');
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('spain','spanisch', 'espagnol');
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('polnich','polnich', 'polonais');
 
@@ -95,6 +95,10 @@ INSERT INTO lingua_dictionary (de, fr) VALUES ('Software', 'Software');
 
 ### home module
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('6000', 'New', 'Neu');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('6001', 'Change', 'Ändern');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('6002', 'Delete', 'Löschen');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('6003', 'Lock', 'Sperren');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('6004', 'Unlock', 'Freigeben');
 
 ### text module (new & change)
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7000', 'Category', 'Kategorie');
@@ -376,9 +380,9 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('1139', 'Personal Page of', 'Pers&ouml;nliche Seite von', 'Page personnelle de');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
-       ('1140', 'Your password has been updated', 'Ihr Password wurde ge&auml;ndert');
+       ('1140', 'Your password has been updated', 'Ihr Password wurde geändert');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
-       ('1141', 'Back', 'Zur&uuml;ck');
+       ('1141', 'Back', 'Zurück');
 
 # description-edit-page (1144 - 1149)
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
@@ -493,7 +497,7 @@ CREATE TABLE lingua_user_desc (
         desc_id   SMALLINT(3) UNSIGNED NOT NULL AUTO_INCREMENT,
         user_id   INT(10)     UNSIGNED NOT NULL,
         lang_id   SMALLINT(3) UNSIGNED NOT NULL,
-        desc_text BLOB                 NOT NULL,
+        desc_text TEXT                 NOT NULL,
         PRIMARY KEY(desc_id)
 );
 
@@ -513,7 +517,7 @@ CREATE TABLE lingua_user_blocked (
         user_id      INT(10)     UNSIGNED NOT NULL AUTO_INCREMENT,
         blocked_by   INT(10)     UNSIGNED NOT NULL,
         block_time   CHAR(10)             NOT NULL,
-        block_reason BLOB,
+        block_reason TEXT,
         lang_id      SMALLINT(3) UNSIGNED NOT NULL,
         PRIMARY KEY(user_id)
 );
@@ -535,64 +539,62 @@ INSERT INTO lingua_user_lang (user_id, lang_id, level) VALUES ('1', '2', '2');
 DROP TABLE IF EXISTS lingua_categories;
 
 CREATE TABLE lingua_categories (
-        cat_id     INT(10) UNSIGNED NOT NULL               AUTO_INCREMENT,
-        parent_id  INT(10) UNSIGNED           DEFAULT '0',
-        lang_id    INT(10) UNSIGNED NOT NULL,
-        depth      INT(10) UNSIGNED           DEFAULT '0',
-        cat_count  INT(10) UNSIGNED           DEFAULT '0',
-        text_count INT(10) UNSIGNED           DEFAULT '0',
+        cat_id     INT(10)        UNSIGNED NOT NULL               AUTO_INCREMENT,
+        parent_id  INT(10)        UNSIGNED           DEFAULT '0',
+        lang_id    INT(10)        UNSIGNED NOT NULL,
+        depth      INT(10)        UNSIGNED           DEFAULT '0',
+        cat_count  INT(10)        UNSIGNED           DEFAULT '0',
+        text_count INT(10)        UNSIGNED           DEFAULT '0',
+	status     ENUM('0', '1')                    DEFAULT '0',
         PRIMARY KEY(cat_id)
 );
 
 # Categories level: 1.
-INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('4001', '7');
-INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('4002', '2');
-INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('4003', '5');
-INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('4004', '0');
-INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('4005', '9');
-INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('4006', '0');
-INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('4007', '0');
+INSERT INTO lingua_categories (lang_id, cat_count, status) VALUES ('4001', '7', '1');
+INSERT INTO lingua_categories (lang_id, cat_count, status) VALUES ('4002', '2', '1');
+INSERT INTO lingua_categories (lang_id, cat_count, status) VALUES ('4003', '5', '1');
+INSERT INTO lingua_categories (lang_id, cat_count, status) VALUES ('4004', '0', '1');
+INSERT INTO lingua_categories (lang_id, cat_count, status) VALUES ('4005', '9', '1');
+INSERT INTO lingua_categories (lang_id, cat_count, status) VALUES ('4006', '0', '1');
+INSERT INTO lingua_categories (lang_id, cat_count, status) VALUES ('4007', '0', '1');
 
 # Categories level: 2
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4008', '1', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4009', '1', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4010', '1', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4011', '1', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4012', '1', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4013', '1', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4014', '1', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4015', '2', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4016', '2', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4017', '3', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4018', '3', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4019', '3', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4020', '3', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4021', '3', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4022', '5', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4023', '5', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, cat_count, depth) VALUES ('4024', '5', '2', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4025', '5', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4026', '5', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4027', '5', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4028', '5', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4029', '5', '1');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4030', '5', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4008', '1', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4009', '1', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4010', '1', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4011', '1', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4012', '1', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4013', '1', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4014', '1', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4015', '2', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4016', '2', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4017', '3', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4018', '3', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4019', '3', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4020', '3', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4021', '3', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4022', '5', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4023', '5', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, cat_count, depth, status) VALUES ('4024', '5', '2', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4025', '5', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4026', '5', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4027', '5', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4028', '5', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4029', '5', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4030', '5', '1', '1');
 
 # Categories level: 3
-INSERT INTO lingua_categories (lang_id, parent_id, cat_count, depth) VALUES ('4031', '24', '1', '2');
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4032', '24', '2');
-
-# Categories level: 4 (for testing only)
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4001', '31', '3');
+INSERT INTO lingua_categories (lang_id, parent_id, cat_count, depth, status) VALUES ('4031', '24', '0', '2', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth, status) VALUES ('4032', '24', '2', '1');
 
 DROP TABLE IF EXISTS lingua_text;
 
 CREATE TABLE lingua_text (
         text_id         INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 	parent_id       INT(10) DEFAULT '0',
-        text_header     MEDIUMBLOB NOT NULL,
-	text_desc       MEDIUMBLOB NOT NULL,
-	text_content    MEDIUMBLOB NOT NULL,
+        text_header     MEDIUMTEXT NOT NULL,
+	text_desc       MEDIUMTEXT NOT NULL,
+	text_content    MEDIUMTEXT NOT NULL,
         num_words       INT(10) UNSIGNED DEFAULT '0',
         lang_id         INT(10) UNSIGNED NOT NULL,
 	lang_trans_id   INT(10) UNSIGNED DEFAULT '0',

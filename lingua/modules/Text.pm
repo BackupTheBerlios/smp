@@ -5,7 +5,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.18 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.19 $ =~ /(\d+)\.(\d+)/;
 
 #-----------------------------------------------------------------------------#
 # CALL:   $self->parameter($mgr).                                             #
@@ -72,7 +72,19 @@ sub text_new {
   } elsif ($mode eq "upload_back") {
     $mgr->{TmplData}{TEXT_HEADER} = $mgr->escape($mgr->from_unicode($mgr->{Session}->get("TextHeader")));
     $mgr->{TmplData}{TEXT_DESC}   = $mgr->escape($mgr->from_unicode($mgr->{Session}->get("TextDesc")));
-    $mgr->{TmplData}{TEXT_TEXT}   = $mgr->escape($mgr->from_unicode($mgr->{Session}->get("TextText")));
+
+    my $check_text = $mgr->{Session}->get("TextText");
+    my $tmp_text   = "";
+    my $unicode;
+
+    # Simple unicode check.
+    eval { $unicode = latin($check_text); $tmp_text = $unicode->utf8($check_text); };
+
+    if ($@) {
+      $mgr->{TmplData}{TEXT_TEXT} = $mgr->escape($check_text);
+    } else {
+      $mgr->{TmplData}{TEXT_TEXT} = $mgr->escape($tmp_text);
+    }
 
     $text_lang_trans = $mgr->{Session}->get("TextLangTrans");
     $text_lang       = $mgr->{Session}->get("TextLang");

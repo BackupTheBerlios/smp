@@ -48,7 +48,7 @@ use fields (
 use vars qw(%FIELDS $VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.11 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.12 $ =~ /(\d+)\.(\d+)/;
 
 &handler();
 
@@ -135,10 +135,8 @@ sub handler {
   }
 
   $self->set_lang();
-#  $self->check_login();
 
   if ($class->can("parameter")) {
-    # $self->check_session();
 
     eval {
       $class->parameter($self);

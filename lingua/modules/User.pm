@@ -6,7 +6,13 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.12 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)\.(\d+)/;
+
+# "constants" (don't change later on)
+my $status_ok      = 1;
+my $status_first   = 2;
+my $status_blocked = 0;
+
 
 #
 # this method is called by the manager (main.cgi)
@@ -63,7 +69,9 @@ sub parameter
     # case 4.4: edit block reason
     elsif ($method eq 'reason_edit') { $self->method_reason_edit($mgr); }
 
-
+    # case 5: show a page for a blocked user
+    elsif ($method eq 'blocked')     { $self->method_blocked($mgr); }
+    
     return 1;
 }
 
@@ -84,14 +92,10 @@ sub method_reg2
     my $error;
     
     # get user data from CGI
-    my $username   = $mgr->{CGI}->param('u_inp_username');
-#        $mgr->unescape($mgr->to_unicode($mgr->{CGI}->param('u_inp_username')));
-    my $firstname  = $mgr->{CGI}->param('u_inp_firstname');
-#        $mgr->unescape($mgr->to_unicode($mgr->{CGI}->param('u_inp_firstname')));
-    my $lastname   = $mgr->{CGI}->param('u_inp_lastname');
-#        $mgr->unescape($mgr->to_unicode($mgr->{CGI}->param('u_inp_lastname')));
-    my $email      = $mgr->{CGI}->param('u_inp_email');
-#        $mgr->unescape($mgr->to_unicode($mgr->{CGI}->param('u_inp_email')));
+    my $username   = $self->get_formdata($mgr, 'u_inp_username');  # unicode (?)
+    my $firstname  = $self->get_formdata($mgr, 'u_inp_firstname'); # unicode
+    my $lastname   = $self->get_formdata($mgr, 'u_inp_lastname');  # unicode
+    my $email      = $self->get_formdata($mgr, 'u_inp_email');     # unicode (?)
     my $syslang_id = $mgr->{CGI}->param('u_sel_syslang');
 
     # case 1: user pressed 'next' button on reg1 page 
@@ -127,8 +131,8 @@ sub method_reg3
 
     # get values from CGI 
     my $username   = $mgr->{CGI}->param('u_username');
-    my $firstname  = $mgr->{CGI}->param('u_firstname');
-    my $lastname   = $mgr->{CGI}->param('u_lastname');
+    my $firstname  = $self->get_formdata($mgr, 'u_firstname');  # unicode
+    my $lastname   = $self->get_formdata($mgr, 'u_lastname');   # unicode
     my $email      = $mgr->{CGI}->param('u_email');
     my $syslang_id = $mgr->{CGI}->param('u_syslang');
 
@@ -319,7 +323,7 @@ sub method_upd_descedit
     elsif (defined($mgr->{CGI}->param('u_sub_desc')))
     {
 	my $lang_id = $mgr->{Session}->get('UserDescLangId');
-	my $desc    = $mgr->{CGI}->param('u_inp_desc');
+	my $desc    = $self->get_formdata($mgr, 'u_inp_desc');  # unicode
 	my $error   = $self->check_desc($mgr, $desc);
 
 	if ($error != 0)
@@ -356,7 +360,7 @@ sub method_upd_descnew
     if (defined($mgr->{CGI}->param('u_sub_desc')))
     {
 	my $lang_id = $mgr->{CGI}->param('u_sel_desclang');
-	my $desc    = $mgr->{CGI}->param('u_inp_desc');
+	my $desc    = $self->get_formdata($mgr, 'u_inp_desc');  # unicode
 	my $error   = $self->check_desc($mgr, $desc);
 
 	if ($error != 0)
@@ -509,7 +513,7 @@ sub method_reason_new
     {
 	my $admin_id = $mgr->{Session}->get('UserId');
 	my $lang_id  = $mgr->{CGI}->param('u_sel_rslang');
-	my $reason   = $mgr->{CGI}->param('u_inp_reason');
+	my $reason   = $self->get_formdata($mgr, 'u_inp_reason');  # unicode
 	my $error    = $self->check_reason($mgr, $reason);
 
 	if ($error != 0)
@@ -552,7 +556,7 @@ sub method_reason_edit
     elsif (defined($mgr->{CGI}->param('u_sub_reason')))
     {
 	my $lang_id = $mgr->{Session}->get('User_AdmLangId');
-	my $reason  = $mgr->{CGI}->param('u_inp_reason');
+	my $reason  = $self->get_formdata($mgr, 'u_inp_reason');  # unicode
 	my $error   = $self->check_reason($mgr, $reason);
 
 	if ($error != 0)
@@ -576,6 +580,27 @@ sub method_reason_edit
     else
     {
 	$self->show_reason_edit($mgr, $user_id);
+    }
+}
+
+
+sub method_blocked
+{
+    my ($self, $mgr) = @_;
+    my $user_id = $mgr->{CGI}->param('user_id');
+
+    # if user changed language of reason
+    if (defined($mgr->{CGI}->param('u_sub_rslang')))
+    {
+	my $lang_id = $mgr->{CGI}->param('u_sel_rslang');
+	$self->show_blocked_page($mgr, $user_id, $lang_id);
+    }
+    # language change
+    else
+    {
+	# get reason-language-id from hidden variable (might be undef)
+	my $lang_id = $mgr->{CGI}->param('u_inp_rslang');
+	$self->show_blocked_page($mgr, $user_id, $lang_id);
     }
 }
 
@@ -604,10 +629,16 @@ sub show_reg1
     $mgr->{TmplData}{PAGE_METHOD} = 'reg2';
     
     # fill input fields if necessary
-    $mgr->{TmplData}{USER_USERNAME}  = $username  if (defined($username));
-    $mgr->{TmplData}{USER_FIRSTNAME} = $firstname if (defined($firstname));
-    $mgr->{TmplData}{USER_LASTNAME}  = $lastname  if (defined($lastname));
-    $mgr->{TmplData}{USER_EMAIL}     = $email     if (defined($email));
+    $mgr->{TmplData}{USER_USERNAME} = $username  if (defined($username));
+    $mgr->{TmplData}{USER_EMAIL}    = $email     if (defined($email));
+    if (defined($firstname)) 
+    { 
+	$self->put_pagedata($mgr, 'USER_FIRSTNAME', $firstname); 
+    }
+    if (defined($lastname)) 
+    { 
+	$self->put_pagedata($mgr, 'USER_LASTNAME', $lastname); 
+    }
 
     # fill system language select box
     my @syslangs = $mgr->{Func}->get_langs($mgr, 'system');
@@ -660,14 +691,20 @@ sub show_reg2
     
     # fill user values (and also the hidden fields)
     $mgr->{TmplData}{USER_USERNAME}  = $username   if (defined($username));
-    $mgr->{TmplData}{USER_FIRSTNAME} = $firstname  if (defined($firstname));
-    $mgr->{TmplData}{USER_LASTNAME}  = $lastname   if (defined($lastname));
+    if (defined($firstname)) 
+    {
+	$self->put_pagedata($mgr, 'USER_FIRSTNAME', $firstname);
+    }
+    if (defined($lastname))
+    {
+	$self->put_pagedata($mgr, 'USER_LASTNAME', $lastname);
+    }
     $mgr->{TmplData}{USER_EMAIL}     = $email      if (defined($email));
     $mgr->{TmplData}{USER_SYSLANGID} = $syslang_id if (defined($syslang_id));
     if (defined($syslang_id))
     {
 	$mgr->{TmplData}{USER_SYSLANG} 
-	    = $self->get_lang_name($mgr, $syslang_id);
+	    = $mgr->{Func}->get_lang($mgr, $syslang_id);
     }
     
     # fill dictionary template vars
@@ -721,10 +758,14 @@ sub show_mypage
 {
     my ($self, $mgr, $mode, $user_id) = @_;
 
-    #--- get data ------------------------------------------------------------#
+    #--- get data -------------------------------------------------------------#
     if (not defined($mode) or $mode eq 'me')
     {
 	$user_id  = $mgr->{Session}->get("UserId");
+    }
+    elsif (not defined($user_id))
+    {
+	warn sprintf("[Error:] missing user_id param in User::show_mypage()");
     }
 
     my ($username, $firstname, $lastname, $email, $syslang_id, $lasttime, 
@@ -745,7 +786,7 @@ sub show_mypage
     ($desc, $desc_langid)
         = $self->get_desc($mgr, $user_id, $desc_langid, $desclangs);
        
-    #--- fill user part ------------------------------------------------------#
+    #--- fill user part -------------------------------------------------------#
     # main template vars
     $mgr->{Template} = $mgr->{TmplFiles}->{User_MyPage};
     $mgr->{Action} = "user";
@@ -764,35 +805,46 @@ sub show_mypage
 
     # user data in template
     $mgr->{TmplData}{USER_USERNAME}  = $username;
-    $mgr->{TmplData}{USER_FIRSTNAME} = $firstname;
-    $mgr->{TmplData}{USER_LASTNAME}  = $lastname;
+    $self->put_pagedata($mgr, 'USER_FIRSTNAME', $firstname);
+    $self->put_pagedata($mgr, 'USER_LASTNAME', $lastname);
     $mgr->{TmplData}{USER_EMAIL}     = $email;
-    $mgr->{TmplData}{USER_SYSLANG}   = $self->get_lang_name($mgr, $syslang_id);
+    $mgr->{TmplData}{USER_SYSLANG}   = 
+        $mgr->{Func}->get_lang($mgr, $syslang_id);
     $mgr->{TmplData}{USER_LEVEL}     
         = $mgr->{Func}->get_text($mgr, 1088 + $level);
     if (defined($lasttime))
     {
-	$mgr->{TmplData}{USER_LASTLOGIN} = $self->timestring($lasttime);
+	$self->put_pagedata($mgr, 'USER_LASTLOGIN', 
+			    $self->timestring($lasttime));
     }
-    $mgr->{TmplData}{USER_REGTIME}   = $self->timestring($regtime);
+    $self->put_pagedata($mgr, 'USER_REGTIME', 
+			$self->timestring($regtime));
 
-# !!!
-# handle status here!!
-# !!!
-
-    #--- fill language part --------------------------------------------------#
+    if ($status == $status_blocked)
+    {
+	$mgr->{TmplData}{USER_IF_BLOCKED}  = 1;
+	$mgr->{TmplData}{PAGE_LANG_001079} = $mgr->{Func}->get_text($mgr, 1079);
+    }
+    else
+    {
+	$mgr->{TmplData}{USER_IF_BLOCKED}  = 0;
+    }
+	
+    #--- fill language part ---------------------------------------------------#
     if (@$mylangs == 0)
     {
+	$mgr->{TmplData}{USER_IF_NOLANGS} = 1;
 	$mgr->{TmplData}{PAGE_LANG_001075} = $mgr->{Func}->get_text($mgr, 1075);
     }
     else
     {
+	$mgr->{TmplData}{USER_IF_NOLANGS} = 0;
 	my @loop;
 	my $lang;
 	foreach $lang (@$mylangs)
         {
 	    my %loop_row;
-	    $loop_row{USER_MYLANG}    = $self->get_lang_name($mgr, $lang->[0]);
+	    $loop_row{USER_MYLANG}    = $mgr->{Func}->get_lang($mgr, $lang->[0]);
 	    $loop_row{USER_MYLANGLVL}
 	        = $mgr->{Func}->get_text($mgr, 1080 + ($lang->[1]));
 	    push(@loop, \%loop_row);
@@ -800,7 +852,7 @@ sub show_mypage
 	$mgr->{TmplData}{USER_LOOP_MYLANGS} = \@loop;
     }
 
-    #--- fill description part -----------------------------------------------#
+    #--- fill description part ------------------------------------------------#
     if ($desc)
     {
 	$mgr->{TmplData}{USER_IF_FIRST_DESC} = 0;
@@ -809,14 +861,14 @@ sub show_mypage
 	$self->fill_lang_select($mgr, $desclangs, undef, $desc_langid);
 	$mgr->{TmplData}{PAGE_LANG_001076} = $mgr->{Func}->get_text($mgr, 1076);
 	# description
-	$mgr->{TmplData}{USER_DESC} = $desc;
+	$self->put_pagedata_textarea($mgr, 'USER_DESC', $desc);
     }
     else
     {
 	$mgr->{TmplData}{USER_IF_FIRST_DESC} = 1;
     }
 
-    #--- links to text module ------------------------------------------------#
+    #--- links to text module -------------------------------------------------#
     $mgr->{TmplData}{PAGE_LANG_001070} = $mgr->{Func}->get_text($mgr, 1070);
     $mgr->{TmplData}{USER_LINK_TEXT}   = $mgr->my_url(ACTION => "text") 
                                          . "&method=text";
@@ -865,8 +917,10 @@ sub show_mypage
 	}
 	else
         {
-	    $mgr->{TmplData}{PAGE_LANG_001068} = $mgr->{Func}->get_text($mgr, 1068);
-	    $mgr->{TmplData}{PAGE_LANG_001069} = $mgr->{Func}->get_text($mgr, 1069);
+	    $mgr->{TmplData}{PAGE_LANG_001068} 
+	        = $mgr->{Func}->get_text($mgr, 1068);
+	    $mgr->{TmplData}{PAGE_LANG_001069} 
+	        = $mgr->{Func}->get_text($mgr, 1069);
 	}
 	# text links
 	$mgr->{TmplData}{PAGE_LANG_001071} = $mgr->{Func}->get_text($mgr, 1071);
@@ -1088,7 +1142,7 @@ sub show_upd_descedit
     # language select box
     $self->fill_lang_select($mgr, $desclangs, undef, $desc_langid);
     # description
-    $mgr->{TmplData}{USER_DESC} = $desc;
+    $self->put_pagedata_textarea($mgr, 'USER_DESC', $desc);
 
     # fill dictionary template vars
     $mgr->{TmplData}{USER_USERNAME}    = $username;
@@ -1204,7 +1258,7 @@ sub show_admin_page
     my ($self, $mgr, $user_id) = @_;
     my ($username, $firstname, $lastname, $email, $syslang_id, $lasttime, 
 	$regtime, $level, $status) = $self->get_user_info($mgr, $user_id);
-  
+    
     # main template vars
     $mgr->{Template}              = $mgr->{TmplFiles}->{User_Admin};
     $mgr->{Action}                = "user";
@@ -1225,10 +1279,18 @@ sub show_admin_page
     $mgr->{TmplData}{PAGE_LANG_001184} = $mgr->{Func}->get_text($mgr, 1184);
 
     # if user is blocked, show reason
-    if ($status == 2)
+    if ($status == $status_blocked)
     {
+	my ($blocked_by, $block_email, $block_time) 
+	    = $self->get_block_info($mgr, $user_id);
+
 	$mgr->{TmplData}{USER_IF_BLOCKED} = 1;
 	$self->fill_admin_reason($mgr, $user_id);
+
+	$mgr->{TmplData}{USER_BLOCKED_BY}  = $blocked_by;
+	$mgr->{TmplData}{USER_BLOCK_EMAIL} = $block_email;
+	$self->put_pagedata($mgr, 'USER_BLOCK_TIME', 
+			    $self->timestring($block_time));
 
 	$mgr->{TmplData}{PAGE_LANG_001185} = $mgr->{Func}->get_text($mgr, 1185);
 	$mgr->{TmplData}{PAGE_LANG_001186} = $mgr->{Func}->get_text($mgr, 1186);
@@ -1238,7 +1300,9 @@ sub show_admin_page
 	$mgr->{TmplData}{PAGE_LANG_001190} = $mgr->{Func}->get_text($mgr, 1190);
 	$mgr->{TmplData}{PAGE_LANG_001191} = $mgr->{Func}->get_text($mgr, 1191);
 	$mgr->{TmplData}{PAGE_LANG_001192} = $mgr->{Func}->get_text($mgr, 1192);
-	$mgr->{TmplData}{PAGE_LANG_001193} = $mgr->{Func}->get_text($mgr, 1193);
+ 	$mgr->{TmplData}{PAGE_LANG_001193} = $mgr->{Func}->get_text($mgr, 1193);
+ 	$mgr->{TmplData}{PAGE_LANG_001194} = $mgr->{Func}->get_text($mgr, 1194);
+ 	$mgr->{TmplData}{PAGE_LANG_001195} = $mgr->{Func}->get_text($mgr, 1195);
     }
     # else show promote-button and block-button
     else 
@@ -1312,7 +1376,7 @@ sub show_reason_edit
     # language select box
     $self->fill_lang_select($mgr, $rslangs, undef, $rs_langid);
     # reason
-    $mgr->{TmplData}{USER_REASON} = $reason;
+    $self->put_pagedata_textarea($mgr, 'USER_REASON', $reason);
 
     # fill dictionary template vars
     $mgr->{TmplData}{PAGE_LANG_001204} = $mgr->{Func}->get_text($mgr, 1204);
@@ -1371,6 +1435,61 @@ sub show_reason_new
     $mgr->{TmplData}{PAGE_LANG_001221} = $mgr->{Func}->get_text($mgr, 1221);
 }
 
+
+#
+# fill page-for-blocked-users template
+# Params: 1. Manager ref
+#         2. user id of blocked user
+#         3. language id of reason (optional)
+# No Return Value
+#
+sub show_blocked_page
+{
+    my ($self, $mgr, $user_id, $rs_langid) = @_;
+    # if no reason language has been given, use current system language
+    unless (defined($rs_langid)) { $rs_langid = $mgr->{Language}; }
+
+    #--- get data -------------------------------------------------------------#
+    my ($blocked_by, $block_email, $block_time) 
+        = $self->get_block_info($mgr, $user_id);
+
+    # get languages of all reasons for this user
+    my $rslangs = $self->get_reasonlangs($mgr, $user_id);
+
+    # get user's description (in desired language)
+    my $reason;
+    ($reason, $rs_langid)
+        = $self->get_reason($mgr, $user_id, $rs_langid, $rslangs);
+
+    #--- fill template  -------------------------------------------------------#
+    # main template vars
+    $mgr->{Template} = $mgr->{TmplFiles}->{User_Blocked};
+    $mgr->{Action} = "user";
+    $mgr->{TmplData}{PAGE_TITLE}  = $mgr->{Func}->get_text($mgr, 1224);
+    $mgr->{TmplData}{PAGE_METHOD} = 'blocked';
+
+    # hidden vars
+    $mgr->{TmplData}{USER_RSLANG} = $rs_langid;
+    $mgr->{TmplData}{USER_USERID} = $user_id;
+    # admin info
+    $mgr->{TmplData}{USER_BLOCKED_BY}  = $blocked_by;
+    $mgr->{TmplData}{USER_BLOCK_EMAIL} = $block_email;
+    $self->put_pagedata($mgr, 'USER_BLOCK_TIME', 
+			$self->timestring($block_time));
+    # language select box
+    $self->fill_lang_select($mgr, $rslangs, undef, $rs_langid);
+    # reason
+    $self->put_pagedata_textarea($mgr, 'USER_REASON', $reason);
+
+    # fill dictionary template vars
+    $mgr->{TmplData}{PAGE_LANG_001224} = $mgr->{Func}->get_text($mgr, 1224);
+    $mgr->{TmplData}{PAGE_LANG_001225} = $mgr->{Func}->get_text($mgr, 1225);
+    $mgr->{TmplData}{PAGE_LANG_001226} = $mgr->{Func}->get_text($mgr, 1226);
+    $mgr->{TmplData}{PAGE_LANG_001227} = $mgr->{Func}->get_text($mgr, 1227);
+    $mgr->{TmplData}{PAGE_LANG_001228} = $mgr->{Func}->get_text($mgr, 1228);
+    $mgr->{TmplData}{PAGE_LANG_001229} = $mgr->{Func}->get_text($mgr, 1229);
+}
+
 ### PAGE DISPLAY AUXILARY FUNCTIONS ############################################
 
 #
@@ -1392,7 +1511,7 @@ sub fill_langlvl_loop
 	my %loop_row;
 
 	# the language name
-	$loop_row{USER_MYLANG}      = $self->get_lang_name($mgr, $lang->[0]);
+	$loop_row{USER_MYLANG}      = $mgr->{Func}->get_lang($mgr, $lang->[0]);
 	# the select box name
 	$loop_row{USER_SEL_LANGLVL} = "u_sel_langlvl_$i";
 
@@ -1513,7 +1632,7 @@ sub fill_admin_reason
     # now fill template: language select box and reason
     $self->fill_lang_select($mgr, $rslangs, undef, $rs_langid);
     # fill reason
-    $mgr->{TmplData}{USER_REASON} = $reason;
+    $self->put_pagedata_textarea($mgr, 'USER_REASON', $reason);
 
 # debug: no user should be blocked without reason! :)
     if (length($reason) == 0)
@@ -1567,7 +1686,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 SQL
 
     unless ($sth->execute($username, $firstname, $lastname, $passwd, $email,
-			  "1000", "1", "0", $syslang_id, time())) 
+			  "1000", $status_first, "0", $syslang_id, time())) 
     {
 	warn sprintf("[Error:] Trouble adding user to %s. " .
 		     "Reason: [%s].", $table, $dbh->errstr());
@@ -2019,7 +2138,7 @@ WHERE user_id = ?
 
 SQL
 
-    unless ($sth->execute('2', $user_id)) 
+    unless ($sth->execute($status_blocked, $user_id)) 
     {
 	warn sprintf("[Error:] Trouble updating %s. " .
 		     "Reason: [%s].", $table, $dbh->errstr());
@@ -2138,7 +2257,7 @@ WHERE user_id = ?
 
 SQL
 
-    unless ($sth->execute('0', $user_id)) 
+    unless ($sth->execute($status_ok, $user_id)) 
     {
 	warn sprintf("[Error:] Trouble updating %s. " .
 		     "Reason: [%s].", $table, $dbh->errstr());
@@ -2304,7 +2423,7 @@ SQL
     my $lang;
     foreach $lang (@$result)
     {
-	$lang->[1] = $self->get_lang_name($mgr, $lang->[0]);
+	$lang->[1] = $mgr->{Func}->get_lang($mgr, $lang->[0]);
     }
     $sth->finish();
     return $result;
@@ -2384,6 +2503,44 @@ SQL
 
 
 #
+# gets admin name and email and time of block for a blocked user
+# Params: 1. Manager ref
+#         2. user id of blocked user
+# Returns ($admin_name, $admin_email, $block_time)
+#
+sub get_block_info
+{
+    my ($self, $mgr, $user_id) = @_;
+    my $dbh = $mgr->connect();
+    my $table_block = $mgr->{Tables}->{USER_BLOCK};
+    my $table_user  = $mgr->{Tables}->{USER};
+
+    $dbh->do("LOCK TABLES $table_block AS b READ, $table_user AS u READ");
+    my $sth = $dbh->prepare(<<SQL);
+
+SELECT b.blocked_by, b.block_time, u.username, u.email
+FROM $table_block b, $table_user u
+WHERE b.user_id = ? AND u.user_id = b.blocked_by
+
+SQL
+
+    unless ($sth->execute($user_id)) 
+    {
+	warn sprintf("[Error:] Trouble selecting from %s and %s " .
+		     "Reason: [%s].",$table_block, $table_user, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+    $dbh->do("UNLOCK TABLES");
+
+    my $result = $sth->fetchrow_arrayref();
+    $sth->finish();
+    return ($result->[2], $result->[3], $result->[1]);
+}
+    
+
+#
 # selects languages of all blocking reasons for a user 
 # Params: 1. Manager ref
 #         2. user id
@@ -2418,7 +2575,7 @@ SQL
     my $lang;
     foreach $lang (@$result)
     {
-	$lang->[1] = $self->get_lang_name($mgr, $lang->[0]);
+	$lang->[1] = $mgr->{Func}->get_lang($mgr, $lang->[0]);
     }
     $sth->finish();
     return $result;
@@ -2494,45 +2651,6 @@ SQL
     my $result = $sth->fetchrow_arrayref();
     $sth->finish();
     return ($result->[0], $lang_id1);
-}
-
-
-#
-# Returns the name of a language in the current session's lang
-# Params: 1. Manager ref  
-#         2. language id 
-# Return value: the language name (you've probably guessed that...)
-#
-sub get_lang_name 
-{
-    my ($self, $mgr, $lang_id) = @_;
-
-    my $table = $mgr->{Tables}->{LANG};
-    my $dbh   = $mgr->connect();
-
-    $dbh->do("LOCK TABLES $table READ");
-    my $sth        = $dbh->prepare(<<SQL);
-
-SELECT lang_name_id
-FROM $table
-WHERE lang_id = ?
-
-SQL
-
-    unless ($sth->execute($lang_id)) 
-    {
-	warn sprintf("[Error:] Trouble selecting from [%s]. ".
-		     "Reason: [%s].", $table, $dbh->errstr());
-	$dbh->do("UNLOCK TABLES");
-	$mgr->fatal_error("Database error.");
-    }
-
-    $dbh->do("UNLOCK TABLES");
-
-    my $dict_id = $sth->fetchrow_arrayref()->[0];
-    $sth->finish();
-
-    return $mgr->{Func}->get_text($mgr, $dict_id);
 }
 
 ### Check Input Functions ######################################################
@@ -2767,6 +2885,56 @@ sub check_reason
 ### Auxiliary Functions ########################################################
 
 #
+# reads a value from cgi
+# Params: 1. Manager
+#         2. cgi value name
+# returns a to-unicode-converted, html-unescaped string, ready for database
+#
+sub get_formdata
+{
+    my ($self, $mgr, $val_name) = @_;
+    my $value = $mgr->{CGI}->param($val_name);
+    if (not defined ($value)) { return undef; }
+    return $mgr->unescape($mgr->to_unicode($value));
+}
+
+
+#
+# sets a HTML::Template value 
+#   (converts the value from unicode and html-escapes it first)
+# Params: 1. Manager
+#         2. name of the value
+#         3. value
+# No Return value
+#
+sub put_pagedata
+{
+    my ($self, $mgr, $val_name, $value) = @_;
+    $mgr->{TmplData}{$val_name} = $mgr->escape($mgr->from_unicode($value));
+}
+
+
+#
+# same as put_pagedata, but newlines are not converted to <br> (which would be
+# displayed as-is)
+#
+sub put_pagedata_textarea
+{
+    my ($self, $mgr, $val_name, $value) = @_;
+
+    # convert from unicode
+    my $tmpl_value = $mgr->from_unicode($value);
+
+    # html-escape
+    $tmpl_value =~ s/\"/&quot;/g;
+    $tmpl_value =~ s/</&lt;/g;
+    $tmpl_value =~ s/>/&gt;/g;
+
+    $mgr->{TmplData}{$val_name} = $tmpl_value;
+}
+
+
+#
 # good ol' c ... (used in check_reg)
 #
 sub tolower
@@ -2850,15 +3018,21 @@ sub send_passwd
 {
     my ($self, $mgr, $username, $firstname, $lastname, $email, $syslang_id, 
 	$passwd) = @_;
+    
+    $firstname = $mgr->from_unicode($firstname);
+    $lastname  = $mgr->from_unicode($lastname);
 
     my $message = 
-        $mgr->{Func}->get_text($mgr, 1093) . " $firstname $lastname \n\n" .
-	$mgr->{Func}->get_text($mgr, 1094) . "\n" .
-	$mgr->{Func}->get_text($mgr, 1095) . "\n\n    " .
-	$mgr->{Func}->get_text($mgr, 1096) . ": $username \n    " .
-	$mgr->{Func}->get_text($mgr, 1097) . ": $passwd \n\n" .
-	$mgr->{Func}->get_text($mgr, 1098) . "\n\n" .
-	$mgr->{Func}->get_text($mgr, 1099) . "\n";
+        $mgr->from_unicode($mgr->{Func}->get_text($mgr, 1093)) .
+	" $firstname $lastname \n\n" .
+	$mgr->from_unicode($mgr->{Func}->get_text($mgr, 1094)) . "\n" .
+	$mgr->from_unicode($mgr->{Func}->get_text($mgr, 1095)) . "\n\n    " .
+	$mgr->from_unicode($mgr->{Func}->get_text($mgr, 1096)) . 
+	": $username \n    " .
+	$mgr->from_unicode($mgr->{Func}->get_text($mgr, 1097)) . 
+	": $passwd \n\n" .
+	$mgr->from_unicode($mgr->{Func}->get_text($mgr, 1098)) . "\n\n" .
+	$mgr->from_unicode($mgr->{Func}->get_text($mgr, 1099)) . "\n";
 
     my %mail = 
     ( 

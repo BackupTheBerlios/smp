@@ -57,6 +57,7 @@ $TABLES = {
            USER_DESC      => 'lingua_user_desc',
            USER_LANG      => 'lingua_user_lang',
 	   TEXT           => 'lingua_text',
+	   TEXT_RES	  => 'lingua_text_reserve',
 	   TEXT_RATING    => 'lingua_text_rating',
 	   POINTS_INACTIV => 'lingua_inactiv_points'
 };
@@ -81,10 +82,18 @@ $TMPL = {
 	 Text_New             => 'lingua_text_new.tmpl',
          Text_New_Ok          => 'lingua_text_new_ok.tmpl',
 	 Text_New_Upload      => 'lingua_text_new_upload.tmpl',
-	 Text_Cat_Show        => 'lingua_text_cat_show.tmpl'
+	 Text_Cat_Show        => 'lingua_text_cat_show.tmpl',
+	 Text_Trans           => 'lingua_text_trans.tmpl',
+	 Text_Trans_Upload    => 'lingua_text_trans_upload.tmpl',
+	 Text_Trans_Ok        => 'lingua_text_trans_ok.tmpl',
+	 Text_User_Mes        => 'lingua_text_user.tmpl',
+	 Text_Trans_Download  => 'lingua_text_to_trans_download.tmpl',
+	 Text_Download 	      => 'lingua_text_download.tmpl'
 };
 
 1;
+
+
 
 
 

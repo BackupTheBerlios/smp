@@ -48,7 +48,7 @@ use fields (
 use vars qw(%FIELDS $VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)\.(\d+)/;
 
 &handler();
 
@@ -151,13 +151,17 @@ sub handler {
     warn "No parameter method in class [$class].";
     $self->fatal_error();
   }
-
-  unless ($self->{ModuleHandlesOutput}) {
+if ($self->{Template} eq 'lingua_text_download.tmpl'){
+ $self->output();  
+}else{
+unless ($self->{ModuleHandlesOutput}) {
     $self->{Page}->fill_main_part($self);
     $self->{Page}->fill_user_part($self);
     $self->{Page}->fill_lang_part($self);
     $self->output();
   }
+}
+
 }
 
 sub new {
@@ -448,9 +452,13 @@ sub output {
 				     loop_context_vars => 1);
 
   $template->param(%{$self->{TmplData}});
-  $self->header();
 
-  print $self->to_unicode($template->output());
+  print "Content-type: text/html;\n\n";			#geändert:  Giovanni N.
+  print $template->output;
+
+#  $self->header();
+#  print $self->to_unicode($template->output());
+
 }
 
 sub template_error {
@@ -473,3 +481,6 @@ sub template_error {
 }
 
 1;
+
+
+

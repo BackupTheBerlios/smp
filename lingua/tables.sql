@@ -37,7 +37,7 @@ INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Change', 'Wechseln','Changer
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Login', 'Anmelden','Entrer');
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Points existence','Punkte vorhanden', 'Points existants');
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Points in work','Punkte in arbeit', 'Points en travail');
-INSERT INTO lingua_dictionary (en, de, fr) VALUES ('personal page','persÅˆnliche Seite', 'Page personnelle');
+INSERT INTO lingua_dictionary (en, de, fr) VALUES ('personal page','persˆnliche Seite', 'Page personnelle');
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Logout', 'Abmelden','Sortir');
 INSERT INTO lingua_dictionary (en, de, fr) VALUES 
 	('Wrong username or password.', 'Falscher Benutzername oder Passwort.', 'Mot de passe ou Nom Utilisateur incorrect');
@@ -45,7 +45,7 @@ INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Put a text', 'Text rein stel
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Category admin', 'Kategorien verwalten', 'Gestion de Categories');
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Start', 'Start', 'Start');
 
-INSERT INTO lingua_dictionary (en, de, fr) VALUES ('french', 'franzÅˆsich', 'francais');
+INSERT INTO lingua_dictionary (en, de, fr) VALUES ('french', 'franzˆsich', 'francais');
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('swahili', 'swahili', 'swahili' );
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('lingala', 'lingala', 'lingala' );
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('arabisch', 'arabisch', 'arabe' );
@@ -55,7 +55,7 @@ INSERT INTO lingua_dictionary (en, de, fr) VALUES ('polnich','polnich', 'polonai
 
 INSERT INTO lingua_dictionary (en, de) VALUES ('Register here', 'Hier Registrieren');
 
-INSERT INTO lingua_dictionary (en, de) VALUES ('Title', 'Å‹berschrift');
+INSERT INTO lingua_dictionary (en, de) VALUES ('Title', '‹berschrift');
 INSERT INTO lingua_dictionary (en, de) VALUES ('Description', 'Beschreibung');
 INSERT INTO lingua_dictionary (en, de) VALUES ('Languages', 'Sprachen');
 INSERT INTO lingua_dictionary (en, de) VALUES ('Amount of intresting', 'Interessengrad');
@@ -67,13 +67,13 @@ INSERT INTO lingua_dictionary (de, fr) VALUES ('Sport', 'Sport');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Technik', 'Technique');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Wirtschaftswissenschaften', 'Sciences economiques');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Diverses', 'Divers');
-INSERT INTO lingua_dictionary (de, fr) VALUES ('Åƒgyptologie', 'Egyptoligie');
-INSERT INTO lingua_dictionary (de, fr) VALUES ('ArchÅ‰ologie', 'Archeologie');
+INSERT INTO lingua_dictionary (de, fr) VALUES ('ƒgyptologie', 'Egyptoligie');
+INSERT INTO lingua_dictionary (de, fr) VALUES ('Arch‰ologie', 'Archeologie');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Kulturgeschichte', 'Histoires Culturelles');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Politikwissenschaft', 'Sciences Politiques');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Sozialwissenschaften', 'Sciences Sociales');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Theologie, Religion', 'Theologie, Religion');
-INSERT INTO lingua_dictionary (de, fr) VALUES ('VÅˆlkerkunde', 'Ethnologie');
+INSERT INTO lingua_dictionary (de, fr) VALUES ('Vˆlkerkunde', 'Ethnologie');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Normen, Patente', 'Standardisation, Brevet');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Rechtswissenschaft', 'Sciences du Droit');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Physik', 'Physique');
@@ -86,7 +86,7 @@ INSERT INTO lingua_dictionary (de, fr) VALUES ('Energietechnik', 'Technique ener
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Informatik und Datenverarbeitung', 'Informatique et Traitement de Donnees');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Maschinenbau','Construction Mecanique');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Mechanik', 'Mecanique');
-INSERT INTO lingua_dictionary (de, fr) VALUES ('MeÅﬂ- und Regelungstechnik', 'Technique de Reglementation et de Mesure');
+INSERT INTO lingua_dictionary (de, fr) VALUES ('Meﬂ- und Regelungstechnik', 'Technique de Reglementation et de Mesure');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Nachrichtentechnik', 'Technique de la Communication');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Verkehrswesen', 'Transport, Circulation');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Vermessungswesen', 'Mensuration, Topographie');
@@ -102,7 +102,7 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('6004', 'Unlock', 'Freig
 
 ### text module (new & change)
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7000', 'Category', 'Kategorie');
-INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7001', 'Back', 'ZurÅ¸ck');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7001', 'Back', 'Zur¸ck');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7002', 'Title', 'Titel');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7003', 'Description', 'Beschreibung');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7004', 'Content', 'Inhalt');
@@ -119,19 +119,87 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7009',
                                                         'Bitte geben Sie einen Text ein oder laden einen hoch.');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7010',
                                                         'Please check your input.',
-                                                        'Bitte Å¸berprÅ¸fen Sie ihre Eingaben.');
+                                                        'Bitte ¸berpr¸fen Sie ihre Eingaben.');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7011',
                                                         'You have not enough Points for this text:',
-                                                        'Ihnen fehlen noch Punkte fÅ¸r diesen Text:');
+                                                        'Ihnen fehlen noch Punkte f¸r diesen Text:');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7012', 'Source language', 'Quellsprache');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7017', 'Destiny language', 'Zielsprache');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7018',
                                                         'Source language and destiny languagemay not be the same.',
-                                                        'Quellsprache und Zielsprache dÅ¸rfen nicht gleich sein.');
+                                                        'Quellsprache und Zielsprache d¸rfen nicht gleich sein.');
 
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8000', 'Your browser does not support Unicode', 'Ihr Browser unterst¸tzt leider nicht Unicode');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8001', 'Your file is not an Unicode-File', 'Ihre Datei ist nicht richtig kodiert(Unicode-utf8)');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8002', 'Your data are not right Coded', 'Ihre Daten sind nicht richtig kodiert(Unicode-utf8).');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8003', 'Enter new text', 'neuer Text eingeben');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8004', 'New Text upload', 'neuer Text uploaden');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8005', 'Text insert confirmation', 'Text speichern');
+
+
+#TMPL-TEXT-TRANS
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8006', 'Text translation', 'Text');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8007', 'Original-Title', 'Originaler-Titel');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8008', 'Translation-Title', '‹bersetzer-Titel');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8009', 'Original-Description', 'Originale-Beschreibung');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8010', 'Translation-Description', '‹bersetze-Beschreibung');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8011', 'Original-Text', 'Originaler-Text');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8012', 'Translation-Text', '‹bersetzer-Text');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8013', 'Upload', 'Hochladen');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8014', 'Save', 'Speichern');
+
+### text to trans upload
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8015', 'Upload translation file', '‹bersetze Datei hochladen');
+
+# TMPL TEXT-TRANS DOWNLOAD
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8018', 'Reserve language', 'Sprache reservieren');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8016', 'online translation', 'online ‹bersetzung');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8017', 'Text downloaden', 'Text herunterladen');
+
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8022', 'Date', 'Datum');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8019', 'Text', 'Text');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8020', 'Object', 'Betreff');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8021', 'User messages', 'Benutzermeldungen');
+
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8023', 'No message for you', 'Keine Meldung');
+
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8024', 'Text is already available in this language', 'Der Text ist schon in dieser Sprache vorhanden');
+
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8025', 
+                                                        'Please give a translation of the title.', 
+                                                        'Bitte geben Sie eine ‹bersetzung des Titels an.');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8026',
+                                                        'Please give a translation of the description.',
+                                                        'Bitte geben Sie eine ‹bersetzung der Beschreibung ein.');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8027',
+                                                        'Please give a translation of the text.',
+                                                        'Bitte geben Sie eine ‹bersetzung des Textes.');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8028',
+                                                        'Please check your input.',
+                                                        'Bitte ¸berpr¸fen Sie ihre Eingaben.');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8029','Code of file not OK','Kodierung der Datei nicht OK');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8030','Fileformat not OK','Dateiformat nicht OK');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8031','no file chooce','kein Datei gew‰hlen');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8032',
+                                                        'Inserting of translation was sucsesfully finishted.',
+                                                        'Speichern der ‹bersetzung war Erfolgreich.');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8033','delete','lˆschen');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8034','upload','hochladen');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8035','release','freigeben');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8036','your text have been rated','Ihr Text wurde bewertet');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8037','your translation have been rated','Ihre ‹bersetzung wurde bewertet');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8038', 'Text is reserved for you. Translation language:','Text is f¸r Sie reserviert. ‹bersetzungssprache:');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8039','Your text have been reserved. Translation language:', 'Ihr Text wurde reserviert. ‹bersetzungssprache:');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8040','Your text have been transled. Translation language:', 'Ihr Text wurde ¸bersetzt. ‹bersetzungssprache:');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8041','Your reserved text have been released. Translation language:','Ihr reservierter Text wurde freigegeben. ‹bersetzungssprache:');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8042','Text have been reserved for you. Translation language:','Text wurde f¸r Sie reserviert. ‹bersetzungssprache:');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8043','This language is already reserved. Selected language:','Diese Sprache wurde schon reserviert. Gew‰hlte Sprache:');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8044','Please select a language','Bitte eine Sprache w‰hlen');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8045','Close fenster','Dieses Fenster schliessen');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8046','Select (file)-(Save As) or (Print) to save or to print this file.','W‰hlen Sie Bitte (Datei)-(Speichern unter) oder (ausdr¸cken), um den Inhalt dieses Festers auszudr¸cken oder zu speichern');
+
+
+
 
 ### text module (upload)
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7016', 'File', 'Datei');
@@ -140,7 +208,7 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7016', 'File', 'Datei')
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7013',
                                                         'Inserting was sucsesfully finishted.',
                                                         'Speichern des Textes war Erfolgreich.');
-INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7014', 'Count words', 'Anzahl WÅˆrter');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7014', 'Count words', 'Anzahl Wˆrter');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7015', 'Point cost', 'Punktekosten');
 
 #
@@ -550,7 +618,9 @@ CREATE TABLE lingua_user (
         UNIQUE(username, email)
 );
 
-INSERT INTO lingua_user (username, password, lastname, firstname, email, reg_time, points, status, level, system_lang) VALUES ('admin', 'test', 'Test', 'Testie', 'test@test.de', '1007057807', '1000', '0', '2', '1');
+INSERT INTO lingua_user (username, password, lastname, firstname, email, reg_time, points, status, level, system_lang) VALUES ('admin', 'test', 'Test', 'Testie', 'test@test.de', '1007057807', '1000', '1', '2', '1');
+INSERT INTO lingua_user (user_id, username, password, lastname, firstname, email, reg_time, points, status, level, system_lang) VALUES ('3','gio', 'gio', 'Test', 'Testie', 'test@test.de', '1007057807', '1000', '1', '2', '1');
+
 
 INSERT INTO lingua_user 
 (user_id, username, password, lastname, firstname, email, reg_time, points, status, level, system_lang) VALUES 
@@ -720,6 +790,29 @@ INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (1,4,25)
 INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (2,5,25);
 INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (2,6,25);
 INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (2,7,25);
+
+
+DROP TABLE IF EXISTS lingua_text_reserve;
+
+CREATE TABLE lingua_text_reserve (
+        res_id          INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	text_id         INT(10) UNSIGNED DEFAULT '0',	
+	lang_trans_id   INT(10) UNSIGNED DEFAULT '0',
+        submit_time     TIMESTAMP,
+        user_id         INT(10) UNSIGNED NOT NULL,
+        art             ENUM('0','1','2','3', '4', '5') NOT NULL,
+        PRIMARY KEY(res_id)
+);
+
+
+
+
+
+
+
+
+
+
 
 
 

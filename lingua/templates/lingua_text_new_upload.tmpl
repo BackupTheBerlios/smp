@@ -12,9 +12,11 @@
   </td>
   <td bgcolor="#31639C" width="600">
 
-    <table cellspacing="5" cellpadding="0" border="0" width="100%" align="right">
+    <table cellspacing="5" cellpadding="0" border="0" align="rigth">
     <tr>
-	<td> <a class="normal" href="<TMPL_VAR TEXT_ADD_BACK>"><TMPL_VAR PAGE_LANG_007001></a> </td>
+	<td>
+	<a class="normal" onclick="<TMPL_VAR TEXT_BACK>"><TMPL_VAR PAGE_LANG_007001></a>
+	</td>
         <td>  <TMPL_IF UNICODE_ERROR>
 	          <span class="alert">
         	    <TMPL_VAR UNICODE_ERROR>
@@ -43,6 +45,9 @@
 </table>
 
 <TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
 
 
 

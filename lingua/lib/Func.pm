@@ -53,7 +53,8 @@ SQL
 
   # Push the languages id and the languages name into the @lang array.
   while (my ($lang_id, $lang) = $sth->fetchrow_array()) {
-    push (@langs, [$lang_id, $lang]);
+
+    push (@langs, [$lang_id, $mgr->to_unicode($lang)]);	    #geändert: Giovanni N.
   }
 
   $sth->finish();
@@ -97,7 +98,7 @@ SQL
 
   $sth->finish();
 
-  return $lang_name;
+   return $mgr->to_unicode($lang_name);    #geändert: Giovanni N.
 }
 
 #-----------------------------------------------------------------------------#
@@ -135,7 +136,7 @@ SQL
 
   $sth->finish();
 
-  return $text;
+  return $mgr->to_unicode($text);  #geändert: Giovanni N.
 }
 
 #-----------------------------------------------------------------------------#
@@ -173,7 +174,7 @@ SQL
 
   # Push all the selected values into an array.
   while (my ($cid, $count, $name, $cats, $depth, $status) = $sth->fetchrow_array()) {
-    push (@cats, [$cid, $name, $count, $cats, $depth, $status]);
+    push (@cats, [$cid, $mgr->to_unicode($name), $count, $cats, $depth, $status]);     #geändert: Giovanni N.
   }
 
   $sth->finish();
@@ -217,6 +218,8 @@ SQL
   my (@cat) = $sth->fetchrow_array();
 
   $sth->finish();
+
+ $cat[2]= $mgr->to_unicode($cat[2]);   #geändert: Giovanni N.
 
   return @cat;
 }
@@ -277,3 +280,4 @@ sub check_for_user {
 }
 
 1;
+

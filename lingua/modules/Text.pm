@@ -6,7 +6,9 @@ use vars qw($VERSION);
 use strict;
 
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.27 $ =~ /(\d+)\.(\d+)/;
+
+$VERSION = sprintf "%d.%03d", q$Revision: 1.28 $ =~ /(\d+)\.(\d+)/;
+
 
 
 #-----------------------------------------------------------------------------#
@@ -67,9 +69,6 @@ sub parameter {
  } elsif ($method eq "download_text") {
     $self->download_text($mgr);
 
- } elsif ($method eq 'text_show' || defined $mgr->{CGI}->param('text_show')) {        # by Hendrik Erler
-    $self->show_text_see($mgr);                                                       # by Hendrik Erler
-
  } elsif ($method eq 'delete_text' || defined $mgr->{CGI}->param('delete_text')) {    # by Hendrik Erler
     $self->delete_text($mgr);                                                         # by Hendrik Erler
 
@@ -78,6 +77,18 @@ sub parameter {
 
  } elsif ($method eq 'text_rating' || defined $mgr->{CGI}->param('text_rating')) {     # by Hendrik Erler
     $self->text_rating($mgr);                                                          # by Hendrik Erler
+
+ } elsif ($method eq 'view_trans' || defined $mgr->{CGI}->param('view_trans')) {        # by Hendrik Erler
+    $self->show_text_see($mgr);                                                       # by Hendrik Erler
+
+ } elsif ($method eq 'dont_delete_orig' || defined $mgr->{CGI}->param('dont_delete_orig')) {        # by Hendrik Erler
+    $self->show_text_see($mgr);                                                       # by Hendrik Erler
+
+ } elsif ($method eq 'dont_delete_trans' || defined $mgr->{CGI}->param('dont_delete_trans')) {        # by Hendrik Erler
+    $self->show_text_see($mgr);                                                       # by Hendrik Erler
+
+ } elsif ($method eq 'text_show' || defined $mgr->{CGI}->param('text_show')) {        # by Hendrik Erler
+    $self->show_text_see($mgr);                                                       # by Hendrik Erler
 
  } elsif ($method eq 'text' || defined $mgr->{CGI}->param('text')) {                   # by Hendrik Erler
     $self->texts_own($mgr);                                                            # by Hendrik Erler
@@ -1884,13 +1895,8 @@ sub show_text_see {
   my $text_rating = $mgr->{CGI}->param('text_rating') || undef;
 
   $mgr->{Template} = $mgr->{TmplFiles}->{Text_Show};
-  $mgr->{TmplData}{TEXT_ID} = $text_id;
 
-  #if (defined $text_rating && defined $text_id){ $self->text_original_rating($mgr); }
-  #if (defined $view_trans){ $self->view_trans($mgr); }
-  #elsif (defined $text_rating && defined $trans_text_id){ $self->text_trans_rating($mgr);}
-  #elsif ($trans_text_id ne undef){ $self->show_text_translation($mgr);}
-  if ($text_id ne undef){ $self->show_text($mgr);}
+  if (defined $text_id){ $self->show_text($mgr);}
 }
 
 
@@ -1914,6 +1920,7 @@ sub show_text{
   if ($mgr->{CGI}->param('method') eq 'view_trans' || defined $mgr->{CGI}->param('view_trans')){
     $given_text_id = $mgr->{CGI}->param('text_trans_lang_id') || undef;
   }
+  $mgr->{TmplData}{TEXT_ID} = $given_text_id;
 
 #get Textvalues from text-Table #############
   my $table = $mgr->{Tables}->{TEXT};
@@ -1922,7 +1929,8 @@ sub show_text{
   my $sth = $dbh->prepare(<<SQL);
 
 SELECT  text_id, parent_id, text_header, text_desc, text_content, num_words,
-        lang_id, submit_time, user_id, category_id, status, avg_rating, num_ratings
+        lang_id, submit_time, user_id, category_id, status, avg_rating, num_ratings,
+        lang_trans_id
 FROM   $table
 WHERE  text_id = ?
 
@@ -1948,35 +1956,40 @@ SQL
   my $status        = $row[10];
   my $avg_rating    = $row[11];
   my $num_ratings   = $row[12];
+  my $lang_trans_id = $row[13];
 
   $sth->finish();
 
   # fill template lingua_show_text.tmpl
   #$mgr->{TmplData}{PAGE_LANG_007023} = $mgr->{Func}->get_text($mgr, 7023);#Title
-  $mgr->{TmplData}{PAGE_LANG_007100} = $mgr->{Func}->get_text($mgr, 7100);#Author
   $mgr->{TmplData}{PAGE_LANG_007120} = $mgr->{Func}->get_text($mgr, 7120);#Title of Text
+  $mgr->{TmplData}{PAGE_LANG_007124} = $mgr->{Func}->get_text($mgr, 7124);#Language of Text
   $mgr->{TmplData}{PAGE_LANG_007122} = $mgr->{Func}->get_text($mgr, 7122);#Text-Description
   $mgr->{TmplData}{PAGE_LANG_007121} = $mgr->{Func}->get_text($mgr, 7121);#Text_Length
   $mgr->{TmplData}{PAGE_LANG_007102} = $mgr->{Func}->get_text($mgr, 7102);#TEXT_ORIG_LANG
   $mgr->{TmplData}{PAGE_LANG_007103} = $mgr->{Func}->get_text($mgr, 7103);#TEXT_TRANS_LANGUAGES
-  $mgr->{TmplData}{PAGE_LANG_007105} = $mgr->{Func}->get_text($mgr, 7105);#TEXT_RATING_NUMBE
+  $mgr->{TmplData}{PAGE_LANG_007125} = $mgr->{Func}->get_text($mgr, 7125);#TEXT_RATING_NUMBER
+  $mgr->{TmplData}{PAGE_LANG_007105} = $mgr->{Func}->get_text($mgr, 7105);#TEXT_RATING_NUMBER
   $mgr->{TmplData}{PAGE_LANG_007101} = $mgr->{Func}->get_text($mgr, 7101);#TEXT
-  $mgr->{TmplData}{PAGE_LANG_007106} = $mgr->{Func}->get_text($mgr, 7106);#text_trans_buuton
+  $mgr->{TmplData}{PAGE_LANG_007106} = $mgr->{Func}->get_text($mgr, 7106);#text_trans_button
   $mgr->{TmplData}{PAGE_LANG_007114} = $mgr->{Func}->get_text($mgr, 7114);#delete_text_button
   $mgr->{TmplData}{PAGE_LANG_007116} = $mgr->{Func}->get_text($mgr, 7116);#TEXT_SUBMIT_TIME
   $mgr->{TmplData}{PAGE_LANG_007123} = $mgr->{Func}->get_text($mgr, 7123);#TEXT_CAT
   $mgr->{TmplData}{PAGE_LANG_007118} = $mgr->{Func}->get_text($mgr, 7118);#View_Translation_Button
   $mgr->{TmplData}{PAGE_LANG_007119} = $mgr->{Func}->get_text($mgr, 7119);#Titel of Page
   $mgr->{TmplData}{TEXT_TITLE} = $text_header;
+  $mgr->{TmplData}{TEXT_LANGUAGE} = $self->lang_name($mgr, $lang_id);
   $mgr->{TmplData}{TEXT_DESCRIPTION} = $text_desc;
   $mgr->{TmplData}{TEXT_LENGTH} = $num_words;
   $mgr->{TmplData}{TEXT} = $text_content;
   $mgr->{TmplData}{PARENT_ID} = $parent_id;
 
-  #User-handlig
-  if($current_user_level == 0){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'hidden';}
-  elsif($current_user_level == 1){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';}
-  elsif($current_user_level == 2){
+
+
+#User-handlig
+  if($mgr->{UserData}->{UserId} == undef){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'hidden';}
+  elsif($current_user_level == 0){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';}
+  elsif($current_user_level > 0){
     $mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'submit'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';
   }
 
@@ -2035,15 +2048,27 @@ SQL
   $data{TEXT_TRANS_LANG_ID}= $orig_text_id;
   $data{TEXT_TRANS_LANG_NAME}= $self->lang_name($mgr,$orig_lang_id);
   push(@lang_loop_data,\%data);
-
   @lang_loop_data = sort {$self->sort_uml($a->{TEXT_TRANS_LANG_NAME},$b->{TEXT_TRANS_LANG_NAME})} @lang_loop_data;
   $mgr->{TmplData}{TEXT_LOOP_TRANS_LANG}=\@lang_loop_data;
   $mgr->{TmplData}{SUBMIT_VIEW_TRANS_TYPE}='submit';
 
+#translation Request
+  my $row;
+  my $trans_request = 0;
+  foreach $row (@lang_loop_data){
+    if($self->lang_name($mgr,$row->{TEXT_TRANS_LANG_NAME}) == $self->lang_name($mgr,$lang_trans_id)){
+      $trans_request = 1;
+    }
+  }
 
+  if( $trans_request == 1){
+  }else{
+    $mgr->{TmplData}{TRANS_REQUEST} = $self->lang_name($mgr, $lang_trans_id);
+    $mgr->{TmplData}{PAGE_LANG_007126} = $mgr->{Func}->get_text($mgr, 7126);#Translation Request
+  }
 
 #fill category-name of this Text##################
-  $mgr->{TmplData}{CAT_LINk} = $mgr->my_url(ACTION => "home", METHOD => "show_cat");
+  $mgr->{TmplData}{CAT_LINk} = $mgr->my_url(ACTION => "text", METHOD => "show_texts") . '&cat_id=' . $category_id;
   $mgr->{TmplData}{TEXT_CAT} = $mgr->{Func}->get_text($mgr, $self->cat_lang_id($mgr,$category_id));
   $mgr->{TmplData}{CAT_LANG_ID} = $self->cat_lang_id($mgr,$category_id);
 
@@ -2053,13 +2078,12 @@ SQL
   elsif($avg_rating < 2.5 && $avg_rating >= 1.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 7110); }
   elsif($avg_rating < 3.5 && $avg_rating >= 2.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 7109); }
   elsif($avg_rating < 4.5 && $avg_rating >= 3.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 7108); }
-  elsif($avg_rating >= 4.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 2107); }
-
+  elsif($avg_rating >= 4.5){ $mgr->{TmplData}{TEXT_RATING} = $mgr->{Func}->get_text($mgr, 7107); }
   $mgr->{TmplData}{TEXT_RATING_NUMBER} = $num_ratings;
   $mgr->{TmplData}{TEXT_SUBMIT_TIME} = substr($submit_time,6, 2) . "." . substr($submit_time,4, 2) . "." .substr($submit_time,0, 4);
 
 
-#show text-rating-radio-buttons only if user not owner by this text and if user haven't rate this text
+#show text-rating-radio-buttons only if user not owner by this text and if user haven't rated this text
   if($current_user_id == $user_id || $text_rating_id == $given_text_id) {
     $mgr->{TmplData}{RADIO_TYPE} = 'hidden';
     $mgr->{TmplData}{SUBMIT_TYPE} = 'hidden';
@@ -2079,13 +2103,16 @@ SQL
     $mgr->{TmplData}{PAGE_LANG_007113} = $mgr->{Func}->get_text($mgr, 7113);
     $mgr->{TmplData}{RADIO_TYPE} = 'radio';
     $mgr->{TmplData}{SUBMIT_TYPE} = 'submit';
+    $mgr->{TmplData}{RATE_TEXT} = 'text_rating';
   }
 
 #Author of this Text#####################
-  $mgr->{TmplData}{AUTHOR_LINK} = $mgr->my_url(ACTION => "user", METHOD => "mypage");
-  $mgr->{TmplData}{TEXT_AUTOR} = $self->get_author($mgr, $user_id);
+  if($user_id ne $current_user_id){
+    $mgr->{TmplData}{PAGE_LANG_007100} = $mgr->{Func}->get_text($mgr, 7100);#Author
+    $mgr->{TmplData}{AUTHOR_LINK} = $mgr->my_url(ACTION => "user", METHOD => "mypage");
+    $mgr->{TmplData}{TEXT_AUTOR} = $self->get_author($mgr, $user_id);
+  }
   $mgr->{TmplData}{AUTHOR_ID} =$user_id ;
-
 }#end show_text
 
 
@@ -2366,7 +2393,7 @@ sub text_rating {
   my $text_id = $mgr->{CGI}->param('text_id') || undef;
   my $current_user_level = $mgr->{Session}->get('UserLevel');
 
-  #test wether current user rated this text#############
+#test wether current user rated this text#############
   my $table = $mgr->{Tables}->{TEXT_RATING};
 
   my $dbh = $mgr->connect();
@@ -2436,7 +2463,7 @@ VALUES (?, ?, ?)
 SQL
 
     unless ($sth->execute($user_id, $text_id, $rating))
-      {
+    {
 	  warn sprintf("[Error:] Trouble adding user to %s. " .
 	  	       "Reason: [%s].", $table, $dbh->errstr());
 	  $dbh->do("UNLOCK TABLES");
@@ -2449,7 +2476,12 @@ SQL
 
 
 # caculate new vaues for average_rating and num_ratings ####################
-    $TEXT_avg_rating = (($TEXT_avg_rating * $TEXT_num_ratings) + $rating) / ($TEXT_num_ratings+1);
+    if( $TEXT_avg_rating == 0){
+      $TEXT_avg_rating = $rating;
+    }
+    else{
+      $TEXT_avg_rating = (($TEXT_avg_rating * $TEXT_num_ratings) + $rating) / ($TEXT_num_ratings+1);
+    }
     $TEXT_num_ratings += 1;
 
 
@@ -2613,10 +2645,10 @@ SQL
   $sth->finish();
 
 #DELETE Ratings of Original Text ##################
-  my $table = $mgr->{Tables}->{TEXT_RATING};
-  my $dbh = $mgr->connect();
+  $table = $mgr->{Tables}->{TEXT_RATING};
+  $dbh = $mgr->connect();
   $dbh->do("LOCK TABLES $table WRITE");
-  my $sth = $dbh->prepare(<<SQL);
+  $sth = $dbh->prepare(<<SQL);
 DELETE LOW_PRIORITY
 FROM   $table
 WHERE  text_id = ?

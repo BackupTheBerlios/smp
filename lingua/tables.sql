@@ -54,6 +54,7 @@ INSERT INTO lingua_dictionary (en, de, fr) VALUES ('holland', 'neederland', 'hol
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('spain','spanisch', 'espagnol');
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('polnich','polnich', 'polonais');
 
+INSERT INTO lingua_dictionary (en, de) VALUES ('Register here', 'Hier Registrieren');
 
 INSERT INTO lingua_dictionary (dict_id, de, fr) VALUES (4001,'Geschichte, Politik', 'Histoire et Politique');
 INSERT INTO lingua_dictionary (de, fr) VALUES ('Jura', 'Droit');

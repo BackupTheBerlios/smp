@@ -42,7 +42,7 @@ sub fill_user_part {
     $mgr->{TmplData}{PAGE_LANG_000007} = $mgr->{Func}->get_text($mgr, 9);
     $mgr->{TmplData}{PAGE_LANG_000009} = $mgr->{Func}->get_text($mgr, 10);
     $mgr->{TmplData}{PAGE_LANG_000010} = $mgr->{Func}->get_text($mgr, 11);
-    $mgr->{TmplData}{PAGE_USER_LINK}   = $mgr->my_url(ACTION => "user");
+    $mgr->{TmplData}{PAGE_USER_LINK}   = $mgr->my_url(ACTION => "user", METHOD => "mypage");
     $mgr->{TmplData}{PAGE_LANG_000012} = $mgr->{Func}->get_text($mgr, 13);
     $mgr->{TmplData}{PAGE_TEXT_LINK}   = $mgr->my_url(ACTION => "text", METHOD => "create_text");
 
@@ -67,10 +67,12 @@ sub fill_user_part {
     }
 
   } else {
-    $mgr->{TmplData}{PAGE_IF_LOGIN}    = 1;
-    $mgr->{TmplData}{PAGE_LANG_000003} = $mgr->{Func}->get_text($mgr, 3);
-    $mgr->{TmplData}{PAGE_LANG_000004} = $mgr->{Func}->get_text($mgr, 4);
-    $mgr->{TmplData}{PAGE_LANG_000005} = $mgr->{Func}->get_text($mgr, 7);
+    $mgr->{TmplData}{PAGE_REGISTER_LINK} = $mgr->my_url(ACTION => "user", METHOD => "reg1");
+    $mgr->{TmplData}{PAGE_LEFT_REGISTER} = $mgr->{Func}->get_text($mgr, 23);
+    $mgr->{TmplData}{PAGE_IF_LOGIN}      = 1;
+    $mgr->{TmplData}{PAGE_LANG_000003}   = $mgr->{Func}->get_text($mgr, 3);
+    $mgr->{TmplData}{PAGE_LANG_000004}   = $mgr->{Func}->get_text($mgr, 4);
+    $mgr->{TmplData}{PAGE_LANG_000005}   = $mgr->{Func}->get_text($mgr, 7);
   }
 
 }

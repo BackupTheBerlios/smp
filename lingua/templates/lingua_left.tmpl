@@ -33,9 +33,13 @@
 <TMPL_IF PAGE_IF_LOGIN>
 <tr>
   <td>
-    <span class="alert">
+    <a class="normal" href="<TMPL_VAR PAGE_REGISTER_LINK>"><TMPL_VAR PAGE_LEFT_REGISTER></a>
+    <br>
+    <TMPL_IF PAGE_LOGIN_ERROR>
+    <span class="alert"> 
       <TMPL_VAR PAGE_LOGIN_ERROR>
-    </span>
+    <span>
+    </TMPL_IF>
     <br>
     <span class="normal"><TMPL_VAR PAGE_LANG_000003></span>:
     <br>

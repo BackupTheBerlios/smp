@@ -21,15 +21,18 @@ $CONFIG = {
                               script  => 'User'
                              },
                             ],
-           TmplDir       => 'templates' 
+           TmplDir       => 'templates',
+	   TextPoints    => 1,
+	   TransPoints   => 2,
+	   InactivTime   => 28,
 };
 
 $DB = {
        DataBase => 'lingua',
-       DbHost   => '',
-       DbPass   => '',
+       DbHost   => 'localhost',
+       DbPass   => 'lingua',
        DbPort   => '',
-       DbUser   => 'root'
+       DbUser   => 'lingua'
 };
 
 $SESSION = {
@@ -82,6 +85,7 @@ $TMPL = {
 };
 
 1;
+
 
 
 

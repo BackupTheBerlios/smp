@@ -5,7 +5,9 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.23 $ =~ /(\d+)\.(\d+)/;
+
+$VERSION = sprintf "%d.%03d", q$Revision: 1.24 $ =~ /(\d+)\.(\d+)/;
+
 
 #-----------------------------------------------------------------------------#
 # CALL:   $self->parameter($mgr).                                             #
@@ -41,7 +43,7 @@ sub parameter {
   } elsif ($method eq "show_texts") {
     $self->show_texts($mgr);
 
- } elsif ($method eq "text_trans") {
+ } elsif ($method eq "text_trans" || defined $mgr->{CGI}->param('text_trans')) {
     $self->text_trans($mgr);
 
  } elsif ($method eq "text_trans_upload") {
@@ -80,7 +82,7 @@ sub parameter {
  } elsif ($method eq 'text' || defined $mgr->{CGI}->param('text')) {                   # by Hendrik Erler
     $self->texts_own($mgr);                                                            # by Hendrik Erler
 
- } elsif ($method eq 'trans' || defined $mgr->{CGI}->param('trans')) {                   # by Hendrik Erler
+ } elsif ($method eq 'trans' || defined $mgr->{CGI}->param('trans')) {                 # by Hendrik Erler
     $self->trans_own($mgr);                                                            # by Hendrik Erler
 
   } else {
@@ -603,6 +605,8 @@ my $text_lang_trans	= $mgr->{Session}->get("TextLangTransOk");
 $mgr->{TmplData}{PAGE_TITLE}  = $mgr->{Func}->get_text($mgr, 8005);
 
   $mgr->{Template} = $mgr->{TmplFiles}->{Text_New_Ok};
+
+
 }
 
 #-----------------------------------------------------------------------------#
@@ -1993,56 +1997,39 @@ SQL
   #$mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2112);#TEXT_RATING
 
 #Original Language of this Text##################
-  $table = $mgr->{Tables}->{LANG};
+  my $orig_text_id = $self->get_original_text($mgr, $text_id);
+
+  $table = $mgr->{Tables}->{TEXT};
   $dbh = $mgr->connect();
   $sth = $dbh->prepare(<<SQL);
-SELECT lang_id, lang_name_id
+SELECT lang_id
 FROM   $table
-WHERE  lang_id = ?
+WHERE  text_id = ?
 
 SQL
-  unless ($sth->execute($lang_id)) {
+  unless ($sth->execute($orig_text_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $mgr->fatal_error("Database error.");
   }
   @row = $sth->fetchrow_array();
-  my $lang_name_id = $row[1];
+  my $orig_lang_id = $row[0];
   $sth->finish();
-  $mgr->{TmplData}{TEXT_ORIG_LANG} = $mgr->{Func}->get_text($mgr, $lang_name_id);
+  $mgr->{TmplData}{TEXT_ORIG_LANG} = $self->lang_name($mgr,$orig_lang_id);
 
 
 #Translated Languages of this Text##################
-  $table = $mgr->{Tables}->{TEXT};
-  $dbh = $mgr->connect();
-  $sth = $dbh->prepare(<<SQL);
-SELECT text_id, parent_id, lang_id
-FROM   $table
-WHERE  parent_id = ?
 
-SQL
-  unless ($sth->execute($text_id)) {
-    warn sprintf("[Error:] Trouble selecting data from [%s].".
-                 "Reason: [%s].", $table, $dbh->errstr());
-    $mgr->fatal_error("Database error.");
-  }
-  $table = $sth->fetchall_arrayref();
-  my @lang_loop_data;
-  my $row;
+  my @lang_loop_data = $self->get_relation_texts($mgr, $parent_id);
   my %data;
   $data{TEXT_TRANS_LANG_ID}= $text_id;
   $data{TEXT_TRANS_LANG_NAME}= $self->lang_name($mgr,$lang_id);
   push(@lang_loop_data,\%data);
-  foreach $row (@$table){
-    my %data;
-    $data{TEXT_TRANS_LANG_ID}= $row->[0];
-    $data{TEXT_TRANS_LANG_NAME}= $self->lang_name($mgr,$row->[2]);
-    push(@lang_loop_data,\%data);
-  }
+
   @lang_loop_data = sort {$self->sort_uml($a->{TEXT_TRANS_LANG_NAME},$b->{TEXT_TRANS_LANG_NAME})} @lang_loop_data;
   $mgr->{TmplData}{TEXT_LOOP_TRANS_LANG}=\@lang_loop_data;
   $mgr->{TmplData}{SUBMIT_VIEW_TRANS_TYPE}='submit';
-  $sth->finish();
+
 
 
 #fill category-name of this Text##################
@@ -2090,6 +2077,85 @@ SQL
   $mgr->{TmplData}{AUTHOR_ID} =$user_id ;
 
 }#end show_text
+
+#-----------------------------------------------------------------------------#
+#CALL: $self->get_original_text($mgr, text_id)                                #
+#                                                                             #
+#RETURN: @text_id;                                                            #
+#                                                                             #
+#DESC: rekursiv call to get the root original text                            #
+#                                                                             #
+#                                                                             #
+#Author: Hendrik Erler(erler@cs.tu-berlin.de)                                 #
+#-----------------------------------------------------------------------------#
+sub get_original_text{
+  my ($self, $mgr, $text_id) = @_;
+  my $table = $mgr->{Tables}->{TEXT};
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+SELECT parent_id, text_id
+FROM   $table
+WHERE  text_id = ?
+
+SQL
+  unless ($sth->execute($text_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+  my @row = $sth->fetchrow_array();
+
+  $sth->finish();
+  if($row[0] > 0){
+    $text_id = $self->get_original_text($mgr, $row[0]);
+  }
+  return $text_id;
+}#end get_original_text
+
+#-----------------------------------------------------------------------------#
+#CALL: $self->get_relation_texts($mgr, $parent_id)                            #
+#                                                                             #
+#RETURN: @lang_loop_data;                                                     #
+#                                                                             #
+#DESC: rekursiv call to get all relation texts, because translation of        #
+#      translation                                                            #
+#                                                                             #
+#Author: Hendrik Erler(erler@cs.tu-berlin.de)                                 #
+#-----------------------------------------------------------------------------#
+sub get_relation_texts{
+  my ($self, $mgr, $parent_id) = @_;
+
+#Translated Languages of this Text##################
+  my $table = $mgr->{Tables}->{TEXT};
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+SELECT text_id, parent_id, lang_id
+FROM   $table
+WHERE  text_id = ?
+
+SQL
+  unless ($sth->execute($parent_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+  $table = $sth->fetchall_arrayref();
+  my @lang_loop_data;
+  my $row;
+  foreach $row (@$table){
+    my %data;
+    if($row->[1] > 0){
+      @lang_loop_data = $self->get_relation_texts($mgr, $row->[1]);
+    }
+    $data{TEXT_TRANS_LANG_ID}= $row->[0];
+    $data{TEXT_TRANS_LANG_NAME}= $self->lang_name($mgr,$row->[2]);
+    push(@lang_loop_data,\%data);
+  }
+  $sth->finish();
+  return @lang_loop_data;
+}#end get_relation_texts
+
+
 
 #-----------------------------------------------------------------------------#
 #CALL: $self->cat_lang_id($mgr)                                               #
@@ -2170,7 +2236,6 @@ SQL
 sub texts_own{
   my ($self, $mgr) = @_;
   my $user_id = $mgr->{CGI}->param('user_id');
-  $user_id='1';
   $mgr->{Template} = $mgr->{TmplFiles}->{Texts_Own};
   #$mgr->{TmplData}{USERID} = $user_id;
 
@@ -2229,7 +2294,6 @@ SQL
 sub trans_own{
   my ($self, $mgr) = @_;
   my $user_id = $mgr->{CGI}->param('user_id');
-  $user_id='1';
   $mgr->{Template} = $mgr->{TmplFiles}->{Trans_Own};
   #$mgr->{TmplData}{USERID} = $user_id;
 

@@ -1,0 +1,84 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<input type="hidden" name="text_id" value="<TMPL_VAR TEXT_ID>">
+<input type="hidden" name="trans_text_id" value="<TMPL_VAR TRANS_TEXT_ID>">
+<input type="hidden" name="text_method" value="text_message_way">
+<input type="hidden" name="delete_text" value="delete_page">
+<input type="hidden" name="author_id" value="<TMPL_VAR AUTHOR_ID>">
+<input type="hidden" name="cat_lang_id" value="<TMPL_VAR CAT_LANG_ID>">
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+	<tr valign="top">
+	   <td colspan="2">
+	       <TMPL_INCLUDE lingua_logo.tmpl>
+	  </td>
+	</tr>
+	<tr valign="top">
+ 		<td width="200">
+    			<TMPL_INCLUDE lingua_left.tmpl>
+  		</td>
+  		<td bgcolor="#31639C" width="600">
+
+  <h2 align="left"><b><TMPL_VAR PAGE_LANG_007214></b></h2>
+  <table width="100%" border="0">
+    <tr>
+      <td>
+        <table border="0" align="left" width="100%">
+          <tr>
+	    <td><TMPL_VAR PAGE_LANG_007220><TMPL_VAR PAGE_LANG_007221></td>
+	  </tr>
+          <tr>
+            <td valign="top" align="left">
+              <table border="0">
+                <tr> <!-- Author -->
+                  <td><input type="<TMPL_VAR SUBMIT_ORIG_TYPE>" name="delete_all_orig" value="<TMPL_VAR PAGE_LANG_007222>"></td>
+                  <td><input type="<TMPL_VAR SUBMIT_ORIG_TYPE>" name="dont_delete_orig" value="<TMPL_VAR PAGE_LANG_007223>"></td>
+                </tr>
+                <tr> <!-- Text-Length -->
+                  <td><TMPL_VAR PAGE_LANG_007224></td>
+                  <td><input type="<TMPL_VAR SUBMIT_TRANS_TYPE>" name="delete_trans" value="<TMPL_VAR PAGE_LANG_007226>"></td>
+                </tr>
+                <tr> <!-- Original-Language -->
+                  <td><TMPL_VAR PAGE_LANG_007225></td>
+                  <td><input type="<TMPL_VAR SUBMIT_TRANS_TYPE>" name="delete_all_trans" value="<TMPL_VAR PAGE_LANG_007227>"></td>
+                </tr>
+                <tr> <!-- Translated-Languages -->
+                  <td><TMPL_VAR PAGE_LANG_007228></td>
+                  <td><input type="<TMPL_VAR SUBMIT_TRANS_TYPE>" name="dont_delete_trans" value="<TMPL_VAR PAGE_LANG_0072231>"></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+		</td>
+</tr>
+
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

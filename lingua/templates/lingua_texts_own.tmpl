@@ -1,0 +1,80 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+
+<input type="hidden" name="text" value="text">
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+	<tr valign="top">
+	   <td colspan="2">
+	       <TMPL_INCLUDE lingua_logo.tmpl>
+	  </td>
+	</tr>
+	<tr valign="top">
+ 		<td width="200">
+    			<TMPL_INCLUDE lingua_left.tmpl>
+  		</td>
+  		<td bgcolor="#31639C" width="600">
+
+                <h1 align="center"><TMPL_VAR PAGE_LANG_007404> <TMPL_VAR USER></h1>
+
+  		<TABLE cellspacing="10" cellpadding="0" border="0" align="center" bgcolor="#31639C">
+ 		  <TR>
+		    <TD>
+		      <B><TMPL_VAR PAGE_LANG_007400></B>
+		    </TD>
+		    <TD>
+		      <B><TMPL_VAR PAGE_LANG_007401></B>
+		    </TD>
+		    <TD>
+		      <B><TMPL_VAR PAGE_LANG_007402></B>
+		    </TD>
+		    <TD>
+		      <B><TMPL_VAR PAGE_LANG_007403></B>
+		    </TD>
+		  </TR>
+                  <TMPL_LOOP TEXT_LOOP>
+		    <TR>
+		       <TD>
+		         <a class="normal" href="<TMPL_VAR TEXT_LINK>"><TMPL_VAR TEXT_HEADER></a>
+		       </TD>
+		       <TD>
+			 <TMPL_VAR TEXT_LANG>
+		       </TD>
+		       <TD>
+			 <TMPL_VAR TEXT_CAT>
+		       </TD>
+		       <TD>
+			 <TMPL_VAR TEXT_TIME>
+		       </TD>
+		     </TR>
+		   </TMPL_LOOP>
+		 </TABLE>
+		</td>
+</tr>
+
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

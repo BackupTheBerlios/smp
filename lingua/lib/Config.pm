@@ -36,8 +36,8 @@ $DB = {
 };
 
 $SESSION = {
-            ExpTime  => 36000,
-            SessDir  => 'sessions',
+            ExpTime  => 10,
+            SessDir  => '/tmp',
             SessFile => 'session',
 };
 

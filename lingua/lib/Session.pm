@@ -2,12 +2,13 @@ package lib::Session;
 
 use Digest::MD5;
 use Fcntl;
+use File::Path;
 use Storable qw(nfreeze thaw);
 use Symbol;
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/;
 
 sub new {
     my $proto  = shift;
@@ -70,9 +71,9 @@ sub kill_session {
         CORE::close $self->{_sess}->{file};
         $self->{_open} -= 1;
     }
-
+    
     eval {
-        unlink($self->{directory}."/".$self->{_sess}->{name});
+        rmtree([$self->{directory}."/".$self->{_sess}->{name}], 0, 0);
     };
 
     delete $self->{_sess};
@@ -153,12 +154,10 @@ sub check_sessions {
 
     foreach (keys %{$self->{_main}->{unserialized}}) {
         if ($self->{_main}->{unserialized}{$_} < $time) {
-            if (-e $self->{directory}."/".$_) {
-                eval {
-                    delete $self->{_main}->{unserialized}{$_};
-                    unlink ($self->{directory}."/".$_);
-                };
-            }
+             eval {
+                rmtree([$self->{directory}."/".$_], 0, 0);
+		delete $self->{_main}->{unserialized}{$_};
+             };
         }
     }
 }
@@ -201,6 +200,23 @@ sub unserialize {
 sub DESTROY {
     my $self = shift;
 
+    if ($self->{_open} == 2) {
+        eval {
+            $self->{_sess}->{serialized} = $self->serialize($self->{_sess}->{unserialized});
+
+            truncate($self->{_sess}->{file}, 0);
+            seek($self->{_sess}->{file}, 0, 0);
+
+            print {$self->{_sess}->{file}} $self->{_sess}->{serialized} if($self->{_sess}->{serialized});
+
+            CORE::close $self->{_sess}->{file};
+
+            if (!defined $self->{_main}->{unserialized}{$self->{_sess}->{name}}) {
+                    rmtree([$self->{directory}."/".$self->{_sess}->{name}], 0, 0);
+            }
+        };
+    }
+
     eval {
         $self->{_main}->{serialized} = $self->serialize($self->{_main}->{unserialized});
 
@@ -210,22 +226,7 @@ sub DESTROY {
         print {$self->{_main}->{file}} $self->{_main}->{serialized};
         
         CORE::close $self->{_main}->{file};
-
-        $self->{_open} -= 1;
     };
-
-    if ($self->{_open}) {
-        eval {
-            $self->{_sess}->{serialized} = $self->serialize($self->{_sess}->{unserialized});
-
-            truncate($self->{_sess}->{file}, 0);
-            seek($self->{_sess}->{file}, 0, 0);
-            
-            print {$self->{_sess}->{file}} $self->{_sess}->{serialized};
-
-            CORE::close $self->{_sess}->{file};
-        };
-    }
 }
 
 1;

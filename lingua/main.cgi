@@ -48,7 +48,7 @@ use fields (
 use vars qw(%FIELDS $VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)\.(\d+)/;
 
 &handler();
 
@@ -304,7 +304,6 @@ SQL
 						  UserLevel   => $data[3],
 						  UserName    => $data[1],
 						  UserLang    => $data[4]);
-	warn "RETURN 1: ".$sid;
 	$self->{Language}                = $data[4];
 	$self->{LoginOk}                 = 1;
 	$self->{SessionId}               = $sid;

@@ -311,6 +311,19 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 ##### Text_Confirm_Save.tmpl (2100 -> 2101)######################################
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 	(2100, 'Author','Autor','Autorfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	(2101, 'Text','Text','Textfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	(2102, 'Original-Language','Original-Sprache','OriginalSprachefr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	(2103, 'Translations','Übersetzungen','Übersetzungenfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	(2104, 'Text-Rating','Text-Bewertung','Bewertungfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	(2105, 'Number of ratings','Anzahl der Bewertungen','Anzahl der Bewertungenfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	(2106, 'Translate Text','Text übersetzen','Text Übersetzenfr');
+
 
 DROP TABLE IF EXISTS lingua_user;
 

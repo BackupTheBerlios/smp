@@ -1,8 +1,8 @@
 <TMPL_INCLUDE lingua_header.tmpl>
 
 <input type="hidden" name="text_id" value="<TMPL_VAR TEXT_ID>">
-<input type="hidden" name="text_method" value="text_show">
-<input type="hidden" name="mes1_dico" value="<TMPL_VAR TEXT_MES1_DICO>">
+<input type="hidden" name="text_method" value="text_message_way">
+<input type="hidden" name="show_text" value="show_text">
 <input type="hidden" name="mes2_dico" value="<TMPL_VAR TEXT_MES2_DICO>">
 
 <table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
@@ -23,13 +23,35 @@
 						<td><TMPL_VAR PAGE_LANG_002100></td>
 						<td><TMPL_VAR PAGE_LANG_002012></TD>
 						<td><TMPL_VAR PAGE_LANG_002033></TD>
+						<td><TMPL_VAR PAGE_LANG_002102></TD>
+						<td><TMPL_VAR PAGE_LANG_002103></td>
+						<td><TMPL_VAR PAGE_LANG_002104></td>
+						<td><TMPL_VAR PAGE_LANG_002105></td>
+						<td><TMPL_VAR PAGE_LANG_002101></TD>
 					</TR>
 					<TR> 	<td><TMPL_VAR TEXT_TITLE></td>
 						<td><TMPL_VAR TEXT_AUTOR></td>
 						<td><TMPL_VAR TEXT_DESCRIPTION></td>
 						<td><TMPL_VAR TEXT_LENGTH></td>
+						<td><TMPL_VAR TEXT_ORIG_LANG></td>
+						<td>
+							<SELECT NAME="text_trans_lang_id" size="1">
+
+							<OPTION value= "<TMPL_VAR TEXT_TRANS_LANG_ID_SELECT>" selected><TMPL_VAR TEXT_TRANS_LANG_NAME_SELECT></option>
+
+							<TMPL_LOOP TEXT_LOOP_TRANS_LANG>
+							<OPTION value= "<TMPL_VAR TEXT_TRANS_LANG_ID>"><TMPL_VAR TEXT_TRANS_LANG_NAME></option>
+					        	</TMPL_LOOP>
+
+					        	</SELECT>
+						</td>
+						<td><TMPL_VAR TEXT_RATING></td>
+						<td><TMPL_VAR TEXT_RATING_NUMBER></td>
+						<td><TMPL_VAR TEXT></td>
 					</TR>
 
+					<TR>	<input type="submit" name="text_trans_contents" value="<TMPL_VAR PAGE_LANG_002106>">
+					</TR>
 				</table>
 			</td>
 </tr>

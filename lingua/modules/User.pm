@@ -5,7 +5,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/;
 
 #
 # this method is called by the manager (main.cgi)
@@ -64,8 +64,8 @@ sub parameter {
 	    if (defined($mgr->{CGI}->param('u_sub_reg2')))
 	    {
 		my ($user_id, $error) = 
-		    $self->add_newuser($mgr, $username, $lastname, $email, 
-				       $syslang_id);
+		    $self->add_new_user($mgr, $username, $firstname, $lastname, 
+					$email, $syslang_id);
 		# if a new user could not be added, an error occured!
 		# -> back to page 1
 		if ($error)
@@ -93,16 +93,16 @@ sub parameter {
 	    # add a language for user and go to page 4
 	    if (defined($mgr->{CGI}->param('u_sub_reg3')))
 	    {
-		my $lang_id = $mgr->{CGI}->param('u_sel_newlang');
-		my $level   = $mgr->{CGI}->param('u_sel_newlanglvl');
+		my $lang_id = $mgr->{CGI}->param('u_sel_lang');
+		my $level   = $mgr->{CGI}->param('u_sel_langlvl');
 
-		my $error = $self->check_new_userid($user_id);
+		my $error = $self->check_new_userid($mgr, $user_id);
 		if ($error)
 	        {
 		    $self->show_reg1($mgr, $error);
 		    return 1;
 		}
-		$self->add_newlang($mgr, $user_id, $lang_id, $level);
+		$self->add_new_lang($mgr, $user_id, $lang_id, $level);
 		$self->show_reg4($mgr, $user_id);
 		return 1;
 	    }
@@ -110,16 +110,16 @@ sub parameter {
 	    # add a language and stay on page 3
 	    if (defined($mgr->{CGI}->param('u_sub_reg3more')))
 	    {
-		my $lang_id = $mgr->{CGI}->param('u_sel_newlang');
-		my $level   = $mgr->{CGI}->param('u_sel_newlanglvl');
+		my $lang_id = $mgr->{CGI}->param('u_sel_lang');
+		my $level   = $mgr->{CGI}->param('u_sel_langlvl');
 
-		my $error = $self->check_new_userid($user_id);
+		my $error = $self->check_new_userid($mgr, $user_id);
 		if ($error)
 	        {
 		    $self->show_reg1($mgr, $error);
 		    return 1;
 		}
-		$self->add_newlang($mgr, $user_id, $lang_id, $level);
+		$self->add_new_lang($mgr, $user_id, $lang_id, $level);
 		$self->show_reg3($mgr, $user_id);
 		return 1;
 	    }
@@ -140,13 +140,13 @@ sub parameter {
 		my $description   = $mgr->{CGI}->param('u_inp_username');
 		my $lang_id = $mgr->{CGI}->param('u_sel_lang');
 
-		my $error = $self->check_new_userid($user_id);
+		my $error = $self->check_new_userid($mgr, $user_id);
 		if ($error)
 	        {
 		    $self->show_reg1($mgr, $error);
 		    return 1;
 		}
-		$self->add_newuserdesc($mgr, $user_id, $lang_id, $description);
+		$self->add_new_desc($mgr, $user_id, $lang_id, $description);
 		$self->show_reg5($mgr, $user_id);
 		return 1;
 	    }
@@ -157,7 +157,7 @@ sub parameter {
 		my $description   = $mgr->{CGI}->param('u_inp_username');
 		my $lang_id = $mgr->{CGI}->param('u_sel_lang');
 
-		my $error = $self->check_new_userid($user_id);
+		my $error = $self->check_new_userid($mgr, $user_id);
 		if ($error)
 	        {
 		    $self->show_reg1($mgr, $error);
@@ -171,6 +171,13 @@ sub parameter {
 	    # stay on page 4 (language change)
 	    $self->show_reg4($mgr, $user_id);
 	} # reg_from == '4'
+
+	# case 1.5: A button was pressed on registration page 5
+	if ($mgr->{CGI}->param('reg_from') eq '5')
+        {
+	    $self->show_reg5($mgr);
+	    return 1;
+	}
     } # method == 'reg1'
 
 #    if ($self->check_new_user_id($user_id))
@@ -224,7 +231,7 @@ sub parameter {
 	    my $level   = $mgr->{CGI}->param('u_sel_newlanglvl');
             my $user_id = $mgr->{Session}->get("UserId");
 
-	    $self->add_newlang($mgr, $user_id, $lang_id, $level);
+	    $self->add_new_lang($mgr, $user_id, $lang_id, $level);
 	    $self->show_mypage($mgr);
 	    return 1;
 	}
@@ -263,26 +270,113 @@ sub parameter {
 #
 sub add_new_user
 {
-    my ($mgr, $username, $firstname, $lastname, $email, $syslang) = @_;
+    my ($self, $mgr, $username, $firstname, $lastname, $email, $syslang) = @_;
+    my $table = $mgr->{Tables}->{USER};
+    my $dbh   = $mgr->connect(); 
+    my $sth;
 
-    return ($0, $0);
+# ...
+# check parameters here!!
+# generate password
+# ...
+
+    $dbh->do("LOCK TABLES $table WRITE");
+    $sth = $dbh->prepare(<<SQL);
+
+INSERT INTO $table (username, firstname, lastname, password, email, points, 
+status, level, system_lang)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+
+SQL
+
+    unless ($sth->execute($username, $firstname, $lastname, "test", $email,
+			  1000, 1, 0, $syslang)) 
+    {
+	warn sprintf("[Error:] Trouble adding user to %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+    $dbh->do("UNLOCK TABLES");   
+ 
+    # get freshly created user id
+    my $user_id = $sth->{mysql_insertid};
+
+# ...
+# take care of errors here!!
+# ...
+
+    return ($user_id, 0);
 }
 
 
 
 #
-# adds a language of a new user to database
-# Params: 1. Manager ref
-#         2. user_id
-#         3. lang_id
-#         4. level
-# Returns $error_lang_id
+# adds a language to user lang table
+# Params: 1. Manager ref  
+#         2. User ID
+#         3. language index  
+#         4. level (0-4)
+# No Return value
 #
 sub add_new_lang
 {
-    my ($mgr, $user_id, $lang_id, $level) = @_;
+    my ($self, $mgr, $user_id, $lang_id, $level) = @_;
 
-    return 0;
+    my $dbh = $mgr->connect();
+    my $sth;
+    my $table;        # table name for sql statements
+    my $result_row;   # a row (ref) resulting from a query
+
+    # first check whether this entry exists already
+    $table = $mgr->{Tables}->{USER_LANG};
+    $dbh->do("LOCK TABLES $table READ");
+    $sth = $dbh->prepare(<<SQL);
+
+SELECT user_id, lang_id 
+FROM $table
+WHERE user_id = ? AND lang_id = ?
+
+SQL
+
+    unless ($sth->execute($user_id, $lang_id)) 
+    {
+	warn sprintf("[Error:] Trouble updating %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+    $dbh->do("UNLOCK TABLES");
+
+    # if user has this language, just change its level
+    if ($sth->fetchrow_array())
+    {
+	$sth->finish();
+	$self->change_langlvl($mgr, $lang_id, $level);
+	return;
+    }
+
+    # else add new language
+    $sth->finish();
+    $dbh->do("LOCK TABLES $table WRITE");
+    $sth = $dbh->prepare(<<SQL);
+
+INSERT INTO $table (user_id, lang_id, level)
+VALUES (?, ?, ?)
+
+SQL
+
+    unless ($sth->execute($user_id, $lang_id, $level)) 
+    {
+	warn sprintf("[Error:] Trouble updating %s. " .
+		     "Reason: [%s].", $table, $dbh->errstr());
+	$dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+    $dbh->do("UNLOCK TABLES");    
 }
 
 
@@ -297,7 +391,22 @@ sub add_new_lang
 #
 sub add_new_desc
 {
-    my ($mgr, $user_id, $lang_id, $description) = @_;
+    my ($self, $mgr, $user_id, $lang_id, $description) = @_;
+
+    return 0;
+}
+
+
+
+#
+# checks whether a user_id belongs to a newly created user
+# Params: 1. Manager ref
+#         2. user_id
+# Returns an error dictionary id (0 upon success)
+#
+sub check_new_userid
+{
+    my ($self, $mgr, $user_id) = @_;
 
     return 0;
 }
@@ -424,6 +533,143 @@ sub show_reg2
 
 
 #
+# shows the third registration page (user description)
+# Params: 1. Manager ref
+#         2. user_id
+# No Return value
+#
+sub show_reg3
+{
+    my ($self, $mgr, $user_id) = @_;
+
+    my @lang_loop;
+    my @langs = $mgr->{Func}->get_langs($mgr);
+    my $lang;
+
+    # main templage vars
+    $mgr->{Template} = $mgr->{TmplFiles}->{User_Reg3};
+    $mgr->{Action} = "user";
+    $mgr->{TmplData}{PAGE_TITLE} = $mgr->{Func}->get_text($mgr, 1021);
+    
+    # fill surrounding page
+    $mgr->{Page}->fill_main_part($mgr);
+    $mgr->{Page}->fill_user_part($mgr);
+    $mgr->{Page}->fill_lang_part($mgr);
+
+    # fill hidden fields
+    $mgr->{TmplData}{USER_USERID}  = $user_id;
+    
+    # fill dictionary template vars
+    $mgr->{TmplData}{PAGE_LANG_001014} = $mgr->{Func}->get_text($mgr, 1014);
+    $mgr->{TmplData}{PAGE_LANG_001015} = $mgr->{Func}->get_text($mgr, 1015);
+    $mgr->{TmplData}{PAGE_LANG_001016} = $mgr->{Func}->get_text($mgr, 1016);
+    $mgr->{TmplData}{PAGE_LANG_001017} = $mgr->{Func}->get_text($mgr, 1017);
+    $mgr->{TmplData}{PAGE_LANG_001018} = $mgr->{Func}->get_text($mgr, 1018);
+    $mgr->{TmplData}{PAGE_LANG_001040} = $mgr->{Func}->get_text($mgr, 1040);
+    $mgr->{TmplData}{PAGE_LANG_001041} = $mgr->{Func}->get_text($mgr, 1041);
+    $mgr->{TmplData}{PAGE_LANG_001042} = $mgr->{Func}->get_text($mgr, 1042);
+    $mgr->{TmplData}{PAGE_LANG_001043} = $mgr->{Func}->get_text($mgr, 1043);
+    $mgr->{TmplData}{PAGE_LANG_001044} = $mgr->{Func}->get_text($mgr, 1044);
+    $mgr->{TmplData}{PAGE_LANG_001028} = $mgr->{Func}->get_text($mgr, 1028);
+
+    # fill language select box
+    foreach $lang (@langs) 
+    {
+	my %loop_row;
+
+	$loop_row{USER_OPTVAL_LANG} = $lang->[0];
+	$loop_row{USER_OPT_LANG}    = $lang->[1];
+
+	# loop vars all set. now push ref onto loop array
+	push(@lang_loop, \%loop_row);
+    }
+
+    $mgr->{TmplData}{USER_LOOP_LANG} = \@lang_loop;
+}
+
+
+
+#
+# shows the 4th registration page (user description)
+# Params: 1. Manager ref
+#         2. user_id
+# No Return value
+#
+sub show_reg4
+{
+    my ($self, $mgr, $user_id) = @_;
+
+    my @lang_loop;
+    my @langs = $mgr->{Func}->get_langs($mgr);
+    my $lang;
+
+    # main templage vars
+    $mgr->{Template} = $mgr->{TmplFiles}->{User_Reg4};
+    $mgr->{Action} = "user";
+    $mgr->{TmplData}{PAGE_TITLE} = $mgr->{Func}->get_text($mgr, 1021);
+    
+    # fill surrounding page
+    $mgr->{Page}->fill_main_part($mgr);
+    $mgr->{Page}->fill_user_part($mgr);
+    $mgr->{Page}->fill_lang_part($mgr);
+
+    # fill hidden fields
+    $mgr->{TmplData}{USER_USERID}  = $user_id;
+    
+    # fill dictionary template vars
+    $mgr->{TmplData}{PAGE_LANG_001034} = $mgr->{Func}->get_text($mgr, 1034);
+    $mgr->{TmplData}{PAGE_LANG_001035} = $mgr->{Func}->get_text($mgr, 1035);
+    $mgr->{TmplData}{PAGE_LANG_001036} = $mgr->{Func}->get_text($mgr, 1036);
+    $mgr->{TmplData}{PAGE_LANG_001037} = $mgr->{Func}->get_text($mgr, 1037);
+    $mgr->{TmplData}{PAGE_LANG_001038} = $mgr->{Func}->get_text($mgr, 1038);
+    $mgr->{TmplData}{PAGE_LANG_001039} = $mgr->{Func}->get_text($mgr, 1039);
+    $mgr->{TmplData}{PAGE_LANG_001028} = $mgr->{Func}->get_text($mgr, 1028);
+
+    # fill language select box
+    foreach $lang (@langs) 
+    {
+	my %loop_row;
+
+	$loop_row{USER_OPTVAL_DESCLANG} = $lang->[0];
+	$loop_row{USER_OPT_DESCLANG}    = $lang->[1];
+
+	# loop vars all set. now push ref onto loop array
+	push(@lang_loop, \%loop_row);
+    }
+
+    $mgr->{TmplData}{USER_LOOP_DESCLANG} = \@lang_loop;
+}
+
+
+
+#
+# shows the final registration page
+# Params: 1. Manager ref
+# No Return value
+#
+sub show_reg5
+{
+    my ($self, $mgr) = @_;
+
+    # main templage vars
+    $mgr->{Template} = $mgr->{TmplFiles}->{User_Reg5};
+    $mgr->{Action} = "user";
+    $mgr->{TmplData}{PAGE_TITLE} = $mgr->{Func}->get_text($mgr, 1021);
+    
+    # fill surrounding page
+    $mgr->{Page}->fill_main_part($mgr);
+    $mgr->{Page}->fill_user_part($mgr);
+    $mgr->{Page}->fill_lang_part($mgr);
+
+    # fill dictionary template vars
+    $mgr->{TmplData}{PAGE_LANG_001045} = $mgr->{Func}->get_text($mgr, 1045);
+    $mgr->{TmplData}{PAGE_LANG_001046} = $mgr->{Func}->get_text($mgr, 1046);
+    $mgr->{TmplData}{PAGE_LANG_001047} = $mgr->{Func}->get_text($mgr, 1047);
+}
+
+
+
+#
 # updates user table upon change of email address
 # Params: 1. Manager ref
 # No Return value
@@ -527,75 +773,6 @@ SQL
 
     $dbh->do("UNLOCK TABLES");
     $sth->finish();
-}
-
-
-
-#
-# adds a language to user lang table
-# Params: 1. Manager ref  
-#         2. User ID
-#         3. language index  
-#         4. level (0-4)
-# No Return value
-#
-sub add_newlang
-{
-    my ($self, $mgr, $user_id, $lang_id, $level) = @_;
-
-    my $dbh = $mgr->connect();
-    my $sth;
-    my $table;        # table name for sql statements
-    my $result_row;   # a row (ref) resulting from a query
-
-    # first check whether this entry exists already
-    $table = $mgr->{Tables}->{USER_LANG};
-    $dbh->do("LOCK TABLES $table READ");
-    $sth = $dbh->prepare(<<SQL);
-
-SELECT user_id, lang_id 
-FROM $table
-WHERE user_id = ? AND lang_id = ?
-
-SQL
-
-    unless ($sth->execute($user_id, $lang_id)) 
-    {
-	warn sprintf("[Error:] Trouble updating %s. " .
-		     "Reason: [%s].", $table, $dbh->errstr());
-	$dbh->do("UNLOCK TABLES");
-	$mgr->fatal_error("Database error.");
-    }
-
-    $dbh->do("UNLOCK TABLES");
-
-    # if user has this language, just change its level
-    if ($sth->fetchrow_array())
-    {
-	$sth->finish();
-	$self->change_langlvl($mgr, $lang_id, $level);
-	return;
-    }
-
-    # else add new language
-    $sth->finish();
-    $dbh->do("LOCK TABLES $table WRITE");
-    $sth = $dbh->prepare(<<SQL);
-
-INSERT INTO $table (user_id, lang_id, level)
-VALUES (?, ?, ?)
-
-SQL
-
-    unless ($sth->execute($user_id, $lang_id, $level)) 
-    {
-	warn sprintf("[Error:] Trouble updating %s. " .
-		     "Reason: [%s].", $table, $dbh->errstr());
-	$dbh->do("UNLOCK TABLES");
-	$mgr->fatal_error("Database error.");
-    }
-
-    $dbh->do("UNLOCK TABLES");    
 }
 
 
@@ -877,6 +1054,26 @@ SQL
 
 
 1;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

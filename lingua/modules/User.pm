@@ -6,7 +6,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)\.(\d+)/;
 
 # "constants" (don't change later on)
 my $status_ok      = 1;
@@ -792,6 +792,7 @@ sub show_mypage
     $mgr->{Action} = "user";
     $mgr->{TmplData}{PAGE_TITLE}
         = $mgr->{Func}->get_text($mgr, 1051) . " " . $username;
+    $mgr->{TmplData}{PAGE_METHOD} = 'mypage_upd';
 
     # dictionary entries
     $mgr->{TmplData}{PAGE_LANG_001051} = $mgr->{Func}->get_text($mgr, 1051);
@@ -870,10 +871,12 @@ sub show_mypage
 
     #--- links to text module -------------------------------------------------#
     $mgr->{TmplData}{PAGE_LANG_001070} = $mgr->{Func}->get_text($mgr, 1070);
-    $mgr->{TmplData}{USER_LINK_TEXT}   = $mgr->my_url(ACTION => "text") 
-                                         . "&method=text";
-    $mgr->{TmplData}{USER_LINK_TRANS}  = $mgr->my_url(ACTION => "text") 
-                                         . "&method=trans";
+    $mgr->{TmplData}{USER_LINK_TEXT}   = $mgr->my_url(ACTION => "text",
+						      METHOD => "text") 
+                                         . "&user_id=$user_id";
+    $mgr->{TmplData}{USER_LINK_TRANS}  = $mgr->my_url(ACTION => "text",
+						      METHOD => "trans") 
+                                         . "&user_id=$user_id";
 
     #--- mode-dependent settings ----------------------------------------------#
     if (defined($mode) and $mode eq 'other')

@@ -1,0 +1,89 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<input type="hidden" name="cat_id" value="<TMPL_VAR PAGE_CAT_ID>">
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#31639C" width="600">
+
+    <table cellspacing="5" cellpadding="0" border="0" width="100%" align="center">
+    <tr>
+      <td>
+        <a class="normal" href="<TMPL_VAR CAT_BACK>"><TMPL_VAR PAGE_LANG_007001></a> 
+      </td>
+
+      <td> 
+	 <TMPL_IF TEXT_ERROR> 
+          <span class="alert">
+            <TMPL_VAR CAT_ERROR>
+          </span>
+        </TMPL_IF>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <TMPL_VAR PAGE_LANG_006005>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        &nbsp;
+      </td>
+      <td>
+        <TMPL_IF TEXT_ERROR_LANGS>
+          <span class="alert">
+            <TMPL_VAR TEXT_ERROR_LANGS>
+          </span>
+        </TMPL_IF>
+      </td>
+    </tr>
+    </tr>
+    <tr>
+      <td valign="top">
+        <b><TMPL_VAR PAGE_LANG_000001>:</b>
+      </td>
+      <td>
+        <input type="text" name="de" value="<TMPL_VAR CAT_NAME_DE>" size="52">
+      </td>
+    </tr>
+    <tr>
+      <td valign="top">
+        <b><TMPL_VAR PAGE_LANG_000002>:</b>
+      </td>
+      <td>
+        <input type="text" name="en" value="<TMPL_VAR CAT_NAME_EN>" size="52">
+      </td>
+    </tr>
+    <tr>
+      <td valign="top">
+        <b><TMPL_VAR PAGE_LANG_000016>:</b>
+      </td>
+      <td>
+	<input type="text" name="fr" value="<TMPL_VAR CAT_NAME_FR>" size="52">
+      </td>
+    </tr>
+    <tr>
+      <td align="center" colspan="2">
+        <input type="submit" name="cat_change" value="<TMPL_VAR PAGE_LANG_006001>">
+      </td>
+    </tr>
+    </table>
+
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  <td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>

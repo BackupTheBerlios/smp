@@ -158,7 +158,7 @@ sub create_tree {
   # For the administration mode. Startcategory with a new category link.
   if ($mode eq "admin") {
     $mgr->{TmplData}{CAT_ADMIN_START_NEW} = sprintf("%s&cat_id=0",
-						    $mgr->my_url(METHOD => "cat_new",
+						    $mgr->my_url(METHOD => "new_cat",
 								 MODE   => "admin"));
     $mgr->{TmplData}{PAGE_LANG_006000} = $new_text;
   }

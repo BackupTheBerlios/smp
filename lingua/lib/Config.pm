@@ -63,6 +63,8 @@ $TABLES = {
 };
 
 $TMPL = {
+	 Cat_New              => 'lingua_cat_new.tmpl',
+	 Cat_Change           => 'lingua_cat_change.tmpl',
          Error                => 'lingua_error.tmpl',
          Home_Tree            => 'lingua_home.tmpl',
 	 User_MyPage          => 'lingua_user_pers.tmpl',

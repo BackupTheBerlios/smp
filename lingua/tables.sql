@@ -100,6 +100,9 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('6002', 'Delete', 'Lösch
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('6003', 'Lock', 'Sperren');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('6004', 'Unlock', 'Freigeben');
 
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('6005', 'Categoryname in the right language', 'Kategorienname in der entsprechenden Sprache');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('6006', 'Please fill all the language fields.', 'Bitte geben Sie den Namen in allen Sprachen an.');
+
 ### text module (new & change)
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7000', 'Category', 'Kategorie');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7001', 'Back', 'Zurück');

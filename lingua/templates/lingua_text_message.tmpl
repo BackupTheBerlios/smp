@@ -1,0 +1,76 @@
+<!------------------------------------------------------------------------------>
+<!-- NAME: lingua_test_message.tmpl				 		>				
+<!-- 				 				 		>
+<!-- DESC: Used to send a Message to the user (Ex. Text or Desc. confirmation)  > 							 >
+<!--										>
+<!-- Author: Giovanni Ngapout(ngapout@cs.tu-berlin.de)		 		>
+<!------------------------------------------------------------------------------>
+
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<input type="hidden" name="text_id" value="">
+<input type="hidden" name="method" value="text_message_way">
+<input type="hidden" name="mes1_dico" value="<TMPL_VAR TEXT_MES1_DICO>">
+<input type="hidden" name="mes2_dico" value="<TMPL_VAR TEXT_MES2_DICO>">
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+	<tr valign="top">
+	   <td colspan="2">
+	       <TMPL_INCLUDE lingua_logo.tmpl>
+	  </td>
+	</tr>
+	<tr valign="top">
+ 		<td width="200">
+    			<TMPL_INCLUDE lingua_left.tmpl>
+  		</td>
+  		<td bgcolor="#ababab" width="600">
+
+				<TABLE cellspacing="15">
+					
+					<TR>	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>					
+						<td align=center> <font size=6><TMPL_VAR TEXT_MESSAGE_1></font> </TD>					
+					</TR>	
+					<TR> 	<td>&nbsp;</td>	
+						<td align=center> <font size=4><TMPL_VAR TEXT_MESSAGE_2></font></td>					
+					</TR>
+					<br>
+
+					<tr> 	<td> &nbsp;</td> 						
+						<td align="center"> 
+						<input type="submit" name="new_text" value="<TMPL_VAR PAGE_LANG_002005>">
+						___________
+						<input type="submit" name="see_text" value="<TMPL_VAR PAGE_LANG_002006>"> 
+						___________
+						
+					  	<input type="submit" name="new_desc" value="<TMPL_VAR PAGE_LANG_002007>">  			
+						</td>
+					</tr>
+
+
+				</table>
+			</td>
+</tr>
+
+</table>
+
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

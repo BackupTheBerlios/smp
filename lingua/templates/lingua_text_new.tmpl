@@ -1,0 +1,164 @@
+<!------------------------------------------------------------------------------>
+<!-- NAME: lingua_test_new.tmpl				 			>				
+<!-- 				 				 		>
+<!-- DESC: Used to put a new text  						> 							 >
+<!--										>
+<!-- Author: Giovanni Ngapout(ngapout@cs.tu-berlin.de)		 		>
+<!------------------------------------------------------------------------------>
+
+
+<TMPL_INCLUDE lingua_header.tmpl>
+<input type="hidden" name="method" value="text_direction">
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+	<tr valign="top">
+	   <td colspan="2">
+	       <TMPL_INCLUDE lingua_logo.tmpl>
+	  </td>
+	</tr>
+	<tr valign="top">
+ 		<td width="200">
+    			<TMPL_INCLUDE lingua_left.tmpl>
+  		</td>
+  		<td bgcolor="#ababab" width="600" valign="top">
+    			
+			<script language="JavaScript">
+			<!--
+			var wert,max,longueur;
+			max = <TMPL_VAR TEXT_MAX_VAL> ;	
+				
+			function CountMax()
+			{
+			
+				var mytable = document.textform.mytext.value.split(" ");
+								
+				longueur = (document.textform.mytext.value.length - mytable.length) + 1;
+				wert = max - longueur;
+
+				if (wert < 0) {				
+					alert("<TMPL_VAR PAGE_LANG_002017> " + max + " <TMPL_VAR PAGE_LANG_002018>");
+					document.textform.mytext.value = document.textform.mytext.value.substring(0,max+mytable.length-1);													
+				
+
+					 }
+				else { 	
+										
+					document.textform.textcounter.value = max - longueur;
+					document.textform.freicounter.value = longueur;
+								
+				     }
+			}
+			//-->
+			</SCRIPT>
+			<!----------------------BGCOLOR="#CCD4E6"--------BGCOLOR="#EDF0F6"----------------------->
+
+				<TABLE CELLPADDING="5" >
+					
+					<TR> 
+						<TD align="right"> <TMPL_VAR PAGE_LANG_002019> &nbsp;&nbsp;<font color="red">*</font></td>
+						<td colspan="2"> <font size=3 color=red><b><TMPL_VAR TEXT_CAT_MES_002020></b> <br></font>
+						<SELECT NAME="text_cat_id" size="1">
+
+						<OPTION value= "<TMPL_VAR TEXT_CAT_ID_SELECT>" selected><TMPL_VAR TEXT_CAT_NAME_SELECT></option>
+
+						<TMPL_LOOP TEXT_LOOP_CAT>
+						<OPTION value= "<TMPL_VAR TEXT_CAT_ID>"><TMPL_VAR TEXT_CAT_NAME></option>
+					        </TMPL_LOOP>
+
+					        </SELECT>
+						</td>
+					</TR>
+
+					<TR> 
+						<TD align="right"><TMPL_VAR PAGE_LANG_002021> &nbsp;&nbsp;<font color="red">*</font></td>
+						<td colspan="2"> <font size=3 color=red><b><TMPL_VAR TEXT_LANG_MES_002022></b> <br></font>						
+						<SELECT NAME="text_desc_lang_id" size="1">
+						<OPTION value= "<TMPL_VAR TEXT_LANG_ID_SELECT>" selected><TMPL_VAR TEXT_LANG_NAME_SELECT></option>
+
+						<TMPL_LOOP TEXT_LOOP_LANG>
+						<OPTION value= "<TMPL_VAR TEXT_LANG_ID>"><TMPL_VAR TEXT_LANG_NAME></option>
+					        </TMPL_LOOP>
+						
+					        </SELECT>
+						</td>
+					</TR>
+
+					<TR>
+						<TD align="right"><TMPL_VAR PAGE_LANG_002023>&nbsp;&nbsp;<font color="red">*</font></td> 
+						<td colspan="2"><font size=3 color=red><b><TMPL_VAR TEXT_TITLE_MES_002024></b> <br></font>
+						<input type="text"  name="title" value="<TMPL_VAR TEXT_TITLE>" size=30 maxlength=20></TD>
+					</TR>
+
+
+<br>					<TR>
+						<TD align="right" VALIGN="TOP"><TMPL_VAR PAGE_LANG_002025><br><TMPL_VAR PAGE_LANG_002026>-200-<TMPL_VAR PAGE_LANG_002027> </td> 
+						<td colspan="2"><TEXTAREA rows="3" cols="80" NAME="text_desc" maxlength="10"><TMPL_VAR TEXT_DESCRIPTION></TEXTAREA>
+					</TR>
+
+
+<br>
+					<TR>
+						<TD ALIGN="right" VALIGN="TOP"><br><TMPL_VAR PAGE_LANG_002028>&nbsp;&nbsp;<font color="red">*</font><BR> <TMPL_VAR PAGE_LANG_002026>-<TMPL_VAR TEXT_MAX_VAL>-<TMPL_VAR PAGE_LANG_002027>
+						<br> <br> 
+						<center><b><TMPL_VAR PAGE_LANG_002029></b></center>
+						<br> <br> 	
+						<input type="submit" name="upload" value="<TMPL_VAR PAGE_LANG_002030>">
+						
+						</TD>
+						<TD colspan="2"><font size=3 color=red><b><TMPL_VAR TEXT_MES_002031></b> <br></font>
+						<TEXTAREA NAME="mytext"rows="20" cols="80" OnFocus="CountMax();" OnClick="CountMax();" ONCHANGE="CountMax();" onKeydown="CountMax();" onKeyup="CountMax();" ><TMPL_VAR TEXT></TEXTAREA></TD>
+					</TR>
+					<TR>
+						<TD ALIGN="right">&nbsp;</TD>
+						<TD colspan="2">
+						<font color="green"> <TMPL_VAR PAGE_LANG_002032></font> &nbsp; 
+
+						<INPUT TYPE="Text" NAME="textcounter" VALUE="<TMPL_VAR TEXT_ACT_VAL>" SIZE="3" >
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+						<font color="red"> <TMPL_VAR PAGE_LANG_002033></font> &nbsp;<INPUT TYPE="Text" NAME="freicounter" VALUE="<TMPL_VAR TEXT_LENG>"  SIZE="3" >					
+					</TR>
+					<TR>
+					<TD ALIGN="right">&nbsp;</TD>	
+					<td colspan="2" align=center><INPUT TYPE="submit" name="send" VALUE="<TMPL_VAR PAGE_LANG_002034>"> </TD>
+					<tr>
+
+				</TABLE>
+		
+  		</td>
+	</tr>
+	<tr>
+  		<td colspan="2">
+
+  		</td>
+	</tr>
+</table>
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

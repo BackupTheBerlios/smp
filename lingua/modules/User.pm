@@ -2,10 +2,11 @@ package modules::User;
 
 use Class::Singleton;
 use base 'Class::Singleton';
+#use Mail::Sendmail;
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.7 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.8 $ =~ /(\d+)\.(\d+)/;
 
 #
 # this method is called by the manager (main.cgi)
@@ -233,6 +234,17 @@ sub method_admin
 ### check input functions ######################################################
 
 #
+# good ol' c ... (used in check_reg)
+#
+sub tolower
+{
+    my ($self, $word) = @_;
+    $word =~ tr/A-Z/a-z/ if defined($word);
+    return $word;
+}
+
+
+#
 # checks user input on registration form
 # Params: 1. Manager ref.
 #         2. username
@@ -273,9 +285,9 @@ sub check_reg
     $dbh->do("LOCK TABLES $table READ");
     $sth = $dbh->prepare(<<SQL);
 
-SELECT username, email
+SELECT LOWER(username), LOWER(email)
 FROM $table
-WHERE username=? OR email=?
+WHERE LOWER(username)=LOWER(?) OR LOWER(email)=LOWER(?)
 SQL
 
     unless ($sth->execute($username, $email)) 
@@ -293,14 +305,11 @@ SQL
 
     if (@result_row)
     {
-# !!!!!
-# make email all uppercase here!! (reg. exp)
-# !!!!!
-	if ($username eq $result_row[0])
+	if ($self->tolower($username) eq $self->tolower($result_row[0]))
         {
 	    return 1024;
 	}
-	if ($email eq $result_row[1])
+	if ($self->tolower($email) eq $self->tolower($result_row[1]))
         {
 	    return 1025;
 	}
@@ -326,7 +335,11 @@ sub check_email
 {
     my ($self, $mgr, $email) = @_;
 
-    return 1;
+    if ($email =~ /^\s*[A-Za-z\d]([\w\-\$\.]*[A-Za-z\d])?\@([A-Za-z0-9\-?!\.]+\.)+[A-Za-z]{2,}\s*$/) 
+    {
+	return 1;
+    } 
+    return 0;
 }
 
 
@@ -340,7 +353,11 @@ sub check_username
 {
     my ($self, $mgr, $username) = @_;
 
-    return 1;
+    if ($username =~ /^([a-zA-Z0-9]{3,10})$/ ) 
+    {
+	return 1;
+    }
+    return 0;
 }
 
 ### database access functions ##################################################
@@ -381,8 +398,8 @@ sub add_user
     $sth = $dbh->prepare(<<SQL);
 
 INSERT INTO $table (username, firstname, lastname, password, email, points, 
-status, level, system_lang)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+status, level, system_lang, reg_time)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 
 SQL
 
@@ -391,7 +408,7 @@ SQL
 # !!!!!
 
     unless ($sth->execute($username, $firstname, $lastname, $passwd, $email,
-			  1000, 1, 0, $syslang_id)) 
+			  "1000", "1", "0", $syslang_id, time())) 
     {
 	warn sprintf("[Error:] Trouble adding user to %s. " .
 		     "Reason: [%s].", $table, $dbh->errstr());
@@ -660,7 +677,8 @@ sub show_mypage
 
     # get user's description (in desired language, if exists, else in current 
     #   syslang, else in any other.
-    my ($desc, $desc_langid) 
+    my $desc;
+    ($desc, $desc_langid)
         = $self->get_desc($mgr, $user_id, $desc_langid, $desclangs);
         
     #--- fill user part ------------------------------------------------------#
@@ -1157,15 +1175,32 @@ SQL
 
 
 #
-# generates a six-letter-password
+# generates an eight-letter-password
 # Params: 1. Manager ref
 # Returns the password
 #
 sub generate_passwd
 {
     my ($self, $mgr) = @_;
+    my $password = '';
 
-    return 'test';
+    for (my $i = 0; $i < 8; $i++) 
+    {
+	my $j = rand(3);
+	if ($j < 1) 
+        {
+	    $password .= chr(rand(10) + 48)
+	} 
+	elsif ($j < 2) 
+        {
+	    $password .= chr(rand(26) + 65)
+	} 
+	elsif ($j < 3) 
+        {
+	    $password .= chr(rand(26) + 97)
+	}
+    }
+    return $password;
 }
 
 
@@ -1184,121 +1219,37 @@ sub send_passwd
 {
     my ($self, $mgr, $username, $firstname, $lastname, $email, $syslang_id, 
 	$passwd) = @_;
+
+    my $message = 
+        $mgr->{Func}->get_text($mgr, 1093) . " $firstname $lastname \n\n" .
+	$mgr->{Func}->get_text($mgr, 1094) . "\n" .
+	$mgr->{Func}->get_text($mgr, 1095) . "\n\n    " .
+	$mgr->{Func}->get_text($mgr, 1096) . ": $username \n    " .
+	$mgr->{Func}->get_text($mgr, 1097) . ": $passwd \n\n" .
+	$mgr->{Func}->get_text($mgr, 1098) . "\n\n" .
+	$mgr->{Func}->get_text($mgr, 1099) . "\n";
+
+    my %mail = 
+    ( 
+        To         => $email,
+	From       => 'admin@smp.dark-sun.org',
+        Subject    => $mgr->{Func}->get_text($mgr, 1100),
+	Message    => $message,
+        smtp       => 'admin@127.0.0.1',
+        'X-Mailer' => "Lingua Webmailer",
+        debug      => '1'
+    );
+
+    warn "$message";
+
+#    unless (sendmail(%mail))
+#    { 
+#	warn sprintf("[Error:] Sendmail reports %s", $Mail::Sendmail::error);
+#	$mgr->fatal_error("Sendmail error");
+#    }
+
+#    print "OK. Log says:\n", $Mail::Sendmail::log;
 }
 
 
 1;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -13,7 +13,35 @@
     <TMPL_INCLUDE lingua_left.tmpl>
   </td>
   <td bgcolor="#ababab" width="600">
-    <table cellspacing="5" cellpadding="0" border="0">
+    <table cellspacing="5" cellpadding="0" border="0" width="100%">
+    <tr>
+      <td colspan="2">
+        <TMPL_IF PAGE_CAT_START_LINK>
+          <a class="normal" href="<TMPL_VAR PAGE_CAT_START_LINK>"><TMPL_VAR PAGE_CAT_START_NAME></a>
+        <TMPL_ELSE>
+          <span class="normal">
+            <TMPL_VAR PAGE_CAT_START_NAME>
+          </span>
+        </TMPL_IF>
+
+        <TMPL_LOOP PAGE_CAT_LIST>
+          <span class="normal">-></span>
+
+          <TMPL_IF PAGE_CAT_LIST_LINK>
+            <a class="normal" href="<TMPL_VAR PAGE_CAT_LIST_LINK>"><TMPL_VAR PAGE_CAT_LIST_NAME></a>
+          <TMPL_ELSE>
+            <span class="normal">
+              <TMPL_VAR PAGE_CAT_LIST_NAME>
+            </span>
+          </TMPL_IF>
+        </TMPL_LOOP>
+        <br>
+        <hr noshade>
+      </td>
+    </tr>
+    </table>
+    
+    <table cellspacing="5" cellpadding="0" border="0" width="100%">
     <TMPL_LOOP PAGE_LOOP_CATS>
   
       <TMPL_IF PAGE_CAT_OPEN_TR> 

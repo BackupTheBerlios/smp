@@ -5,8 +5,19 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.7 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.8 $ =~ /(\d+)\.(\d+)/;
 
+#-----------------------------------------------------------------------------#
+# CALL:   $self->parameter($mgr).                                             #
+#                                                                             #
+#         $mgr = manager object.                                              #
+#                                                                             #
+# AUTHOR: Sören Wurch (sowuinfo@cs.tu-berlin.de)                              # 
+#                                                                             #
+# DESC:   Main function for the Home module.                                  #
+#                                                                             #
+# RETURN: none.                                                               #
+#-----------------------------------------------------------------------------#
 sub parameter {
   my ($self, $mgr) = @_;
 
@@ -29,11 +40,20 @@ sub parameter {
     if (defined $mgr->{SessionId});
 }
 
+#-----------------------------------------------------------------------------#
+# CALL:   $self->show_category_admin($mgr).                                   #
+#                                                                             #
+#         $mgr = manager object.                                              #
+#                                                                             #
+# DESC:   Creates a tree with all the categories.                             #
+#                                                                             #
+# RETURN: none.                                                               #
+#-----------------------------------------------------------------------------#
 sub show_category_admin {
   my ($self, $mgr) = @_;
 
   unless ($mgr->{Func}->check_for_user($mgr, 2)) {
-    # Error handling ...
+    $self->show_categories($mgr);
     return 1;
   }
 
@@ -57,6 +77,22 @@ sub show_category_admin {
   $mgr->{TmplData}{PAGE_LOOP_CATS} = \@result;
 }
 
+#-----------------------------------------------------------------------------#
+# CALL:   $self->show_cat_tree($mgr, $cat_id, $list, $count, $result).        #
+#                                                                             #
+#         $mgr    = manager object.                                           #
+#         $cat_id = cat id from the parent category.                          #
+#         $list   = A list of ids with all the open categories.               #
+#         $count  = Number of categories in the template loop.                #
+#         $result = The result data (in template loop order).                 #
+#                                                                             #
+# DESC:   Rekursive call to create a tree with all the categories.            #
+#                                                                             #
+# RETURN: ($count, @result).                                                  #
+#                                                                             #
+#         $count  = Number of categories in the template loop.                #
+#         @result = The result data (in template loop order).                 #
+#-----------------------------------------------------------------------------#
 sub show_cat_tree {
   my ($self, $mgr, $cat_id, $list, $count, $result) = @_;
 
@@ -122,6 +158,15 @@ sub show_cat_tree {
   return ($count, @result);
 }
 
+#-----------------------------------------------------------------------------#
+# CALL:   $self->show_categories($mgr).                                       #
+#                                                                             #
+#         $mgr = manager object.                                              #
+#                                                                             #
+# DESC:   Show the categories list for the start page.                        #
+#                                                                             #
+# RETURN: none.                                                               #
+#-----------------------------------------------------------------------------#
 sub show_categories {
   my ($self, $mgr) = @_;
 
@@ -190,18 +235,71 @@ sub show_categories {
     $count++;
   }
 
+  # Creates the list over the categories hear.
+  $self->create_cat_list($mgr);
+
   $mgr->{TmplData}{PAGE_LOOP_CATS} = \@page_cats;
   $mgr->{Template}                 = $mgr->{TmplFiles}->{Home};
 }
 
+
+sub create_cat_list {
+  my ($self, $mgr) = @_;
+
+  my $cat_id = $mgr->{CGI}->param('cat_id') || 0;
+
+  if ($cat_id ne "0") {
+    $mgr->{TmplData}{PAGE_CAT_START_LINK} = 
+      sprintf("%s&cat_id=0", $mgr->my_url(METHOD => "show_cat"));
+
+    my $count = 0;
+    my (@all_cats, @result);
+
+    while ($cat_id ne "0") {
+      my @cat = $mgr->{Func}->get_cat($mgr, $cat_id);
+      $cat_id = $cat[5];
+
+      push (@all_cats, \@cat);
+    }
+
+    @all_cats = reverse(@all_cats);
+
+    foreach my $tmp_cat (@all_cats) {
+      $result[$count]{PAGE_CAT_LIST_NAME} = @$tmp_cat[2];
+
+      unless ($count == $#all_cats) {
+	$result[$count]{PAGE_CAT_LIST_LINK} = 
+	  sprintf("%s&cat_id=%s", $mgr->my_url(METHOD => "show_cat"), @$tmp_cat[0]);
+      }
+
+      $count++;
+    }
+
+    $mgr->{TmplData}{PAGE_CAT_LIST} = \@result;
+  }
+
+  $mgr->{TmplData}{PAGE_CAT_START_NAME} = $mgr->{Func}->get_text($mgr, 15);
+}
+
+#-----------------------------------------------------------------------------#
+# CALL:   $self->open_category($mgr).                                         #
+#                                                                             #
+#         $mgr = manager object.                                              #
+#                                                                             #
+# DESC:   Opening a category.                                                 #
+#                                                                             #
+# RETURN: none.                                                               #
+#-----------------------------------------------------------------------------#
 sub open_category {
   my ($self, $mgr) = @_;
 
   my $cat_id = $mgr->{CGI}->param('cat_id') || "0";
   my @cat    = $mgr->{Func}->get_cat($mgr, $cat_id);
 
+  # Set the cgi variable cat_id with a new value.
   $mgr->{CGI}->param(-name => "cat_id", -value => "0");
 
+  # Open the category, if this category has parent categories or texts.
   if (((defined $cat[1]) && ($cat[1] ne 0)) || ((defined $cat[3]) && ($cat[3] ne 0))) {
     my @open = split(',', $mgr->{Session}->get("HomeCatsOpen") || '');
     my %list;
@@ -218,6 +316,15 @@ sub open_category {
   $self->show_category_admin($mgr);
 }
 
+#-----------------------------------------------------------------------------#
+# CALL:   $self->close_category($mgr).                                        #
+#                                                                             #
+#         $mgr = manager object.                                              #
+#                                                                             #
+# DESC:   Closing a category.                                                 #
+#                                                                             #
+# RETURN: none.                                                               #
+#-----------------------------------------------------------------------------#
 sub close_category {
   my ($self, $mgr) = @_;
 
@@ -225,6 +332,7 @@ sub close_category {
 
   $mgr->{CGI}->param(-name => "cat_id", -value => "0");
 
+  # Get all the ids of the open categories.
   my @open = split(',', $mgr->{Session}->get("HomeCatsOpen") || '');
   my %list;
 
@@ -234,6 +342,7 @@ sub close_category {
     $list{$open} = 1;
   }
 
+  # Set the session var new with category ids.
   $mgr->{Session}->del("HomeCatsOpen");
   $mgr->{Session}->set(HomeCatsOpen => join(',', keys %list));
 

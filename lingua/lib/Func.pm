@@ -144,7 +144,7 @@ SQL
 
 
 #-----------------------------------------------------------------------------#
-# CALL: $self->get_cat($mgr, $cat_id).                                       #
+# CALL: $self->get_cat($mgr, $cat_id).                                        #
 #                                                                             #
 #       $mgr     = manager object.                                            #
 #       $dict_id = id of the parent_cat.                                      #
@@ -162,7 +162,7 @@ sub get_cat {
   my $dbh = $mgr->connect();
   my $sth = $dbh->prepare(<<SQL);
 
-SELECT c.cat_id, c.text_count, d.$lang, c.cat_count, c.depth
+SELECT c.cat_id, c.text_count, d.$lang, c.cat_count, c.depth, c.parent_id
 FROM $table_cats c, $table_dict d
 WHERE d.dict_id = c.lang_id AND c.cat_id = ?
 

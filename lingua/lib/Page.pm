@@ -25,8 +25,8 @@ sub fill_main_part {
   $mgr->{TmplData}{PAGE_SID}            = $mgr->{SessionId};
   $mgr->{TmplData}{PAGE_LANG}           = $lang;
 
-  $mgr->{TmplData}{PAGE_LANG_000001}    = $mgr->{Func}->get_text($mgr, 5);
-  $mgr->{TmplData}{PAGE_LANG_000002}    = $mgr->{Func}->get_text($mgr, 6);
+  $mgr->{TmplData}{PAGE_LANG_000005}    = $mgr->{Func}->get_text($mgr, 5);
+  $mgr->{TmplData}{PAGE_LANG_000006}    = $mgr->{Func}->get_text($mgr, 6);
 
   $mgr->{TmplData}{PAGE_LEFT_LINK_HOME} = $mgr->my_url(ACTION => "home");
 }
@@ -37,13 +37,13 @@ sub fill_user_part {
   if ($mgr->{LoginOk} == 1) {
     my $lang = $mgr->{Language};
 
-    $mgr->{TmplData}{PAGE_LANG_000008} = $mgr->{Func}->get_text($mgr, 3);
-    $mgr->{TmplData}{PAGE_LANG_000006} = $mgr->{Func}->get_text($mgr, 8);
-    $mgr->{TmplData}{PAGE_LANG_000007} = $mgr->{Func}->get_text($mgr, 9);
-    $mgr->{TmplData}{PAGE_LANG_000009} = $mgr->{Func}->get_text($mgr, 10);
-    $mgr->{TmplData}{PAGE_LANG_000010} = $mgr->{Func}->get_text($mgr, 11);
+    $mgr->{TmplData}{PAGE_LANG_000003} = $mgr->{Func}->get_text($mgr, 3);
+    $mgr->{TmplData}{PAGE_LANG_000008} = $mgr->{Func}->get_text($mgr, 8);
+    $mgr->{TmplData}{PAGE_LANG_000009} = $mgr->{Func}->get_text($mgr, 9);
+    $mgr->{TmplData}{PAGE_LANG_000010} = $mgr->{Func}->get_text($mgr, 10);
+    $mgr->{TmplData}{PAGE_LANG_000011} = $mgr->{Func}->get_text($mgr, 11);
     $mgr->{TmplData}{PAGE_USER_LINK}   = $mgr->my_url(ACTION => "user", METHOD => "mypage");
-    $mgr->{TmplData}{PAGE_LANG_000012} = $mgr->{Func}->get_text($mgr, 13);
+    $mgr->{TmplData}{PAGE_LANG_000013} = $mgr->{Func}->get_text($mgr, 13);
     $mgr->{TmplData}{PAGE_TEXT_LINK}   = $mgr->my_url(ACTION => "text", METHOD => "create_text");
 
     $mgr->{TmplData}{PAGE_USERNAME}   = 
@@ -58,7 +58,7 @@ sub fill_user_part {
 	$mgr->{TmplData}{PAGE_USER_TYPE_2}    = 1;
 	$mgr->{TmplData}{PAGE_CATEGORY_ADMIN} = $mgr->my_url(ACTION => "home", 
 							     METHOD => "cat_admin");
-	$mgr->{TmplData}{PAGE_LANG_000011}    = $mgr->{Func}->get_text($mgr, 14);
+	$mgr->{TmplData}{PAGE_LANG_000014}    = $mgr->{Func}->get_text($mgr, 14);
       } elsif ($mgr->{UserData}->{UserLevel} == 1) {
 
       } else {
@@ -72,7 +72,7 @@ sub fill_user_part {
     $mgr->{TmplData}{PAGE_IF_LOGIN}      = 1;
     $mgr->{TmplData}{PAGE_LANG_000003}   = $mgr->{Func}->get_text($mgr, 3);
     $mgr->{TmplData}{PAGE_LANG_000004}   = $mgr->{Func}->get_text($mgr, 4);
-    $mgr->{TmplData}{PAGE_LANG_000005}   = $mgr->{Func}->get_text($mgr, 7);
+    $mgr->{TmplData}{PAGE_LANG_000007}   = $mgr->{Func}->get_text($mgr, 7);
   }
 
 }

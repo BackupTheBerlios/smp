@@ -1,8 +1,7 @@
 DROP TABLE IF EXISTS lingua_languages;
 
 CREATE TABLE lingua_languages (
-        lang_id                     SMALLINT(3) UNSIGNED NOT NULL
-AUTO_INCREMENT,
+        lang_id                     SMALLINT(3) UNSIGNED NOT NULL AUTO_INCREMENT,
         lang_name_id                INT(10)     UNSIGNED,
         system_lang  enum('0', '1') DEFAULT '0',
         PRIMARY KEY(lang_id)
@@ -392,8 +391,7 @@ CREATE TABLE lingua_user (
         UNIQUE(username, email)
 );
 
-INSERT INTO lingua_user (username, password, lastname, firstname, email, reg_time, status, level, system_lang) VALUES 
-	('admin', 'test', 'Test', 'Testie', 'test@test.de', '1007057807', '1', '2', '1');
+INSERT INTO lingua_user (username, password, lastname, firstname, email, reg_time, status, level, system_lang) VALUES ('admin', 'test', 'Test', 'Testie', 'test@test.de', '1007057807', '1', '2', '1');
 
 DROP TABLE IF EXISTS lingua_user_desc;
 
@@ -477,8 +475,11 @@ INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4029', '5', '
 INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4030', '5', '1');
 
 # Categories level: 3
-INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4031', '24', '2');
+INSERT INTO lingua_categories (lang_id, parent_id, cat_count, depth) VALUES ('4031', '24', '1', '2');
 INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4032', '24', '2');
+
+# Categories level: 4 (for testing only)
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4001', '31', '3');
 
 DROP TABLE IF EXISTS lingua_original_text;
 

@@ -731,6 +731,18 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
        ('1229', 'Change', 'Wechseln');
 
 
+#
+# Help pages
+#
+
+# link on left page
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
+       ('2001', 'Info/Help', 'Info/Hilfe');
+# page title
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
+       ('2002', 'LINGUA - Info and Help', 'Lingua - Info und Hilfe');
+
+
 
 DROP TABLE IF EXISTS lingua_user;
 
@@ -768,13 +780,13 @@ CREATE TABLE lingua_user_desc (
 );
 
 INSERT INTO lingua_user_desc (desc_id, user_id, lang_id, desc_text) VALUES
-       ('1', '1', '1', 'Morgen ist Donnerstag [Deutsch]');
+       ('1', '1', '1', '[Deutsch] Ich bin Student der Informatik.\nIch übersetze gerne wissenschaftliche Texte, und bin auch sonst ein dufter Typ.');
 INSERT INTO lingua_user_desc (desc_id, user_id, lang_id, desc_text) VALUES
-       ('2', '1', '2', 'Tomorry is Thursday [English]');
+       ('2', '1', '2', '[English] Hi, I\'m a computer science student.\nIn my spare time, I like to translate scientific texts, an moreover, my friends call me \"the King\"');
 INSERT INTO lingua_user_desc (desc_id, user_id, lang_id, desc_text) VALUES
-       ('3', '1', '3', '[Francais]');
+       ('3', '1', '3', '[Francais] Je suis un estudiant de Informatique. Bonjour, et au revoir');
 INSERT INTO lingua_user_desc (desc_id, user_id, lang_id, desc_text) VALUES
-       ('4', '1', '4', '[Swahili]');
+       ('4', '1', '4', '[Swahili] Well... looks like I\'ve forgotten all about my Swahili.\nMaybe next time...');
 
 
 DROP TABLE IF EXISTS lingua_user_blocked;

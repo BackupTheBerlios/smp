@@ -5,7 +5,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.8 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/;
 
 #-----------------------------------------------------------------------------#
 # CALL:   $self->parameter($mgr).                                             #
@@ -258,7 +258,7 @@ sub create_cat_list {
     while ($cat_id ne "0") {
       my @cat = $mgr->{Func}->get_cat($mgr, $cat_id);
       $cat_id = $cat[5];
-
+# XXX
       push (@all_cats, \@cat);
     }
 

@@ -30,9 +30,9 @@ $CONFIG = {
 $DB = {
        DataBase => 'lingua',
        DbHost   => 'localhost',
-       DbPass   => 'lingua',
+       DbPass   => '',
        DbPort   => '',
-       DbUser   => 'lingua'
+       DbUser   => 'wurch'
 };
 
 $SESSION = {

@@ -1,0 +1,71 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<input type="hidden" name="cat_id" value="<TMPL_VAR PAGE_CAT_ID>">
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#31639C" width="600">
+
+    <table cellspacing="5" cellpadding="0" border="0" width="100%" align="center">
+    <tr>
+      <td>
+        <b><TMPL_VAR PAGE_LANG_009002>:</b>
+      </td>
+      <td colspan="3">
+        <TMPL_VAR TEXT_CAT_NAME>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="4">
+        <hr noshade width="100%">
+      </td>
+    </tr>
+    <tr> 
+      <td>
+        <b><TMPL_VAR PAGE_LANG_000024></b>
+      </td>
+      <td>
+        <b><TMPL_VAR PAGE_LANG_000025></b>
+      </td>
+      <td>
+        <b><TMPL_VAR PAGE_LANG_000026></b>
+      </td>
+      <td>
+        <b><TMPL_VAR PAGE_LANG_000027></b>
+      </td>
+    </tr>
+    <TMPL_LOOP LOOP_CAT_TEXTS>
+    <tr>
+      <td valign="top">
+        <a href="<TMPL_VAR TEXT_SHOW_LINK>"><TMPL_VAR TEXT_HEADER></a>
+      </td>
+      <td valign="top">
+        <TMPL_VAR TEXT_DESC>
+      </td>
+      <td valign="top">
+        <TMPL_VAR TEXT_LANG>
+      </td>
+      <td valign="top">
+        <TMPL_VAR TEXT_AVG_RAT> (<TMPL_VAR TEXT_NUM_RAT>)
+      </td>
+    </tr>
+    </TMPL_LOOP>
+    </table>
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  <td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>

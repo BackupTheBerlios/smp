@@ -7,7 +7,7 @@ use strict;
 
 
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.34 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.35 $ =~ /(\d+)\.(\d+)/;
 
 
 
@@ -1978,7 +1978,7 @@ $sth->finish();
 		$mgr->{TmplData}{PAGE_CHARSET}= $mgr->{Charset};
 		$mgr->{TmplData}{CLOSE_WIN} =  $mgr->{Func}->get_text($mgr, 8045);
 
-		$mgr->{TmplData}{TEXT_DOWNLOAD_INFO} =  $mgr->{Func}->get_text($mgr, 8046);
+		#$mgr->{TmplData}{TEXT_DOWNLOAD_INFO} =  $mgr->{Func}->get_text($mgr, 8046);
 		$mgr->{TmplData}{TEXT_HEADER} = $mgr->escape($text_header);
 		$mgr->{TmplData}{TEXT_DESC} = $mgr->escape($text_desc);
 		$mgr->{TmplData}{TEXT_TEXT} = $mgr->escape($text_content);
@@ -3216,6 +3216,7 @@ sub sort_uml{
 }
 
 1;
+
 
 
 

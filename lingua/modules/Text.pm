@@ -5,7 +5,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.19 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.20 $ =~ /(\d+)\.(\d+)/;
 
 #-----------------------------------------------------------------------------#
 # CALL:   $self->parameter($mgr).                                             #
@@ -25,20 +25,97 @@ sub parameter {
 
   if ($method eq "new") {
     $self->text_new($mgr);
-  } elsif(defined $mgr->{CGI}->param('text_add')) {
+
+  } elsif(defined $mgr->{CGI}->param('text_add')) {		#Button text_save New
     $self->text_add($mgr);
-  } elsif (defined $mgr->{CGI}->param('show_text_upload')) {
+
+  } elsif (defined $mgr->{CGI}->param('show_text_upload')) {	#Button Hochladen New
     $self->show_text_upload($mgr);
-  } elsif (defined $mgr->{CGI}->param('text_upload')) {
+
+  } elsif (defined $mgr->{CGI}->param('text_upload')) {		#Button text_uploaden lingua_text_uploaden
     $self->text_upload($mgr);
-  } elsif ($method eq "upload_back") {
+
+  } elsif ($method eq "upload_back") {				#Button text_uploaden lingua_text_uploaden
     $self->text_new($mgr, "upload_back");
-  } elsif ($method eq "show_texts") {
+
+  } elsif ($method eq "show_texts") {				#Text view
     $self->show_texts($mgr);
-  } else {
-    $self->text_new($mgr);
+  
+  } else {							
+	if (defined $mgr->{CGI}->param('change_lang_text_insert_ok')) {				
+		$self->text_insert_ok($mgr);
+	}else{
+		$self->text_new($mgr);
+	}
   }
 }
+
+
+
+
+sub Check_Code{
+  my $self = shift;
+  my $mgr  = shift;
+  my $text = shift || undef;
+  
+my $meldung=0;
+my @bytes;
+my $lentgh;
+
+my $index=0;
+my $follower=0;
+my $bstring;
+
+
+#--------------------Kodierung prüfen
+
+	@bytes    = split //, $text;
+	$lentgh   = @bytes;
+	$follower=0;
+
+	while (($index < $lentgh) && ($follower<3)) {
+
+		$bstring = sprintf "%08b", ord($bytes[$index]);
+
+		if ($bstring =~ /^0/) {$follower = 0; }
+		elsif ($bstring =~ /^110/) {$follower = 1; }
+		elsif ($bstring =~ /^1110/){$follower = 2; }
+		else {$follower = 3;}
+	
+		if ($follower == 0){$index = $index +1;}
+		elsif ($follower == 1){
+			if ($index+1 < $lentgh){			
+				$index=$index+1;			
+				$bstring = sprintf "%08b", ord($bytes[$index]);
+
+				if ($bstring =~ /^10/ ){ $index = $index +1;}
+				else {$follower=3;}
+			}else {$follower=3;}
+		}
+					
+		elsif ($follower == 2){
+			if ($index+2 < $lentgh){
+				$index=$index+1;
+				$bstring = sprintf "%08b", ord($bytes[$index]);
+
+				if ($bstring =~ /^10/){
+					$index=$index+1;
+					$bstring = sprintf "%08b", ord($bytes[$index]);
+					
+					if ($bstring =~ /^10/){$index = $index +1;}
+					else {$follower=3;}
+				}else{ $follower=3;}
+		    	}else {$follower=3;}
+		}
+		
+
+	} #end while
+
+ return $follower;
+}
+
+
+
 
 #-----------------------------------------------------------------------------#
 # CALL:   $self->text_new($mgr, $mode).                                       #
@@ -61,34 +138,107 @@ sub text_new {
   my $text_lang       = $mgr->{CGI}->param('text_lang') || '1';
   my $text_lang_trans = $mgr->{CGI}->param('text_lang_trans') || '1';
 
+  my $code;
+  my $head = $mgr->{CGI}->param('text_header') || '';
+  my $desc = $mgr->{CGI}->param('text_desc') || '';
+  my $text; 
+  
+  if (defined $mgr->{CGI}->param('change_lang')) {    
+   
+    $text = $mgr->{CGI}->param('text_text') || undef;
+
+    if (!($head eq '')){	$code = $self->Check_Code($mgr, $head);}
+    if ((!($desc eq '')) and ($code<3)){$code = $self->Check_Code($mgr, $desc);}
+    if ((defined $text) and ($code<3)){$code = $self->Check_Code($mgr, $text);}
+
+
+	if ($code==3){
+   	    $mgr->{TmplData}{TEXT_ERROR} = $mgr->{Func}->get_text($mgr, 8000);
+	    $mgr->{TmplData}{TEXT_HEADER} =  $mgr->escape($head);
+	    $mgr->{TmplData}{TEXT_DESC}   =  $mgr->escape($desc);
+	    $mgr->{TmplData}{TEXT_TEXT}   =  $mgr->escape($text);
+	}else{
+	    $mgr->{TmplData}{TEXT_HEADER} = $mgr->escape($mgr->from_unicode($head));
+	    $mgr->{TmplData}{TEXT_DESC}   = $mgr->escape($mgr->from_unicode($desc));
+	    $mgr->{TmplData}{TEXT_TEXT}   = $mgr->escape($mgr->from_unicode($text));
+	}
+
+	    $cat_id = $mgr->{Session}->get("TextCatId");
+
+
+  }elsif ($mode eq "WrongCode") {
+    $cat_id    = $mgr->{Session}->get("TextCatId");
+
   # If mode eq "change", we fill the form again.
-  if ($mode eq "change") {
-    $mgr->{TmplData}{TEXT_HEADER} = $mgr->escape($mgr->from_unicode($mgr->{CGI}->param('text_header')));
-    $mgr->{TmplData}{TEXT_DESC}   = $mgr->escape($mgr->from_unicode($mgr->{CGI}->param('text_desc')));
-    $mgr->{TmplData}{TEXT_TEXT}   = $mgr->escape($mgr->from_unicode($mgr->{CGI}->param('text_text')));
+  }elsif ($mode eq "change") {
+
+    $head = $mgr->{CGI}->param('text_header');
+    $desc = $mgr->{CGI}->param('text_desc');
+    $text = $mgr->{CGI}->param('text_text');
+
+    if (defined $head){	$code = $self->Check_Code($mgr, $head);}
+    if ((defined $desc) and ($code<3)){$code = $self->Check_Code($mgr, $desc);}
+    if ((defined $text) and ($code<3)){$code = $self->Check_Code($mgr, $text);}
+
+    if ($code==3){
+	    $mgr->{TmplData}{TEXT_HEADER} = $mgr->escape($head);
+	    $mgr->{TmplData}{TEXT_DESC}   = $mgr->escape($desc);
+	    $mgr->{TmplData}{TEXT_TEXT}   = $mgr->escape($text);
+     }else{   
+	    $mgr->{TmplData}{TEXT_HEADER} = $mgr->escape($mgr->from_unicode($head));
+	    $mgr->{TmplData}{TEXT_DESC}   = $mgr->escape($mgr->from_unicode($desc));
+	    $mgr->{TmplData}{TEXT_TEXT}   = $mgr->escape($mgr->from_unicode($text));
+     }
 
     $cat_id    = $mgr->{Session}->get("TextCatId");
+
   # If we came from the upload form, we fill the form again.
-  } elsif ($mode eq "upload_back") {
-    $mgr->{TmplData}{TEXT_HEADER} = $mgr->escape($mgr->from_unicode($mgr->{Session}->get("TextHeader")));
-    $mgr->{TmplData}{TEXT_DESC}   = $mgr->escape($mgr->from_unicode($mgr->{Session}->get("TextDesc")));
+  }elsif ($mode eq "upload_back") {
 
     my $check_text = $mgr->{Session}->get("TextText");
-    my $tmp_text   = "";
-    my $unicode;
+    $head = $mgr->{Session}->get("TextHeader");
+    $desc = $mgr->{Session}->get("TextDesc");
 
-    # Simple unicode check.
-    eval { $unicode = latin($check_text); $tmp_text = $unicode->utf8($check_text); };
+    if ((defined $check_text) and (defined $mgr->{CGI}->param('text_file'))){$code = $self->Check_Code($mgr, $check_text);}
+    
+    if ($code==3){
 
-    if ($@) {
-      $mgr->{TmplData}{TEXT_TEXT} = $mgr->escape($check_text);
-    } else {
-      $mgr->{TmplData}{TEXT_TEXT} = $mgr->escape($tmp_text);
-    }
+        $mgr->{TmplData}{TEXT_ERROR} = $mgr->{Func}->get_text($mgr, 8001);
+
+     	if (defined $head ){$code = $self->Check_Code($mgr, $head);}
+	if ((defined $desc) and ($code<3)){$code = $self->Check_Code($mgr, $desc);}
+
+	if ($code==3){
+	    $mgr->{TmplData}{TEXT_HEADER} = $mgr->escape($head);
+	    $mgr->{TmplData}{TEXT_DESC}   = $mgr->escape($desc);
+	}else{
+	    $mgr->{TmplData}{TEXT_HEADER} = $mgr->escape($mgr->from_unicode($head));
+	    $mgr->{TmplData}{TEXT_DESC}   = $mgr->escape($mgr->from_unicode($desc));
+	}
+
+     }else{
+
+     	if (defined $head ){$code = $self->Check_Code($mgr, $head);}
+	if ((defined $desc) and ($code<3)){$code = $self->Check_Code($mgr, $desc);}
+
+	if ($code==3){
+   	    $mgr->{TmplData}{TEXT_ERROR} = $mgr->{Func}->get_text($mgr, 8000);
+	    $mgr->{TmplData}{TEXT_HEADER} = $mgr->escape($head);
+	    $mgr->{TmplData}{TEXT_DESC}   = $mgr->escape($desc);
+	}else{
+
+	    $mgr->{TmplData}{TEXT_HEADER} = $mgr->escape($mgr->from_unicode($head));
+	    $mgr->{TmplData}{TEXT_DESC}   = $mgr->escape($mgr->from_unicode($desc));
+	}
+
+        $mgr->{TmplData}{TEXT_TEXT}   = $mgr->escape($mgr->from_unicode($check_text));
+
+     }
 
     $text_lang_trans = $mgr->{Session}->get("TextLangTrans");
     $text_lang       = $mgr->{Session}->get("TextLang");
     $cat_id          = $mgr->{Session}->get("TextCatId");
+
   } else {
     $mgr->{Session}->set("TextCatId", $cat_id);
   }
@@ -130,9 +280,11 @@ sub text_new {
     $lang_count++;
   }
 
+
   $mgr->{TmplData}{LOOP_TEXT_LANG_TRANS} = \@lang_trans_result;
   $mgr->{TmplData}{LOOP_TEXT_LANG}       = \@lang_result;
   $mgr->{Template}                       = $mgr->{TmplFiles}->{Text_New};
+ 
 }
 
 #-----------------------------------------------------------------------------#
@@ -151,32 +303,50 @@ sub text_add {
   my ($self, $mgr) = @_;
 
   # Get the input.
-  my $text_header     = $mgr->unescape($mgr->from_unicode($mgr->{CGI}->param('text_header')));
-  my $text_desc       = $mgr->unescape($mgr->from_unicode($mgr->{CGI}->param('text_desc')));
-  my $text_text       = $mgr->unescape($mgr->from_unicode($mgr->{CGI}->param('text_text')));
+  my $text_header     = $mgr->{CGI}->param('text_header') || undef;	
+  my $text_desc       = $mgr->{CGI}->param('text_desc') || undef;	
+  my $text_text       = $mgr->{CGI}->param('text_text') || undef;	
+  my $code;
+
   my $text_lang       = $mgr->{CGI}->param('text_lang');
   my $text_lang_trans = $mgr->{CGI}->param('text_lang_trans');
 
-  my @length_header = split(' ', $text_header);
-  my @length_desc   = split(' ', $text_desc);
-  my @length_text   = split(' ', $text_text);
+  if (defined $text_header){$code = $self->Check_Code($mgr, $text_header);}
+  if ((defined $text_desc) and ($code<3)){$code = $self->Check_Code($mgr, $text_desc);}
+  if ((defined $text_text) and ($code<3)){$code = $self->Check_Code($mgr, $text_text);}
 
-  # Count the words plus three. One for each additonal whitespace.
-  my $count_words = $#length_header + $#length_desc + $#length_text + 3;
-  my $count_error = 0;
+  if ($code==3){
+  	$mgr->{TmplData}{TEXT_ERROR} = $mgr->{Func}->get_text($mgr, 8002);
+	$mgr->{TmplData}{TEXT_HEADER} = $mgr->escape($text_header);
+	$mgr->{TmplData}{TEXT_DESC}   = $mgr->escape($text_desc);
+	$mgr->{TmplData}{TEXT_TEXT}   = $mgr->escape($text_text);
+   	$self->text_new($mgr, "WrongCode");
 
-  # Catch and count the errors.
-  if ($text_header eq '') {
-    $mgr->{TmplData}{TEXT_ERROR_HEADER} = $mgr->{Func}->get_text($mgr, 7007);
-    $count_error++;
-  }
+   }else{
+	$text_header     = $mgr->unescape($mgr->from_unicode($mgr->{CGI}->param('text_header')));
+	$text_desc       = $mgr->unescape($mgr->from_unicode($mgr->{CGI}->param('text_desc')));
+	$text_text       = $mgr->unescape($mgr->from_unicode($mgr->{CGI}->param('text_text')));
 
-  if ($text_desc eq '') {
-    $mgr->{TmplData}{TEXT_ERROR_DESC} = $mgr->{Func}->get_text($mgr, 7008);
-    $count_error++;
-  }
+	my @length_header = split(' ', $text_header);
+	my @length_desc   = split(' ', $text_desc);
+	my @length_text   = split(' ', $text_text);
 
-  if ($text_text eq '') {
+	# Count the words plus three. One for each additonal whitespace.
+	my $count_words = $#length_header + $#length_desc + $#length_text + 3;
+	my $count_error = 0;
+
+	# Catch and count the errors.
+	if ($text_header eq '') {
+	    $mgr->{TmplData}{TEXT_ERROR_HEADER} = $mgr->{Func}->get_text($mgr, 7007);
+	    $count_error++;
+	}
+
+	if ($text_desc eq '') {
+	    $mgr->{TmplData}{TEXT_ERROR_DESC} = $mgr->{Func}->get_text($mgr, 7008);
+	    $count_error++;
+	}
+
+	if ($text_text eq '') {
     $mgr->{TmplData}{TEXT_ERROR_TEXT} = $mgr->{Func}->get_text($mgr, 7009);
     $count_error++;
   }
@@ -201,8 +371,16 @@ sub text_add {
   return if (!defined $points || $points == -1);
 
   # Show the page with the inserting result.
-  $self->text_insert_ok($mgr, $points, $text_header, $text_desc, $text_text, 
-			$text_lang, $text_lang_trans);
+
+$mgr->{Session}->set("TextPoints", $points);
+$mgr->{Session}->set("TextHeader", $text_header);
+$mgr->{Session}->set("TextDesc", $text_desc);
+$mgr->{Session}->set("TextText", $text_text);
+$mgr->{Session}->set("TextLang", $text_lang);
+$mgr->{Session}->set("TextLangTrans", $text_lang_trans);
+
+  $self->text_insert_ok($mgr);
+}
 }
 
 #-----------------------------------------------------------------------------#
@@ -222,7 +400,7 @@ sub show_text_upload {
   $mgr->{TmplData}{PAGE_LANG_007001} = $mgr->{Func}->get_text($mgr, 7001);
   $mgr->{TmplData}{PAGE_LANG_007006} = $mgr->{Func}->get_text($mgr, 7006);
   $mgr->{TmplData}{PAGE_LANG_007016} = $mgr->{Func}->get_text($mgr, 7016);
-  $mgr->{TmplData}{TEXT_ADD_BACK}    = $mgr->my_url(METHOD => "upload_back");
+ $mgr->{TmplData}{TEXT_ADD_BACK}    = $mgr->my_url(METHOD => "upload_back");
 
   my $text_header     = $mgr->{CGI}->param('text_header');
   my $text_desc       = $mgr->{CGI}->param('text_desc');
@@ -257,12 +435,10 @@ sub text_upload {
 
   my $file_path  = $mgr->{CGI}->param('text_file');
   my $bytes_read = 0;
-  my $size       = 0;
   my ($buffer, $text);
 
   # Read 2048 bytes from the choosen file.
   while ($bytes_read = read($file_path, $buffer, 2048)) {
-    $size += $bytes_read;
     $text .= $buffer;
   }
 
@@ -361,8 +537,14 @@ sub text_insert {
 # RETURN: none.                                                               #
 #-----------------------------------------------------------------------------#
 sub text_insert_ok {
-  my ($self, $mgr, $count_words, $text_header, $text_desc, 
-      $text_text, $text_lang, $text_lang_trans) = @_;
+  my ($self, $mgr) = @_;
+
+my $count_words 	= $mgr->{Session}->get("TextPoints");
+my $text_header 	= $mgr->{Session}->get("TextHeader");
+my $text_desc 	= $mgr->{Session}->get("TextDesc");
+my $text_text 	= $mgr->{Session}->get("TextText");
+my $text_lang 	= $mgr->{Session}->get("TextLang");
+my $text_lang_trans= $mgr->{Session}->get("TextLangTrans");
 
   my $cat_id = $mgr->{Session}->get("TextCatId");
 
@@ -456,3 +638,11 @@ sub fill_text_header {
 }
 
 1;
+
+
+
+
+
+
+
+

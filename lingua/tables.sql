@@ -129,6 +129,10 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7018',
                                                         'Source language and destiny languagemay not be the same.',
                                                         'Quellsprache und Zielsprache dürfen nicht gleich sein.');
 
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8000', 'Your browser does not support Unicode', 'Ihr Browser unterstützt leider nicht Unicode');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8001', 'Your file is not an Unicode-File', 'Ihre Datei ist nicht richtig kodiert(Unicode-utf8)');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('8002', 'Your data are not right Coded', 'Ihre Daten sind nicht richtig kodiert(Unicode-utf8).');
+
 ### text module (upload)
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7016', 'File', 'Datei');
 
@@ -639,3 +643,6 @@ INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (1,4,25)
 INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (2,5,25);
 INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (2,6,25);
 INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (2,7,25);
+
+
+

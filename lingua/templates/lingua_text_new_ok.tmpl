@@ -1,5 +1,7 @@
 <TMPL_INCLUDE lingua_header.tmpl>
 
+<input type="hidden" name="change_lang_text_insert_ok" value="1">
+
 <table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
 <tr valign="top">
   <td colspan="2">
@@ -50,6 +52,22 @@
       </td>
     </tr>
     <tr>
+      <td>
+        <TMPL_VAR PAGE_LANG_007014>:
+      </td>
+      <td>
+        <TMPL_VAR TEXT_WORDS>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <TMPL_VAR PAGE_LANG_007015>:
+      </td>
+      <td>
+        <TMPL_VAR TEXT_POINT_COST>
+      </td>
+    </tr>
+    <tr>
       <td valign="top">
         <TMPL_VAR PAGE_LANG_007002>:
       </td>
@@ -73,22 +91,7 @@
         <TMPL_VAR TEXT_TEXT>
       </td>
     </tr>
-    <tr>
-      <td>
-        <TMPL_VAR PAGE_LANG_007014>:
-      </td>
-      <td>
-        <TMPL_VAR TEXT_WORDS>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <TMPL_VAR PAGE_LANG_007015>:
-      </td>
-      <td>
-        <TMPL_VAR TEXT_POINT_COST>
-      </td>
-    </tr>
+
     </table>
 
   </td>
@@ -101,3 +104,6 @@
 </table>
 
 <TMPL_INCLUDE lingua_footer.tmpl>
+
+
+

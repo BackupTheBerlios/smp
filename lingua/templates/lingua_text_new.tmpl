@@ -17,8 +17,9 @@
       <td>
         <a class="normal" href="<TMPL_VAR TEXT_CAT_BACK>"><TMPL_VAR PAGE_LANG_007001></a>
       </td>
-      <td>
-        <TMPL_IF TEXT_ERROR>
+
+      <td> 
+	 <TMPL_IF TEXT_ERROR> 
           <span class="alert">
             <TMPL_VAR TEXT_ERROR>
           </span>
@@ -82,7 +83,7 @@
           <TMPL_VAR TEXT_ERROR_HEADER>
         </span>
         <br>
-        <input type="text" name="text_header" value="<TMPL_VAR TEXT_HEADER>" size="59">
+        <input type="text" name="text_header" value="<TMPL_VAR TEXT_HEADER>" size="57">
       </td>
     </tr>
     <tr>
@@ -129,3 +130,7 @@
 </table>
 
 <TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+

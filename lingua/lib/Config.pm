@@ -60,6 +60,7 @@ $TABLES = {
 $TMPL = {
 	 Error => 'lingua_error.tmpl',
 	 Home  => 'lingua_home.tmpl',
+	 User_Pers => 'lingua_user_pers.tmpl',	 
 };
 
 1;

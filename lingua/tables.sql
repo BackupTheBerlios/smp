@@ -173,6 +173,7 @@ CREATE TABLE lingua_categories (
 	cat_id     INT(10) UNSIGNED NOT NULL               AUTO_INCREMENT,
 	parent_id  INT(10) UNSIGNED           DEFAULT '0',
 	lang_id    INT(10) UNSIGNED NOT NULL,
+	depth      INT(10) UNSIGNED           DEFAULT '0',
 	cat_count  INT(10) UNSIGNED           DEFAULT '0',
 	text_count INT(10) UNSIGNED           DEFAULT '0',
 	PRIMARY KEY(cat_id)
@@ -188,33 +189,33 @@ INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('4006', '0');
 INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('4007', '0');
 
 # Categories level: 2
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4008', '1');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4009', '1');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4010', '1');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4011', '1');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4012', '1');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4013', '1');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4014', '1');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4015', '2');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4016', '2');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4017', '3');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4018', '3');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4019', '3');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4020', '3');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4021', '3');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4022', '5');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4023', '5');
-INSERT INTO lingua_categories (lang_id, parent_id, cat_count) VALUES ('4024', '5', '2');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4025', '5');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4026', '5');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4027', '5');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4028', '5');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4029', '5');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4030', '5');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4008', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4009', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4010', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4011', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4012', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4013', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4014', '1', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4015', '2', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4016', '2', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4017', '3', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4018', '3', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4019', '3', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4020', '3', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4021', '3', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4022', '5', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4023', '5', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, cat_count, depth) VALUES ('4024', '5', '2', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4025', '5', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4026', '5', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4027', '5', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4028', '5', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4029', '5', '1');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4030', '5', '1');
 
 # Categories level: 3
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4031', '24');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4032', '24');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4031', '24', '2');
+INSERT INTO lingua_categories (lang_id, parent_id, depth) VALUES ('4032', '24', '2');
 
 DROP TABLE IF EXISTS lingua_original_text;
 

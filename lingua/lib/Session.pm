@@ -1,292 +1,231 @@
 package lib::Session;
 
 use Digest::MD5;
-use fields (
-	'ExpTime',
-        'SessDir',
-	'SessFile',
-	'Sid'
-);
+use Fcntl;
+use Storable qw(nfreeze thaw);
+use Symbol;
+use vars qw($VERSION);
 use strict;
-use vars qw(%FIELDS $VERSION);
- 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/;
 
-#====================================================================================================#
-# SYNOPSIS: new($class, %par);
-# PURPOSE:  Konstruktor der Klasse Session.pm.
-# RETURN:   $self in den Namensraum von Session geblesst.
-#====================================================================================================#
+$VERSION = sprintf "%d.%03d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/;
+
 sub new {
-        my ($class, %par) = @_;
-        no strict "refs";
-        my $self          = bless [\%{"$class\::FIELDS"}], $class;
+    my $proto  = shift;
+    my %params = @_;
 
-	# Keys und Values initialisieren. 
-        foreach (keys %par) {
-                eval { $self->{$_} = $par{$_}; };
- 
-                if ($@) {
-                        if ($@ =~ /No such array field/i) {
-                                warn "Ignoring unknown key[$_]";
-                        } else {
-                                die $@;
-                        }
-                }
-        }
-        $self;
+    my $class = ref($proto) || $proto;
+    my $self;
+
+    $self->{directory}  = $params{directory};
+    $self->{exp_time}   = $params{exp_time};
+    
+    $self->{_main}->{file} = Symbol::gensym();
+    $self->{_main}->{name} = $params{file};
+
+    $self->{_sess}->{file} = Symbol::gensym();
+
+    $self->{_open} = 0;
+    
+    eval {
+        sysopen($self->{_main}->{file}, $self->{directory}."/".$self->{_main}->{name}, O_RDWR|O_CREAT);
+        $self->{_open} = 1;
+    };
+        
+    my $file = $self->{_main}->{file};
+
+    while (<$file>) {
+        $self->{_main}->{serialized} .= $_;
+    }
+
+    $self->{_main}->{unserialized} = thaw ($self->{_main}->{serialized});
+
+    return bless ($self, $class);
 }
 
-#====================================================================================================#
-# SYNOPSIS: $self->start_session($self, %par);
-# PURPOSE:  Anlegen einer Session und damit das schreiben in die Uebersichtsliste aller aktiven
-#	    Sessions und dem schreiben einer neuen Sessiondatei.
-# RETURN:   Die neue Sessionid.
-#====================================================================================================#
 sub start_session {
-	my ($self, %par) = @_;
+    my $self   = shift;
+    my %params = @_;
 
-	# Sessionid generieren.
-	my $sid      = $self->_create_sid();
-	# Global zugreifbar machen.
-	$self->{Sid} = $sid;
-	# Die Zeit ausrechnen, wann die Session abgelaufen ist.
-	my $time     = $self->_get_expires();
+    my $sid                              = $self->_create_sid();
+    $self->{_main}->{unserialized}{$sid} = $self->_get_expires();
+    $self->{_sess}->{name}               = $sid;
+    
+    eval {
+        sysopen($self->{_sess}->{file}, $self->{directory}."/".$self->{_sess}->{name}, O_RDWR|O_CREAT);
+        $self->{_open} = 2;
+    };
 
-	my (%sessions, %sid);
+    $self->set(%params);
 
-	# Gesamt Sessiondatei schreiben.
-	dbmopen %sessions, sprintf("%s/%s", $self->{SessDir}, $self->{SessFile}), 0644 
-	or die "Can't create new session. Reason: $!"; 
-		$sessions{$sid} = $time;
-	dbmclose %sessions;
-	# Eigentliche Sessiondatei schreiben.
-	dbmopen %sid, sprintf("%s/%s", $self->{SessDir}, $sid), 0644 
-	or die "Can't create new session. Reason: $!";
-		foreach (keys %par) {
-			$sid{$_} = $par{$_} || '';
-		}
-	dbmclose %sid;
-	# Sessionid zurueck geben.
-	$sid;
+    return $sid;
 }
 
-#====================================================================================================#
-# SYNOPSIS: $self->kill_session(|$sid); 
-# PURPOSE:  Loescht eine Session komplett. Erst aus der Gesamt Sessiondatei und dann die Sessiondatei
-#           selbst.
-# RETURN:   true.
-#====================================================================================================#
 sub kill_session {
-	my $self = shift;
-	my $sid  = shift || undef;
+    my $self = shift;
+    my $sid  = shift || undef;
 
-	# Wurde eine Sessionid uebergeben?
-	$sid = $self->{Sid} unless ($sid);
+    $sid = $self->{_sess}->{name} unless ($sid);
 
-	my (%sessions, $dir_file, $pag_file, $db_file);
+    if ($self->{_open} == 2) {
+        CORE::close $self->{_sess}->{file};
+        $self->{_open} -= 1;
+    }
 
-	# Pfad zum loeschen zusammen bauen.
-	$dir_file = sprintf("%s/%s.dir", $self->{SessDir}, $sid);
-	$pag_file = sprintf("%s/%s.pag", $self->{SessDir}, $sid);
-	$db_file  = sprintf("%s/%s.db",  $self->{SessDir}, $sid);
+    eval {
+        unlink($self->{directory}."/".$self->{_sess}->{name});
+    };
 
-	# Session aus der Gesamt Session Datei loeschen.
-	dbmopen %sessions, sprintf("%s/%s", $self->{SessDir}, $self->{SessFile}), 0644 
-	or die "Can't open session file. Reason: $!";
-		delete $sessions{$sid};
-	dbmclose %sessions;
-
-	# Eigentliche Sessiondateien loeschen.
-	unlink $dir_file if (-e $dir_file);
-	unlink $pag_file if (-e $pag_file);
-	unlink $db_file  if (-e $db_file);
-
-	1;
+    delete $self->{_sess};
+    delete $self->{_main}->{unserialized}{$sid};
 }
 
-#====================================================================================================#
-# SYNOPSIS: $self->check_sid();
-# PURPOSE:  Ueberprueft die zur Zeit gueltige Session auf Richtigkeit, also das Expiredate wird
-#           ueberprueft.
-# RETURN:   undef oder 1 bei Erfolg.
-#====================================================================================================#
 sub check_sid {
-	my $self = shift;
-	my $sid  = shift;
+    my $self = shift;
+    my $sid  = shift || undef;
 
-	$self->{Sid} = $sid if (defined $sid);
+    $self->{_sess}->{name} = $sid if (defined $sid);
 
-	return undef unless ($self->{Sid});
+    return undef unless (defined $self->{_sess}->{name});
 
-	my %sessions;
+    foreach (keys %{$self->{_main}->{unserialized}}) {
+        if ($_ eq $sid) {
+            return 1;
+        }
+    }
 
-	# Session ueberpruefen und vorher aus dem Gesamt Sessiondatei auslesen.
-	dbmopen %sessions, sprintf("%s/%s", $self->{SessDir}, $self->{SessFile}), 0644
-	or die "Can't open session file. Reason: $!";
-		foreach (keys %sessions) {
-			if ($_ eq $self->{Sid}) {
-				dbmclose %sessions;
-				return 1;
-			}
-		}
-	dbmclose %sessions;
-
-	undef;
+    return undef;
 }
 
-#====================================================================================================#
-# SYNOPSIS: $self->set(%par);
-# PURPOSE:  Setzen von Sessionwerten in die Aktuelle Session.
-# RETURN:   true.
-#====================================================================================================#
 sub set {
-	my $self = shift;
-	my %par  = @_;
+    my $self   = shift;
+    my %params = @_;
 
-	my %sid;
-
-	# Schreiben der Sessionwerte in die Sessiondatei.
-	dbmopen %sid, sprintf("%s/%s", $self->{SessDir}, $self->{Sid}), 0644 
-	or die "Can't open session file. Reason: $!";
-		foreach (keys %par) {
-			next unless ($par{$_});
-			$sid{$_} = $par{$_};
-		}
-	dbmclose %sid;
-
-	1;	
+    foreach (keys %params) {
+        next unless ($params{$_});
+        $self->{_sess}->{unserialized}{$_} = $params{$_};
+    }
 }
 
-#====================================================================================================#
-# SYNOPSIS: $self->get($key);
-# PURPOSE:  Auslesen eines Values zu einer bestimmten Session und dem dazu gehoerigen Schluessel.
-# RETURN:   Der Wert, der zu dem uebergebenen Schluessel passt.
-#====================================================================================================#
 sub get {
-	my $self = shift;
-	my $key  = shift;
+    my $self = shift;
+    my $key  = shift;
 
-	my (%sid, $value);
-
-	# Auslesen aus der Sessiondatei.
-	dbmopen %sid, sprintf("%s/%s", $self->{SessDir}, $self->{Sid}), 0644 
-	or die "Can't open session file. Reason: $!";
-		$value = $sid{$key};
-	dbmclose %sid;
-
-	$value;
+    return $self->{_sess}->{unserialized}{$key};
 }
 
-#====================================================================================================#
-# SYNOPSIS: $self->del($key);
-# PURPOSE:  Loeschen eines Wertes aus der aktiven Session durch den uebergebenen Schluessel.
-# RETURN:   true;
-#====================================================================================================#
 sub del {
-	my $self = shift;
-	my $key  = shift;
+    my $self = shift;
+    my $key  = shift;
 
-	my %sid;
-
-	# Loeschen des Wertes aus der Sessiondatei.
-	dbmopen %sid, sprintf("%s/%s", $self->{SessDir}, $self->{Sid}), 0644 
-	or die "Can't open session file. Reason: $!";
-		delete $sid{$key};
-	dbmclose %sid;
-	
-	1;	
+    delete $self->{_sess}->{unserialized}{$key};
 }
 
-#====================================================================================================#
-# SYNOPSIS: $self->set_sid(|$sid);
-# PURPOSE:  Eine neue Sessionid setzen oder die alte wenn vorhanden loeschen.
-# RETURN:   true.
-#====================================================================================================#
 sub set_sid {
-	my $self = shift;
-	my $sid  = shift || undef;
+    my $self = shift;
+    my $sid  = shift;
 
-	$self->{Sid} = $sid;
+    $self->{_sess}->{name} = $sid;
 
-	1;
+    eval {
+        sysopen($self->{_sess}->{file}, $self->{directory}."/".$self->{_sess}->{name}, O_RDWR|O_CREAT);
+        $self->{_open} = 2;
+
+        my $file = $self->{_sess}->{file};
+
+        while (<$file>) {
+            $self->{_sess}->{serialized} .= $_;
+        }
+
+        $self->{_sess}->{unserialized} = $self->unserialize($self->{_sess}->{serialized});
+    };
 }
 
-#====================================================================================================#
-# SYNOPSIS: $self->get_sid();
-# PURPOSE:  Die zur Zeit aktuelle Sessionid zurueck geben oder undef.
-# RETURN:   siehe PURPOSE.
-#====================================================================================================#
 sub get_sid {
-	my $self = shift;
-	
-	$self->{Sid} || undef;
+    my $self = shift;
+
+    return $self->{session}->{_session_id};
 }
 
-#====================================================================================================#
-# SYNOPSIS: $self->check_sessions(); 
-# PURPOSE:  Ueberprueft alle zur Zeit aktiven Sessions und loescht gegebenen falls die abgelaufenen
-#	    Sessions.
-# RETURN:   true.
-#====================================================================================================#
 sub check_sessions {
-	my $self = shift;
+    my $self = shift;
 
-	my $time = time();
-	my (%sessions, @old_sessions);
+    my $time = time();
 
-	dbmopen %sessions, sprintf("%s/%s", $self->{SessDir}, $self->{SessFile}), 0644 
-	or die "Can't open session file. Reason: $!";
-		foreach (keys %sessions) {
-			if ($sessions{$_} < $time) {
-				push (@old_sessions, $_);
-				delete $sessions{$_};	
-			}
-		}
-	dbmclose %sessions;
-
-	foreach (@old_sessions) {
-		$self->kill_session($_);
-	}
-
-	1;
+    foreach (keys %{$self->{_main}->{unserialized}}) {
+        if ($self->{_main}->{unserialized}{$_} < $time) {
+            if (-e $self->{directory}."/".$_) {
+                eval {
+                    delete $self->{_main}->{unserialized}{$_};
+                    unlink ($self->{directory}."/".$_);
+                };
+            }
+        }
+    }
 }
 
-#====================================================================================================#
-# SYNOPSIS: $self->_create_sid();
-# PURPOSE:  Hilfsfunktion, die eine neue Sessionid per Zufall generiert.
-# RETURN:   $sid.
-#====================================================================================================#
 sub _create_sid {
-	my $self = shift;
+    my $self = shift;
 
-	my $ctx  = Digest::MD5->new();
-	my $data = "";
+    my $ctx  = Digest::MD5->new();
+    my $data = "";
 
-	for (my $i = 0; $i < 20; $i++) {
-		$data .= join '', ('.', '/', 0..9, 'A'..'Z', 'a'..'z')[rand 64, rand 64, rand 64, rand 64];
-	}
+    for (my $i = 0; $i < 20; $i++) {
+        $data .= join('', (0..9, 'A'..'Z', 'a'..'z')[rand 62, rand 62, rand 62, rand 62]);
+    }
 
-	$ctx->add($data);
-	my $sid = $ctx->hexdigest;
+    $ctx->add($data);
 
-	$sid;
+    return $ctx->hexdigest();
 }
 
-#====================================================================================================#
-# SYNOPSIS: $self->_get_expires();
-# PURPOSE:  Errechnet von der jetzigen zeit einen neuen Sessionzeit aus, also wie lange die Session
-#	    aktiv sein soll. Es wird dabei der vorgegebenen Wert beachtet, der gesetzt wurde fuer die
-#	    Dauer einer Session.
-# RETURN:   $time.
-#====================================================================================================#
 sub _get_expires {
-	my $self = shift;
+    my $self = shift;
 
-	my $time = time();
-	$time    = $self->{ExpTime} + $time;
+    return ($self->{exp_time} + time());
+}
 
-	$time;
+sub serialize {
+    my $self         = shift;
+    my $unserialized = shift;
+
+    return (nfreeze $unserialized) if ($unserialized);
+}
+
+sub unserialize {
+    my $self       = shift;
+    my $serialized = shift;
+
+    return (thaw $serialized) if ($serialized);
+}
+
+sub DESTROY {
+    my $self = shift;
+
+    eval {
+        $self->{_main}->{serialized} = $self->serialize($self->{_main}->{unserialized});
+
+        truncate($self->{_main}->{file}, 0);
+        seek($self->{_main}->{file}, 0, 0);
+        
+        print {$self->{_main}->{file}} $self->{_main}->{serialized};
+        
+        CORE::close $self->{_main}->{file};
+
+        $self->{_open} -= 1;
+    };
+
+    if ($self->{_open}) {
+        eval {
+            $self->{_sess}->{serialized} = $self->serialize($self->{_sess}->{unserialized});
+
+            truncate($self->{_sess}->{file}, 0);
+            seek($self->{_sess}->{file}, 0, 0);
+            
+            print {$self->{_sess}->{file}} $self->{_sess}->{serialized};
+
+            CORE::close $self->{_sess}->{file};
+        };
+    }
 }
 
 1;

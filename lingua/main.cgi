@@ -48,7 +48,7 @@ use fields (
 use vars qw(%FIELDS $VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)\.(\d+)/;
 
 &handler();
 
@@ -151,17 +151,17 @@ sub handler {
     warn "No parameter method in class [$class].";
     $self->fatal_error();
   }
-if ($self->{Template} eq 'lingua_text_download.tmpl'){
- $self->output();  
-}else{
-unless ($self->{ModuleHandlesOutput}) {
-    $self->{Page}->fill_main_part($self);
-    $self->{Page}->fill_user_part($self);
-    $self->{Page}->fill_lang_part($self);
-    $self->output();
-  }
-}
 
+  if ($self->{Template} eq 'lingua_text_download.tmpl'){
+      $self->output();  
+  } else {
+      unless ($self->{ModuleHandlesOutput}) {
+          $self->{Page}->fill_main_part($self);
+          $self->{Page}->fill_user_part($self);
+          $self->{Page}->fill_lang_part($self);
+          $self->output();
+      }
+  }
 }
 
 sub new {
@@ -304,7 +304,7 @@ SQL
 						  UserLevel   => $data[3],
 						  UserName    => $data[1],
 						  UserLang    => $data[4]);
-	
+	warn "RETURN 1: ".$sid;
 	$self->{Language}                = $data[4];
 	$self->{LoginOk}                 = 1;
 	$self->{SessionId}               = $sid;
@@ -338,7 +338,7 @@ SQL
       }
     }
   } else {
-    if (defined $self->{CGI}->param('logout')) {
+    if (defined $self->{CGI}->param('logout')) {  
       $self->{Session}->kill_session($self->{SessionId});
       $self->{LoginOk}                 = 0;
       $self->{SessionId}               = undef;
@@ -356,10 +356,9 @@ sub check_session {
   my $self = shift;
   my $sid  = $self->{CGI}->param('sid') || undef;
 
-  $self->{Session} = lib::Session->new(ExpTime  => $self->{SessionData}->{ExpTime},
-				       SessDir  => $self->{SessionData}->{SessDir},
-				       SessFile => $self->{SessionData}->{SessFile},
-				       Sid      => undef);
+  $self->{Session} = lib::Session->new(directory  => $self->{SessionData}->{SessDir},
+				       file       => $self->{SessionData}->{SessFile},
+				       exp_time   => $self->{SessionData}->{ExpTime});
 
   $self->{Session}->check_sessions();
 
@@ -369,7 +368,7 @@ sub check_session {
     my $check;
 
     eval {
-      $check = $self->{Session}->check_sid();
+      $check = $self->{Session}->check_sid($sid);
     };
 
     if ($@) {

@@ -32,7 +32,7 @@ $DB = {
        DbHost   => 'localhost',
        DbPass   => '',
        DbPort   => '',
-       DbUser   => 'root'
+       DbUser   => 'wurch'
 };
 
 $SESSION = {
@@ -98,14 +98,3 @@ $TMPL = {
 };
 
 1;
-
-
-
-
-
-
-
-
-
-
-

@@ -5,7 +5,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.22 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.23 $ =~ /(\d+)\.(\d+)/;
 
 #-----------------------------------------------------------------------------#
 # CALL:   $self->parameter($mgr).                                             #
@@ -16,7 +16,7 @@ $VERSION = sprintf "%d.%03d", q$Revision: 1.22 $ =~ /(\d+)\.(\d+)/;
 #                                                                             #
 # DESC:   Main function for the Text module.                                  #
 #                                                                             #
-# RETURN: none.                            fetchrow_arrayref                                   #
+# RETURN: none.                                                               #
 #-----------------------------------------------------------------------------#
 sub parameter {
   my ($self, $mgr) = @_;
@@ -237,9 +237,11 @@ sub text_new {
     $head = $mgr->{Session}->get("TextHeader");
     $desc = $mgr->{Session}->get("TextDesc");
 
-    if ((defined $check_text) and (defined $mgr->{CGI}->param('text_file'))){$code = $self->Check_Code($mgr, $check_text);}
+    if ((defined $check_text) and (defined $mgr->{CGI}->param('text_file'))){
+	$code = $self->Check_Code($mgr, $check_text);}
     
-    if ($code==3){ $mgr->{TmplData}{TEXT_ERROR} = $mgr->{Func}->get_text($mgr, 8001);
+    if ($code==3){ 
+	$mgr->{TmplData}{TEXT_ERROR} = $mgr->{Func}->get_text($mgr, 8001);
     }else{
 
      	if (defined $head ){$code = $self->Check_Code($mgr, $head);}
@@ -395,12 +397,12 @@ sub text_add {
 
   # Show the page with the inserting result.
 
-$mgr->{Session}->set("TextPointsOk", $points);
-$mgr->{Session}->set("TextHeaderOk", $text_header);
-$mgr->{Session}->set("TextDescOk", $text_desc);
-$mgr->{Session}->set("TextTextOk", $text_text);
-$mgr->{Session}->set("TextLangOk", $text_lang);
-$mgr->{Session}->set("TextLangTransOk", $text_lang_trans);
+  $mgr->{Session}->set("TextPointsOk", $points);
+  $mgr->{Session}->set("TextHeaderOk", $text_header);
+  $mgr->{Session}->set("TextDescOk", $text_desc);
+  $mgr->{Session}->set("TextTextOk", $text_text);
+  $mgr->{Session}->set("TextLangOk", $text_lang);
+  $mgr->{Session}->set("TextLangTransOk", $text_lang_trans);
 
   $self->text_insert_ok($mgr);
 }
@@ -441,7 +443,6 @@ sub show_text_upload {
   $mgr->{TmplData}{PAGE_TITLE}  = $mgr->{Func}->get_text($mgr, 8004);
   $mgr->{Template} = $mgr->{TmplFiles}->{Text_New_Upload};
   $mgr->{TmplData}{TEXT_BACK} =  $self->get_javascript_url_back();
-
 }
 
 #-----------------------------------------------------------------------------#
@@ -668,10 +669,6 @@ sub fill_text_header {
   $mgr->{TmplData}{Text_CAT_BACK}    = $mgr->my_url(ACTION => "home");
 }
 
-
-
-
-
 sub get_text {
   my ($self, $mgr, $text_id) = @_;
 
@@ -698,7 +695,6 @@ SQL
 
   return @text;
 }
-
 
 sub get_text_lang_in_text{
 my ($self, $mgr, $text_id) = @_;
@@ -729,10 +725,6 @@ SQL
 
   return @text_langs;
 }
-
-
-
-
 
 sub get_text_langs {
   my ($self, $mgr, $text_id) = @_;
@@ -787,10 +779,6 @@ SQL
 
   return @text_langs;
 }
-
-
-
-
 
 sub text_trans_insert{
 my $self 		= shift;
@@ -879,8 +867,6 @@ if ( ($text_id) and ($trans_head ) and ($trans_desc ) and ($trans_text ) and ($t
 }
 #FIN Traduction
 
-
-
 #Effacer la traduction chez le Benutzer
 if ((defined $trans_art) and (defined $text_res_id) and ($trans_art == 2) and ($text_res_id == $text_id)) {
 	$table = $mgr->{Tables}->{TEXT_RES};
@@ -902,7 +888,7 @@ FROM   $table
 WHERE  res_id = ?
 
 SQL
-
+	
 	unless ($sth->execute($res_id)) 
 	{
 	    warn sprintf("[Error:] Trouble selecting data from [%s].".
@@ -917,11 +903,8 @@ SQL
 }
 #FIN d'effacer
 
-
-
 #Punkte aktualisieren
 $points = $mgr->{Points}->receive_trans($mgr, $translator_id, $count_words, $translation_id);
-
 
 #Mot a l'auteur
 $table = $mgr->{Tables}->{TEXT_RES};
@@ -970,9 +953,6 @@ $dbh->do("UNLOCK TABLES");
 $sth->finish();
 # FIN
 
-
-
-
 #montre la confirmation
 $mgr->{Session}->set("TransTransWordsOk", $count_words);
 $mgr->{Session}->set("TransTextTransHeaderOk", $trans_head);
@@ -985,12 +965,6 @@ $mgr->{Session}->set("TransTransPointsOk", $points);
 $self->text_trans_insert_ok($mgr);
 
 }
-
-
-
-
-
-
 
 sub text_trans {
 

@@ -211,6 +211,112 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7013',
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7014', 'Count words', 'Anzahl Wörter');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES ('7015', 'Point cost', 'Punktekosten');
 
+
+
+### text module (text_show)
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7100',
+                                                           'Author','Autor','Autorfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7101',
+                                                           'Text','Text','Textfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7102',
+                                                           'Original-Language','Original-Sprache','OriginalSprachefr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7103',
+                                                           'Text exist in','Text existiert in','Text existiert infr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7104',
+                                                           'Text-Rating','Text-Bewertung','Bewertungfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7105',
+                                                           'Number of ratings','Anzahl der Bewertungen','Anzahl der Bewertungenfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7106',
+                                                           'Translate Text','Text übersetzen','Text Übersetzenfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7107',
+                                                           'Very good', 'Sehr gut', 'sehr gut fr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7108',
+                                                           'Good', 'Gut', 'Bien');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7109',
+                                                           'is ok', 'geht so', 'acceptable');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7110',
+                                                           'Bad', 'schlecht', 'mediocre');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7111',
+                                                           'Very bad', 'Sehr schlecht', 'Tres Mediocre');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7112',
+                                                           'Rating of content', 'Inhaltsbewertung', 'Valeur du contenue');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7113',
+                                                           'rate', 'bewerten', 'Evaluation');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7114',
+                                                           'Delete text', 'Text löschen', 'Effacer le texte');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7115',
+                                                           'Rating of translation', 'Übersetzungsbewertung', 'noter la traduction');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7116',
+                                                           'Prepare date', 'Erstellungsdatum', 'Erstellungsdatumfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7117',
+                                                           'You rated this text with', 'Sie haben diesen Text bewertet mit', 'Selon vous ,la valeur du text est de');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7118',
+                                                           'View', 'Anzeigen', 'Montrer');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7119',
+                                                           'Text-View', 'Text-Anzeige', 'Montrer le texte');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7120',
+                                                           'Title', 'Titel', 'Titre');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7121',
+                                                           'Number of words', 'Wortanzahl', 'Wortanzahlfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7122',
+                                                           'Description', 'Beschreibung', 'Beschreibungfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7123',
+                                                           'Category', 'Kategorie', 'Kategoriefr');
+
+### text module (text_delete)
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7220',
+                                                           'This is an original-text', 'Dies ist ein Originaltext, daher müssen auch die zugehörigen Übersetzungen mitgelöscht werden.', 'C est un text original, c est pourquoi il faut aussi effacer sa traduction');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7221',
+                                                           'This is not an original-text', 'Dies ist kein Originaltext', 'C est pas un texte original');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7222',
+                                                           'Delete', 'löschen', 'löschenfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7223',
+                                                           'Don\'t Delete', 'nicht löschen', 'Ne pas effacer');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7224',
+                                                           'Delete only this translation', 'Nur diese Übersetzung löschen', 'N effacer que cette traduction');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7225',
+                                                           'Delete all translations and the original text', 'Alle Übersetzungen und den Originaltext löschen', 'Effacer le texte original et ses traductions');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7226',
+                                                           'Delete translation', 'Übersetzung löschen', 'Effacer la traduction');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7227',
+                                                           'Delete all', 'Alles löschen', 'Tout effacer');
+
+
+
+### text module (text_delete_all_ok)
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7300',
+                                                           'Text was deleted succesful', 'Der Text wurde erfolgreich gelöscht', 'Der Text wurde erfolgreich gelöschtfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7301',
+                                                           'categorie', 'Kategorie:', 'Categorie:');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7302',
+                                                           'Author','Autor','Autorfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7303',
+                                                           'Description', 'Bescreibung:', 'Description:');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7304',
+                                                           'Text','Text','Textfr');
+
+
+### text module (texts_own)
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7400',
+                                                           'Title', 'Titel', 'Titre');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7401',
+                                                           'Language', 'Sprache', 'Sprachefr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7402',
+                                                           'Category','Kategorie','Kategoriefr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7403',
+                                                           'Submit-Time', 'Erstellungsdatum', 'Erstellungsdatumfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7404',
+                                                           'Original texts by', 'Original-Texte von', 'Original-Texte vonfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES('7405',
+                                                           'Translations by', 'Übersetzungen von', 'Übersetzungen vonfr');
+
+
+
+
+
+
+
+
 #
 # user module
 #

@@ -32,7 +32,7 @@ $DB = {
        DbHost   => 'localhost',
        DbPass   => '',
        DbPort   => '',
-       DbUser   => 'wurch'
+       DbUser   => 'root'
 };
 
 $SESSION = {

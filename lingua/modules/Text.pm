@@ -6,7 +6,7 @@ use vars qw($VERSION);
 use strict;
 
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.25 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.26 $ =~ /(\d+)\.(\d+)/;
 
 
 #-----------------------------------------------------------------------------#
@@ -58,7 +58,7 @@ sub parameter {
  } elsif ($method eq "delete_trans_res") {
     $self->delete_trans_res($mgr);
 
- } elsif ($method eq "text_to_trans_download") {
+ } elsif ($method eq "text_to_trans_download" || defined $mgr->{CGI}->param('text_to_trans_download')) {
     $self->text_to_trans_download($mgr);
 
  } elsif ($method eq "res_trans_upload") {
@@ -85,7 +85,7 @@ sub parameter {
  } elsif ($method eq 'trans' || defined $mgr->{CGI}->param('trans')) {                 # by Hendrik Erler
     $self->trans_own($mgr);                                                            # by Hendrik Erler
 
-  } else {
+   } else {
 	if (defined $mgr->{CGI}->param('change_lang_text_insert_ok')) {
 		$self->text_insert_ok($mgr);
 	}else{
@@ -1877,13 +1877,12 @@ sub show_text_see {
   my ($self, $mgr) = @_;
   my $text_id = $mgr->{CGI}->param('text_id') || undef;
   my $text_rating = $mgr->{CGI}->param('text_rating') || undef;
-  my $view_trans = $mgr->{CGI}->param('view_trans') || undef;
 
   $mgr->{Template} = $mgr->{TmplFiles}->{Text_Show};
   $mgr->{TmplData}{TEXT_ID} = $text_id;
 
   #if (defined $text_rating && defined $text_id){ $self->text_original_rating($mgr); }
-  #elsif (defined $view_trans){ $self->view_trans($mgr); }
+  #if (defined $view_trans){ $self->view_trans($mgr); }
   #elsif (defined $text_rating && defined $trans_text_id){ $self->text_trans_rating($mgr);}
   #elsif ($trans_text_id ne undef){ $self->show_text_translation($mgr);}
   if ($text_id ne undef){ $self->show_text($mgr);}
@@ -1906,6 +1905,10 @@ sub show_text{
   my $current_user_id = $mgr->{Session}->get('UserId');
   my $current_user_level = $mgr->{Session}->get('UserLevel');
 
+#if selected another language in language-Box
+  if ($mgr->{CGI}->param('method') eq 'view_trans' || defined $mgr->{CGI}->param('view_trans')){
+    $given_text_id = $mgr->{CGI}->param('text_trans_lang_id') || undef;
+  }
 
 #get Textvalues from text-Table #############
   my $table = $mgr->{Tables}->{TEXT};
@@ -1963,12 +1966,14 @@ SQL
   $mgr->{TmplData}{TEXT_DESCRIPTION} = $text_desc;
   $mgr->{TmplData}{TEXT_LENGTH} = $num_words;
   $mgr->{TmplData}{TEXT} = $text_content;
+  $mgr->{TmplData}{PARENT_ID} = $parent_id;
 
   #User-handlig
-  #if($current_user_level == 0){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'hidden';}
-  #elsif($current_user_level == 1){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';}
-  #elsif($current_user_level == 2){
-  $mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'submit'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';#}
+  if($current_user_level == 0){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'hidden';}
+  elsif($current_user_level == 1){$mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'hidden'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';}
+  elsif($current_user_level == 2){
+    $mgr->{TmplData}{SUBMIT_DELETE_TYPE} = 'submit'; $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';
+  }
 
 #test wether current user rated this text#############
   $table = $mgr->{Tables}->{TEXT_RATING};
@@ -2077,6 +2082,7 @@ SQL
   $mgr->{TmplData}{AUTHOR_ID} =$user_id ;
 
 }#end show_text
+
 
 #-----------------------------------------------------------------------------#
 #CALL: $self->get_original_text($mgr, text_id)                                #
@@ -2234,7 +2240,7 @@ SQL
 #-----------------------------------------------------------------------------#
 sub texts_own{
   my ($self, $mgr) = @_;
-  my $user_id = $mgr->{CGI}->param('user_id');
+  my $user_id = $mgr->{UserData}->{UserId};
   $mgr->{Template} = $mgr->{TmplFiles}->{Texts_Own};
   #$mgr->{TmplData}{USERID} = $user_id;
 
@@ -2292,7 +2298,7 @@ SQL
 #-----------------------------------------------------------------------------#
 sub trans_own{
   my ($self, $mgr) = @_;
-  my $user_id = $mgr->{CGI}->param('user_id');
+  my $user_id = $mgr->{UserData}->{UserId};
   $mgr->{Template} = $mgr->{TmplFiles}->{Trans_Own};
   #$mgr->{TmplData}{USERID} = $user_id;
 
@@ -2485,7 +2491,7 @@ sub delete_text {
   my ($self, $mgr) = @_;
 
   my $text_id = $mgr->{CGI}->param('text_id') || undef;
-  my $trans_text_id = $mgr->{CGI}->param('trans_text_id') || undef;
+  my $parent_id = $mgr->{CGI}->param('parent_id') || undef;
 
   my $delete_trans = $mgr->{CGI}->param('delete_trans') || undef;
   my $delete_all_orig = $mgr->{CGI}->param('delete_all_orig') || undef;
@@ -2508,28 +2514,29 @@ sub delete_text {
     $mgr->{Template} = $mgr->{TmplFiles}->{Text_Delete};
 
     $mgr->{TmplData}{TEXT_ID} = $text_id ;#insert text_id in template as hidden
-    $mgr->{TmplData}{TRANS_TEXT_ID} = $trans_text_id ;#insert trans_text_id in template as hidden
+    $mgr->{TmplData}{PARENT_ID} = $parent_id ;#insert trans_text_id in template as hidden
     $mgr->{TmplData}{AUTHOR_ID} = $author_id ;#insert author_id in template as hidden
     $mgr->{TmplData}{CAT_LANG_ID} = $cat_lang_id ;#insert cat_lang_id_text_id in template as hidden
 
     $mgr->{TmplData}{PAGE_LANG_007214} = $mgr->{Func}->get_text($mgr, 7214);#delete_text Titel of this Page
 
-    if(defined $trans_text_id){
+    if($parent_id > 0){
+
       $mgr->{TmplData}{PAGE_LANG_007221} = $mgr->{Func}->get_text($mgr, 7221);#Original-text-information
       $mgr->{TmplData}{PAGE_LANG_007224} = $mgr->{Func}->get_text($mgr, 7224);#delete Translation
       $mgr->{TmplData}{PAGE_LANG_007225} = $mgr->{Func}->get_text($mgr, 7225);#delete all
-      $mgr->{TmplData}{PAGE_LANG_007228} = $mgr->{Func}->get_text($mgr, 7223);#don't delete
+      #$mgr->{TmplData}{PAGE_LANG_007228} = $mgr->{Func}->get_text($mgr, 7223);#don't delete
       $mgr->{TmplData}{PAGE_LANG_007226} = $mgr->{Func}->get_text($mgr, 7226);#delete translation Button
       $mgr->{TmplData}{PAGE_LANG_007227} = $mgr->{Func}->get_text($mgr, 7227);#delete all Button
-      $mgr->{TmplData}{PAGE_LANG_007223} = $mgr->{Func}->get_text($mgr, 7231);#don't delete Button
+      $mgr->{TmplData}{PAGE_LANG_007223} = $mgr->{Func}->get_text($mgr, 7223);#don't delete Button
+      $mgr->{TmplData}{SUBMIT_ORIG_TYPE} = 'hidden';
+      $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';
 
-	#$mgr->{TmplData}{SUBMIT_ORIG_TYPE} = 'hidden';
-	#$mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';
 	}
     else{
       $mgr->{TmplData}{PAGE_LANG_007220} = $mgr->{Func}->get_text($mgr, 7220);#Original-text-information
       $mgr->{TmplData}{PAGE_LANG_007222} = $mgr->{Func}->get_text($mgr, 7222);#delete Button
-      $mgr->{TmplData}{PAGE_LANG_007223} = $mgr->{Func}->get_text($mgr, 7223);#don't delete Button
+      $mgr->{TmplData}{PAGE_LANG_007228} = $mgr->{Func}->get_text($mgr, 7223);#don't delete Button
       $mgr->{TmplData}{SUBMIT_ORIG_TYPE} = 'submit';
       $mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'hidden';
 
@@ -2548,11 +2555,19 @@ sub delete_text {
 #-----------------------------------------------------------------------------#
 sub delete_all {
   my ($self, $mgr) = @_;
-  my $text_orig_id  = $mgr->{CGI}->param('text_id') || undef;
+  my $text_id       = $mgr->{CGI}->param('text_id') || undef;
   my $author_id     = $mgr->{CGI}->param('author_id') || undef;
   my $cat_lang_id   = $mgr->{CGI}->param('cat_lang_id') || undef;
 
+  my $text_orig_id = $self->get_original_text($mgr, $text_id);
+  my @lang_loop_data;
+  @lang_loop_data = $self->get_relation_texts($mgr, $text_orig_id, @lang_loop_data);
 
+  my $row;
+
+
+# delete all translated texts
+  foreach $row (@lang_loop_data){
 
 #DELETE Translations of Original-Text##################
   my $table = $mgr->{Tables}->{TEXT};
@@ -2561,10 +2576,10 @@ sub delete_all {
   my $sth = $dbh->prepare(<<SQL);
 DELETE LOW_PRIORITY
 FROM   $table
-WHERE  parent_id = ?
+WHERE  text_id = ?
 
 SQL
-  unless ($sth->execute($text_orig_id)) {
+  unless ($sth->execute($row->{TEXT_TRANS_LANG_ID})) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $dbh->do("UNLOCK TABLES");
@@ -2572,11 +2587,13 @@ SQL
   }
   $dbh->do("UNLOCK TABLES");
   $sth->finish();
+}
 
 #DELETE Original-Text##################
-  $table = $mgr->{Tables}->{TEXT};
-  $dbh = $mgr->connect();
-  $sth = $dbh->prepare(<<SQL);
+  my $table = $mgr->{Tables}->{TEXT};
+  my $dbh = $mgr->connect();
+  $dbh->do("LOCK TABLES $table WRITE");
+  my $sth = $dbh->prepare(<<SQL);
 DELETE LOW_PRIORITY
 FROM   $table
 WHERE  text_id = ?
@@ -2590,15 +2607,14 @@ SQL
   }
   $sth->finish();
 
-
-#DELETE Ratings of Translations snd Original-Text##################
-  $table = $mgr->{Tables}->{TEXT_RATING};
-  $dbh = $mgr->connect();
+#DELETE Ratings of Original Text ##################
+  my $table = $mgr->{Tables}->{TEXT_RATING};
+  my $dbh = $mgr->connect();
   $dbh->do("LOCK TABLES $table WRITE");
-  $sth = $dbh->prepare(<<SQL);
+  my $sth = $dbh->prepare(<<SQL);
 DELETE LOW_PRIORITY
 FROM   $table
-WHERE  parent_id = ?
+WHERE  text_id = ?
 
 SQL
   unless ($sth->execute($text_orig_id)) {
@@ -2611,14 +2627,38 @@ SQL
   $sth->finish();
 
 
+
+#DELETE Ratings of Translations ##################
+  foreach $row (@lang_loop_data){
+
+  my $table = $mgr->{Tables}->{TEXT_RATING};
+  my $dbh = $mgr->connect();
+  $dbh->do("LOCK TABLES $table WRITE");
+  my $sth = $dbh->prepare(<<SQL);
+DELETE LOW_PRIORITY
+FROM   $table
+WHERE  text_id = ?
+
+SQL
+  unless ($sth->execute($row->{TEXT_TRANS_LANG_ID})) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $dbh->do("UNLOCK TABLES");
+    $mgr->fatal_error("Database error.");
+  }
+  $dbh->do("UNLOCK TABLES");
+  $sth->finish();
+}
+
 #fill Template Text_Delete_Ok
   $author_id = $mgr->{CGI}->param('author_id') || undef;
   $cat_lang_id = $mgr->{CGI}->param('cat_lang_id') || undef;
 
+  $mgr->{Template} = $mgr->{TmplFiles}->{Text_Delete_ALL_Ok};
+
   $mgr->{TmplData}{AUTHOR_ID} = $author_id ;#insert author_id in template as hidden
   $mgr->{TmplData}{CAT_LANG_ID} = $cat_lang_id ;#insert cat_lang_id_text_id in template as hidden
 
-  $mgr->{Template} = $mgr->{TmplFiles}->{Text_Delete_ALL_Ok};
   $mgr->{TmplData}{PAGE_LANG_007300} = $mgr->{Func}->get_text($mgr, 7300);#text deleted-information
   $mgr->{TmplData}{PAGE_LANG_007301} = $mgr->{Func}->get_text($mgr, 7301);#Category of deleted Text
   $mgr->{TmplData}{PAGE_LANG_007302} = $mgr->{Func}->get_text($mgr, 7302);#Author of deleted Text
@@ -2663,7 +2703,7 @@ SQL
 #-----------------------------------------------------------------------------#
 sub delete_trans {
   my ($self, $mgr) = @_;
-  my $text_trans_id  = $mgr->{CGI}->param('trans_text_id') || undef;
+  my $text_id       = $mgr->{CGI}->param('text_id') || undef;
   my $author_id     = $mgr->{CGI}->param('author_id') || undef;
   my $cat_lang_id   = $mgr->{CGI}->param('cat_lang_id') || undef;
 
@@ -2677,7 +2717,7 @@ FROM   $table
 WHERE  text_id = ?
 
 SQL
-  unless ($sth->execute($text_trans_id)) {
+  unless ($sth->execute($text_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $dbh->do("UNLOCK TABLES");
@@ -2698,7 +2738,7 @@ FROM   $table
 WHERE  text_id = ?
 
 SQL
-  unless ($sth->execute($text_trans_id)) {
+  unless ($sth->execute($text_id)) {
     warn sprintf("[Error:] Trouble selecting data from [%s].".
                  "Reason: [%s].", $table, $dbh->errstr());
     $dbh->do("UNLOCK TABLES");
@@ -2707,14 +2747,14 @@ SQL
   $dbh->do("UNLOCK TABLES");
   $sth->finish();
 
-#fill Template Text_Delete_Ok
+#fill Template Text_Delete_TRANS_Ok
   $author_id = $mgr->{CGI}->param('author_id') || undef;
   $cat_lang_id = $mgr->{CGI}->param('cat_lang_id') || undef;
 
+  $mgr->{Template} = $mgr->{TmplFiles}->{Text_Delete_TRANS_Ok};
   $mgr->{TmplData}{AUTHOR_ID} = $author_id ;#insert author_id in template as hidden
   $mgr->{TmplData}{CAT_LANG_ID} = $cat_lang_id ;#insert cat_lang_id_text_id in template as hidden
 
-  $mgr->{Template} = $mgr->{TmplFiles}->{Text_Delete_TRANS_Ok};
   $mgr->{TmplData}{PAGE_LANG_007300} = $mgr->{Func}->get_text($mgr, 7300);#text deleted-information
   $mgr->{TmplData}{PAGE_LANG_007301} = $mgr->{Func}->get_text($mgr, 7301);#Category of deleted Text
   $mgr->{TmplData}{PAGE_LANG_007302} = $mgr->{Func}->get_text($mgr, 7302);#Author of deleted Text

@@ -7,7 +7,7 @@ use Symbol;
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/;
 
 sub new {
     my $proto  = shift;
@@ -101,7 +101,7 @@ sub set {
     my %params = @_;
 
     foreach (keys %params) {
-        next unless ($params{$_});
+        next unless (defined $params{$_});
         $self->{_sess}->{unserialized}{$_} = $params{$_};
     }
 }

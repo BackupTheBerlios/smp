@@ -1,0 +1,47 @@
+<html>
+<head>
+	<title><TMPL_VAR PAGE_TITLE></title>
+	<meta http-equiv="Content-type" content="text/html; charset=<TMPL_VAR PAGE_CHARSET>">
+
+	<style type="text/css">
+	a.small, a.normal, a.big, span.alert, span.small, span.normal, span.big,
+	td, tr, p, br, nobr, center, div {
+		font-family: Arial Unicode MS, Helvetica, Arial, Verdana;
+		font-size: 12pt;
+		color: #000000;
+	}
+
+	span.alert {
+		color: #ff0000;
+	}
+
+	a.small, span.small {
+		font-size: 8pt;
+	}
+
+	a.normal, span.normal {
+		font-size: 10pt;
+	}
+
+	a.big, span.big, span.error {
+		font-size: 12pt;
+	}
+
+	a:link    { color: #ffffff; text-decoration: underline; }
+	a:active  { color: #bababa; text-decoration: underline; }
+	a:visited { color: #ffffff; text-decoration: underline; }
+</style>
+</head>
+<body text="#000000" bgcolor="#ffffff">
+
+<form action="<TMPL_VAR PAGE_SCRIPT>" method="post">
+
+<input type="hidden" name="action" value="<TMPL_VAR PAGE_ACTION>">
+<input type="hidden" name="sid" value="<TMPL_VAR PAGE_SID>">
+<input type="hidden" name="lang" value="<TMPL_VAR PAGE_LANG>">
+<input type="hidden" name="method" value="<TMPL_VAR PAGE_METHOD>">
+<input type="hidden" name="open" value="<TMPL_VAR PAGE_OPEN>">
+
+<table cellspacing="10" cellpadding="0" border="0" align="center" bgcolor="#cecece">
+<tr>
+  <td>

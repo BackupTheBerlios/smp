@@ -1,0 +1,95 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#ababab" width="600">
+
+    <h1 align="center"><TMPL_VAR PAGE_LANG_001125> <TMPL_VAR USER_USERNAME></h1>
+
+    <br>
+
+    <div align="center">
+      <span class="normal">
+        <b><TMPL_VAR PAGE_LANG_001126></b>
+	<br><br>
+        <TMPL_VAR PAGE_LANG_001127><br>
+        <TMPL_VAR PAGE_LANG_001128>
+	<br><br>
+      </span>
+
+      <TMPL_IF USER_IF_PASSWD_ERR>
+        <span class="alert">
+          <b><TMPL_VAR PAGE_LANG_001134></b><br>
+          <b><TMPL_VAR USER_ERROR_PASSWD></b>
+	  <br><br>
+        </span>
+      </TMPL_IF>
+    </div>
+
+    <table cellspacing="0" cellpadding="2" border="0" width="600">
+
+      <colgroup>
+        <col width="100">
+        <col width="200">
+        <col width="200">
+        <col width="100">
+      </colgroup>
+
+      <tr>
+        <td></td>
+        <td>
+	  <span class="normal"><TMPL_VAR PAGE_LANG_001129></span>
+	</td>
+	<td>
+	  <span class="normal"><TMPL_VAR PAGE_LANG_001130></span>
+	</td>
+	<td></td>
+      </tr>  
+
+      <tr>
+        <td></td>
+        <td>
+	  <input type="password" name="u_inp_passwd1" size="30" maxlength="10">
+	</td>
+	<td>
+	  <input type="password" name="u_inp_passwd2" size="30" maxlength="10">
+	</td>
+	<td></td>
+      </tr>  
+
+    </table>
+
+    <br><br>
+
+    <div align="center">
+      <input type="submit" name="u_sub_passwd"
+	           value="<TMPL_VAR PAGE_LANG_001131>">
+    </div>
+
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  <td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+

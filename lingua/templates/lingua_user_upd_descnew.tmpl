@@ -1,0 +1,109 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#ababab" width="600">
+
+    <h1 align="center"><TMPL_VAR PAGE_LANG_001156> <TMPL_VAR USER_USERNAME></h1>
+
+    <br>
+
+    <div align="center">
+      <span class="normal">
+        <b><TMPL_VAR PAGE_LANG_001157></b><br>
+        <TMPL_VAR PAGE_LANG_001158>
+      </span>
+
+      <br><br>
+
+      <TMPL_IF USER_IF_DESC_ERR>
+        <span class="alert">
+          <b><TMPL_VAR PAGE_LANG_001152></b><br>
+          <b><TMPL_VAR USER_ERROR_DESC></b>
+	  <br><br>
+        </span>
+      </TMPL_IF>
+
+      <span class="normal">
+        <TMPL_VAR PAGE_LANG_001159>
+      </span>
+
+      <br><br>
+
+      <!-- description-language selection -->
+      <select name="u_sel_desclang" size="1">
+        <TMPL_LOOP NAME="USER_LOOP_LANG">
+          <option value="<TMPL_VAR USER_OPTVAL_LANG>" <TMPL_VAR USER_DEF_LANG>>
+            <TMPL_VAR USER_OPT_LANG>
+        </TMPL_LOOP>
+      </select>
+
+      <br><br>
+
+      <span class="normal">
+        <TMPL_VAR PAGE_LANG_001160>
+      </span>
+
+      <br><br>
+
+    </div>
+
+    <table cellspacing="0" cellpadding="2" border="0" width="600">
+
+      <colgroup>
+        <col width="100">
+        <col width="400">
+        <col width="100">
+      </colgroup>
+
+      <!-- description -->
+      <tr>
+        <td></td>
+        <td>
+          <span class="normal">
+	    <textarea name="u_inp_desc" rows="8" cols="55"></textarea>
+          </span>
+        </td>
+        <td></td>
+      </tr>
+
+    </table>
+
+    <br><br>
+
+    <div align="center">
+      <input type="submit" name="u_sub_desc"
+             value="<TMPL_VAR PAGE_LANG_001161>">
+    </div>
+
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  <td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,59 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#ababab" width="600">
+
+    <h1 align="center"><TMPL_VAR PAGE_LANG_001164></h1>
+
+    <br><br>
+
+    <div align="center">
+      <TMPL_IF USER_IF_ADMIN_ERR>
+        <span class="alert">
+          <b><TMPL_VAR PAGE_LANG_001169></b><br>
+          <b><TMPL_VAR USER_ERROR_ADMIN></b><br>
+	  <br><br>
+        </span>
+      <TMPL_ELSE>
+        <br>
+      </TMPL_IF>
+
+      <span class="normal">
+        <TMPL_VAR PAGE_LANG_001165> --&gt; 
+        <input type="text" name="u_inp_username" size="20"
+               maxlength="10" value="<TMPL_VAR USER_USERNAME>"> --&gt;
+        <input type="submit" name="u_sub_user"
+	       value="<TMPL_VAR PAGE_LANG_001166>">        
+      </span>
+    </div>
+
+    <br><br>
+
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  <td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+

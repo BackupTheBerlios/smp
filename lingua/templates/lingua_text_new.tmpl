@@ -1,0 +1,105 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#ababab" width="600">
+
+    <table cellspacing="5" cellpadding="0" border="0" width="100%" align="center">
+    <tr>
+      <td>
+        <a class="normal" href="<TMPL_VAR TEXT_CAT_BACK>"><TMPL_VAR PAGE_LANG_007001></a>
+      </td>
+      <td>
+        <TMPL_IF TEXT_ERROR>
+          <span class="alert">
+            <TMPL_VAR TEXT_ERROR>
+          </span>
+        </TMPL_IF>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <TMPL_VAR PAGE_LANG_007000>: 
+      </td>
+      <td>
+        <TMPL_VAR TEXT_CAT_NAME>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <TMPL_VAR PAGE_LANG_007012>:
+      </td>
+      <td>
+        <select name="text_lang">
+        <TMPL_LOOP LOOP_TEXT_LANG>
+          <option value="<TMPL_VAR TEXT_LANG_ID>" <TMPL_IF TEXT_LANG_IF>selected</TMPL_IF>>
+            <TMPL_VAR TEXT_LANG_NAME>
+          </option>
+        </TMPL_LOOP>
+        </select>
+      </td>
+    <tr>
+    <tr>
+      <td valign="top">
+        <TMPL_VAR PAGE_LANG_007002>:
+      </td>
+      <td>
+        <span class="alert">
+          <TMPL_VAR TEXT_ERROR_HEADER>
+        </span>
+        <br>
+        <input type="text" name="text_header" value="<TMPL_VAR TEXT_HEADER>" size="59">
+      </td>
+    </tr>
+    <tr>
+      <td valign="top">
+        <TMPL_VAR PAGE_LANG_007003>:
+      </td>
+      <td>
+        <span class="alert">
+          <TMPL_VAR TEXT_ERROR_DESC>
+        </span>
+        <br>
+        <textarea name="text_desc" cols="50" rows="5" wrap="physical"><TMPL_VAR TEXT_DESC></textarea>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top">
+        <TMPL_VAR PAGE_LANG_007004>:
+      </td>
+      <td>
+        <span class="alert">
+          <TMPL_VAR TEXT_ERROR_TEXT>
+        </span>
+        <br>
+        <textarea name="text_text" cols="50" rows="10" wrap="physical"><TMPL_VAR TEXT_TEXT></textarea>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <input type="submit" name="text_upload" value="<TMPL_VAR PAGE_LANG_007006>">
+      </td>
+      <td align="center">
+        <input type="submit" name="text_add" value="<TMPL_VAR PAGE_LANG_007005>">
+      </td>
+    </tr>
+    </table>
+
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  <td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>

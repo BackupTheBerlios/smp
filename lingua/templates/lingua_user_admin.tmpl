@@ -1,0 +1,160 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#ababab" width="600">
+
+    <h1 align="center"><TMPL_VAR PAGE_LANG_001174></h1>
+
+<!-- Part 1: General Information (name etc) ---------------------------------->
+    
+    <table cellspacing="0" cellpadding="2" border="0" width="600">
+
+      <colgroup>
+        <col width="100">
+        <col width="200">
+        <col width="200">
+        <col width="100">
+      </colgroup>
+      
+      <tr>
+        <td></td>
+        <td>
+          <span class="normal"><TMPL_VAR PAGE_LANG_001175>:</span>
+        </td>
+        <td>
+          <span class="normal"><TMPL_VAR USER_USERNAME></span>
+        </td>
+        <td></td>
+      </tr>     
+
+      <tr>
+        <td></td>
+        <td>
+          <span class="normal"><TMPL_VAR PAGE_LANG_001176>:</span>
+        </td>
+        <td>
+          <span class="normal"><TMPL_VAR USER_LEVEL></span>
+        </td>
+        <td></td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td>
+          <span class="normal"><TMPL_VAR PAGE_LANG_001177>:</span>
+        </td>
+        <td>
+          <span class="normal"><TMPL_VAR USER_STATUS></span>
+        </td>
+        <td></td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>
+          <input type="submit" name="u_sub_info"
+                 value="<TMPL_VAR PAGE_LANG_001178>">
+        </td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>
+          <input type="submit" name="u_sub_newuser"
+                 value="<TMPL_VAR PAGE_LANG_001184>">
+        </td>
+      </tr>
+
+    </table>
+
+    <hr>
+
+<!-- Part 2: Promotion  ------------------------------------------------------->
+    <span class="normal"><b><TMPL_VAR PAGE_LANG_001179></b></span>
+    <br><br>
+
+    <table cellspacing="0" cellpadding="2" border="0" width="600">
+
+      <colgroup>
+        <col width="100">
+        <col width="200">
+        <col width="200">
+        <col width="100">
+      </colgroup>
+
+      <tr>
+        <td></td>
+        <td>
+          <span class="normal"><TMPL_VAR PAGE_LANG_001180></span>
+	</td>
+        <td>
+          <select name="u_sel_level" size="1">
+            <option value="0"><TMPL_VAR PAGE_LANG_001088>
+            <option value="1"><TMPL_VAR PAGE_LANG_001089>
+            <option value="2"><TMPL_VAR PAGE_LANG_001090>
+          </select>
+        </td>
+        <td>
+          <input type="submit" name="u_sub_promote"
+                 value="<TMPL_VAR PAGE_LANG_001181>">
+        </td>
+      </tr>
+
+    </table>
+
+    <br>
+    <hr>
+
+<!-- Part 3: Block user  ------------------------------------------------------>
+    <span class="normal"><b><TMPL_VAR PAGE_LANG_001182></b></span>
+    <br><br>
+
+    <table cellspacing="0" cellpadding="2" border="0" width="600">
+
+      <colgroup>
+        <col width="500">
+        <col width="100">
+      </colgroup>
+
+      <tr>
+        <td></td>
+        <td>
+          <input type="submit" name="u_sub_block"
+                 value="<TMPL_VAR PAGE_LANG_001183>">
+        </td>
+      </tr>
+
+    </table>
+
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  <td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+

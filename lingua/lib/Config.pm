@@ -39,8 +39,9 @@ $SESSION = {
 };
 
 $SYSTEM_LANGS = {
-                1 => 'de',
-                2 => 'en'
+		 1 => 'de',
+		 2 => 'en',
+		 3 => 'fr'
 };
 
 $TABLES = {

@@ -5,24 +5,20 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/;
 
 sub parameter {
   my ($self, $mgr) = @_;
 
-  my $method = $mgr->{CGI}->param('method') || undef;
+  my $method = $mgr->{CGI}->param('method') || '';
 
-  if (defined $method) {
-    if ($method eq "cat_admin") {
-      $self->show_category_admin($mgr);
-    } elsif ($method eq "show_cat") {
-      $self->show_categories($mgr);
-    }
+  if ($method eq "cat_admin") {
+    $self->show_category_admin($mgr);
+  } elsif ($method eq "show_cat") {
+    $self->show_categories($mgr);
   } else {
     $self->show_categories($mgr);
   }
-
-  1;
 }
 
 sub show_category_admin {
@@ -84,11 +80,6 @@ sub show_cat_tree {
       $count++;
 
       my @tmp = $self->show_cat_tree($mgr, $cat->[0], \%list, $count, \@result);
-      use Data::Dumper; warn $count;
-      foreach my $tmp (@tmp) {
-	#push (@result, %$tmp);
-	#$result[$count++] = %$tmp;
-      }
 
     } else {
       if ($cat->[4] != 0) {

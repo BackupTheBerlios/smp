@@ -8,6 +8,7 @@ use HTML::Template;
 use lib::Config;
 use lib::Func;
 use lib::Page;
+use lib::Points;
 use lib::Session;
 use Unicode::String qw(latin1 utf8);
 use fields (
@@ -26,6 +27,7 @@ use fields (
 	    'Modules',             # Array from all avalible modules.
 	    'MyUrl',               # Current url of this script here with action.
 	    'Page',                # Page object.
+	    'Points',              # Points object.
 	    'ScriptName',          # Script name.
 	    'Session',             # Session object.
 	    'SessionData',         # Hashref with all session config data.
@@ -41,7 +43,7 @@ use fields (
 use vars qw(%FIELDS $VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/;
 
 &handler();
 
@@ -62,6 +64,7 @@ sub handler {
 			       Modules             => $lib::Config::CONFIG->{Modules},
 			       MyUrl               => undef,
 			       Page                => lib::Page->new(),
+			       Points              => lib::Points->new(),
 			       ScriptName          => $ENV{SCRIPT_NAME},
 			       Session             => undef,
 			       SessionData         => $lib::Config::SESSION,

@@ -20,6 +20,10 @@ $CONFIG = {
                               action  => 'user',
                               script  => 'User'
                              },
+                             {
+                              action  => 'help',
+                              script  => 'Help'
+                             }
                             ],
            TmplDir       => 'templates',
 	   TextPoints    => 1,
@@ -100,4 +104,4 @@ $TMPL = {
 	 Trans_Own            => 'lingua_trans_own.tmpl'           #by HENDRIK Erler
 };
 
-1;
+	1;

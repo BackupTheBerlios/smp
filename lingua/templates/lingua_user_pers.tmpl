@@ -12,6 +12,138 @@
   </td>
   <td bgcolor="#ababab" width="600">
 
+    <h2 align="center"><TMPL_VAR PAGE_LANG_001001></h2>
+
+    <TMPL_IF NAME="USER_IF_PERS_ERROR">
+      <TMPL_VAR PAGE_LANG_001002>
+    </TMPL_IF>
+
+    <table cellspacing="0" cellpadding="2" border="0" width="600">
+
+      <colgroup>
+        <col width="33%">
+	<col width="34%">
+	<col width="33%">
+      </colgroup>
+
+      <TMPL_IF NAME='USER_IF_NOTMYSELF'>
+      <tr>
+        <td align="right">
+	  <TMPL_VAR PAGE_LANG_001003>:&nbsp;
+	</td>
+	<td>
+	  <TMPL_VAR USER_USERNAME>
+	</td>
+	<td>
+	</td>
+      </tr>
+      </TMPL_IF>
+      
+      <tr>
+        <td align="right">
+	  <TMPL_VAR PAGE_LANG_001004>:&nbsp;
+	</td>
+	<td>
+	  <TMPL_VAR USER_FIRSTNAME>
+	</td>
+	<td>
+	</td>
+      </tr>     
+
+      <tr>
+        <td align="right">
+	  <TMPL_VAR PAGE_LANG_001005>:&nbsp;
+	</td>
+	<td>
+	  <TMPL_VAR USER_LASTNAME>:
+	</td>
+	<td>
+	</td>
+      </tr>
+
+      <TMPL_IF NAME='USER_IF_NOTMYSELF'>
+      <tr>
+        <td align="right">
+	  <TMPL_VAR PAGE_LANG_001007>:&nbsp;
+	</td>
+	<td>
+	  <TMPL_VAR USER_POINTS>
+	</td>
+	<td>
+	</td>
+      </tr>
+      </TMPL_IF>
+
+      <tr>
+        <td align="right">
+	  <TMPL_VAR PAGE_LANG_001006>:&nbsp;
+	</td>
+
+	<TMPL_IF USER_IF_NOTMYSELF>
+	<td>
+	  <TMPL_VAR USER_EMAIL>
+	</td>
+	<td></td>
+
+	<TMPL_ELSE>
+
+        <td>
+          <input type="text" name="input_email"
+            value="<TMPL_VAR USER_EMAIL>" size="30" maxlength="200">
+	</td>
+	<td>
+	  <input type="submit" name="change_email"
+            value="<TMPL_VAR PAGE_LANG_001013>">
+	</td>
+
+	</TMPL_IF>
+
+      </tr>
+    </table>
+    
+    <br><br>
+    <h3 align="center"><TMPL_VAR PAGE_LANG_001008></h3>
+
+
+    <table cellspacing="0" cellpadding="2" border="0" width="600">
+
+      <colgroup>
+        <col width="33%">
+	<col width="34%">
+	<col width="33%">
+      </colgroup>
+
+      <TMPL_IF NAME='USER_IF_NOTMYSELF'>
+      <TMPL_ELSE>
+      
+      <TMPL_LOOP NAME='USER_LOOP_LANG'>
+      <tr>
+        <td align="right">
+	  <TMPL_VAR USER_LANG>:&nbsp;
+	</td>
+	<td>
+	  <select name="<TMPL_VAR USER_SELECT_LANG>" size="1">
+	    <option <TMPL_VAR USER_DEF_LANG_0>> 
+	      <TMPL_VAR USER_OPTION_LANG_0>
+	    <option <TMPL_VAR USER_DEF_LANG_1>> 
+	      <TMPL_VAR USER_OPTION_LANG_1>
+	    <option <TMPL_VAR USER_DEF_LANG_2>> 
+	      <TMPL_VAR USER_OPTION_LANG_2>
+	    <option <TMPL_VAR USER_DEF_LANG_3>> 
+	      <TMPL_VAR USER_OPTION_LANG_3>
+	    <option <TMPL_VAR USER_DEF_LANG_4>> 
+	      <TMPL_VAR USER_OPTION_LANG_4>
+	  </select>
+	</td>
+	<td>
+	  <input type="submit" name="<TMPL_VAR USER_SUBMIT_LANG>"
+	    value="<TMPL_VAR PAGE_LANG_001013>">
+	</td>
+      </tr>
+      </TMPL_LOOP>
+      </TMPL_IF>
+    </table>
+
   </td>
 </tr>
 <tr>

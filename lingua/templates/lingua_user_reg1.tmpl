@@ -1,0 +1,163 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<input type="hidden" name="method" value="reg1">
+<input type="hidden" name="reg_from"   value="1">
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#ababab" width="600">
+
+    <div align="center">
+      <h1><TMPL_VAR PAGE_LANG_001021></h1>
+
+      <TMPL_IF NAME="USER_IF_INP_ERROR">
+        <span class="alert">
+          <TMPL_VAR USER_REG1_ERROR><BR><BR>
+        </span>
+      </TMPL_IF>
+
+      <span class="normal">
+        <b><TMPL_VAR PAGE_LANG_001022></b><BR>
+        <TMPL_VAR PAGE_LANG_001023><BR>
+        (<TMPL_VAR PAGE_LANG_001024>)<BR>
+        <b><TMPL_VAR PAGE_LANG_001025></b><BR><BR>
+      </span>
+    </div>
+
+    <table cellspacing="0" cellpadding="2" border="0" width="600">
+
+      <colgroup>
+        <col width="100">
+	<col width="200">
+        <col width="200">
+	<col width="100">
+      </colgroup>
+
+      <tr>
+        <td></td>
+        <td>
+	  <span class="normal"><TMPL_VAR PAGE_LANG_001003></span>
+	</td>
+	<td></td>
+	<td></td>
+      </tr>     
+
+      <tr>
+        <td></td>
+        <td>
+	  <input type="text" name="u_inp_username" size="30"
+                 maxlength="10" value="<TMPL_VAR USER_USERNAME>">
+	</td>
+	<td></td>
+	<td></td>
+      </tr>     
+
+      <tr>
+        <td></td>
+	<td>
+	  <span class="normal"><TMPL_VAR PAGE_LANG_001004></span>
+	</td>
+	<td>
+	  <span class="normal"><TMPL_VAR PAGE_LANG_001005></span>
+	</td>
+	<td></td>
+      </tr>
+
+      <tr>
+        <td></td>
+	<td>
+	  <input type="text" name="u_inp_firstname" size="30"
+                 maxlength="50" value="<TMPL_VAR USER_FIRSTNAME>">
+	</td>
+        <td>
+	  <input type="password" name="u_inp_lastname" size="30"
+                 maxlength="50" value="<TMPL_VAR USER_LASTNAME>">
+	</td>
+	<td></td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td>
+	  <span class="normal"><TMPL_VAR PAGE_LANG_001006></span>
+	</td>
+	<td></td>
+	<td></td>
+      </tr>     
+
+      <tr>
+        <td></td>
+        <td>
+	  <input type="text" name="u_inp_email" size="30"
+                 maxlength="200" value="<TMPL_VAR USER_EMAIL>">
+	</td>
+	<td></td>
+	<td></td>
+      </tr>     
+
+      <tr>
+        <td></td>
+        <td>
+	  <span class="normal"><TMPL_VAR PAGE_LANG_001020></span>
+	</td>
+	<td></td>
+	<td></td>
+      </tr>     
+
+      <tr>
+        <td></td>
+        <td>
+	  <select name="u_sel_syslang" size="1">
+	    <TMPL_LOOP NAME="USER_LOOP_SYSLANG">
+	      <option value="<TMPL_VAR USER_OPTVAL_SYSLANG>" 
+	              <TMPL_VAR USER_DEF_SYSLANG>>
+	        <TMPL_VAR USER_OPT_SYSLANG>
+	    </TMPL_LOOP>
+	  </select>
+	</td>
+	<td></td>
+	<td></td>
+      </tr>     
+
+      <tr>
+        <td></td>
+        <td></td>
+	<td></td>
+	<td align="center">
+	  <input type="submit" name="u_sub_reg1"
+                 value="<TMPL_VAR PAGE_LANG_001028>">
+	</td>
+      </tr>     
+
+    </table>
+
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  <td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+
+
+
+

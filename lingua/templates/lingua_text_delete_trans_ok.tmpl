@@ -1,0 +1,89 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<input type="hidden" name="text_id" value="<TMPL_VAR TEXT_ID>">
+<input type="hidden" name="trans_text_id" value="<TMPL_VAR TRANS_TEXT_ID>">
+<input type="hidden" name="text_method" value="text_message_way">
+<input type="hidden" name="show_text" value="show_text">
+<input type="hidden" name="delete_text" value="delete_text">
+<input type="hidden" name="delete_trans_ok" value="delete_trans_ok">
+<input type="hidden" name="author_id" value="<TMPL_VAR AUTHOR_ID>">
+<input type="hidden" name="cat_lang_id" value="<TMPL_VAR CAT_LANG_ID>">
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+	<tr valign="top">
+	   <td colspan="2">
+	       <TMPL_INCLUDE lingua_logo.tmpl>
+	  </td>
+	</tr>
+	<tr valign="top">
+ 		<td width="200">
+    			<TMPL_INCLUDE lingua_left.tmpl>
+  		</td>
+  		<td bgcolor="#ababab" width="600">
+
+  <h2 align="left"><b><TMPL_VAR PAGE_LANG_002128></b></h2>
+  <table width="100%" border="0">
+    <tr>
+      <td>
+        <table border="0" align="left" width="100%">
+          <tr>
+            <td valign="top" align="left">
+              <table border="0">
+                <tr> <!-- Category -->
+                  <td><TMPL_VAR PAGE_LANG_002019></td>
+                  <td><a class="normal" href="<TMPL_VAR CAT_LINK>"><TMPL_VAR TEXT_CAT></a></td>
+                </tr>
+                <tr> <!-- Author -->
+                  <td><TMPL_VAR PAGE_LANG_002100></td>
+                  <td><a class="normal" href="<TMPL_VAR AUTHOR_LINK>"><TMPL_VAR TEXT_AUTOR></a></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table width="100%" border="0">
+	  <tr> <!-- Description -->
+            <td><TMPL_VAR PAGE_LANG_002012></td>
+            <td><TMPL_VAR TEXT_DESCRIPTION></td>
+          </tr>
+          <tr>
+            <td width="6%" valign="top"><TMPL_VAR PAGE_LANG_002101></td>
+            <td width="94%" align="left" valign="top"><TMPL_VAR TEXT></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+		</td>
+</tr>
+
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -368,6 +368,11 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('2127', 'Delete all', 'Alles löschen', 'Alles löschenfr');
 
+
+##### Text_Delete_ok.tmpl (2128 -> 2200)######################################
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2128', 'Text was deleted succesful', 'Der Text wurde erfolgreich gelöscht', 'Der Text wurde erfolgreich gelöschtfr');
+
 DROP TABLE IF EXISTS lingua_user;
 
 CREATE TABLE lingua_user (

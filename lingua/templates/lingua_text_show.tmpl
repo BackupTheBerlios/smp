@@ -4,6 +4,8 @@
 <input type="hidden" name="trans_text_id" value="<TMPL_VAR TRANS_TEXT_ID>">
 <input type="hidden" name="text_method" value="text_message_way">
 <input type="hidden" name="show_text" value="show_text">
+<input type="hidden" name="author_id" value="<TMPL_VAR AUTHOR_ID>">
+<input type="hidden" name="cat_lang_id" value="<TMPL_VAR CAT_LANG_ID>">
 
 <table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
 	<tr valign="top">
@@ -75,6 +77,10 @@
                 <tr>
                   <td align="right">
                     <table border="0">
+		      <tr>
+                        <td><TMPL_VAR PAGE_LANG_002112></td>
+                        <td>&nbsp;</td>
+                      </tr>
                       <tr> <!-- very good radio -->
                         <td><TMPL_VAR PAGE_LANG_002107></td>
                         <td>
@@ -109,10 +115,6 @@
                         <td>
                           <input type="<TMPL_VAR SUBMIT_TYPE>" name="text_rating" value="<TMPL_VAR PAGE_LANG_002113>">
                         </td>
-                        <td>&nbsp;</td>
-                      </tr>
-                      <tr>
-                        <td><TMPL_VAR PAGE_LANG_002112>;</td>
                         <td>&nbsp;</td>
                       </tr>
                       <tr>

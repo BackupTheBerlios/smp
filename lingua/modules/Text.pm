@@ -7,7 +7,7 @@ use strict;
 
 
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.31 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.32 $ =~ /(\d+)\.(\d+)/;
 
 
 
@@ -688,7 +688,7 @@ sub fill_text_header {
   $mgr->{TmplData}{PAGE_LANG_007001} = $mgr->{Func}->get_text($mgr, 7001);
   $mgr->{TmplData}{TEXT_CAT_NAME}    = $cat[2];
   $mgr->{TmplData}{PAGE_LANG_007000} = $mgr->{Func}->get_text($mgr, 7000);
-  $mgr->{TmplData}{Text_CAT_BACK}    = $mgr->my_url(ACTION => "home");
+  $mgr->{TmplData}{TEXT_CAT_BACK}    = $mgr->my_url(ACTION => "home");
 }
 
 sub get_text {
@@ -1575,9 +1575,6 @@ if (($res_id) and ($res_text_id)){
 
 }
 
-
-
-
 sub time_string
 {
     my ($self, $time) = @_;
@@ -1588,7 +1585,6 @@ my $day  = substr($time, 6, 2);
 
      return "$day.$mon.$year";
 }   
-
 
 sub get_text_link{
 my ($self, $mgr, $method ,$text_id) = @_;
@@ -1602,10 +1598,7 @@ my $link = sprintf("%s?action=%s&lang=%s&sid=%s&method=%s&text_id=%s",
 			$text_id);
 
   return $link;
-
-
 }
-
 
 sub show_text_user_message{
 my ($self, $mgr) = @_;
@@ -2481,7 +2474,9 @@ SQL
 #-----------------------------------------------------------------------------#
 sub texts_own{
   my ($self, $mgr) = @_;
-  my $user_id = $mgr->{UserData}->{UserId};
+
+  # by Sören,  Änderungen wegen Zugriffe noch. UserID muss über Parameter gelesen werden.
+  my $user_id = $mgr->{CGI}->param('user_id');  #$mgr->{UserData}->{UserId};
   $mgr->{Template} = $mgr->{TmplFiles}->{Texts_Own};
   #$mgr->{TmplData}{USERID} = $user_id;
 

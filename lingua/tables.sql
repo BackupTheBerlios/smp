@@ -766,6 +766,15 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
 
 
 
+# Search
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
+	('9000', 'Search', 'Suchen');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+	('9001', 'Go', 'Los');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
+	('9002', 'Search results', 'Suchergebnisse');
+
+
 DROP TABLE IF EXISTS lingua_user;
 
 CREATE TABLE lingua_user (

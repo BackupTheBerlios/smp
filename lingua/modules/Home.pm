@@ -5,7 +5,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)\.(\d+)/;
 
 #-----------------------------------------------------------------------------#
 # CALL:   $self->parameter($mgr).                                             #
@@ -50,11 +50,61 @@ sub parameter {
     } elsif ($method eq "delete_cat") {
 	$self->delete_cat($mgr);
 	$self->show_tree($mgr);
+    } elsif (defined $mgr->{CGI}->param('search_text') && $mgr->{CGI}->param('search_text') ne "") {
+	$self->search($mgr);
     } else {
 	$self->show_tree($mgr);
     }
     
     $mgr->{TmplData}{PAGE_CAT_ID} = $mgr->{CGI}->param('cat_id') || '';
+}
+
+sub search {
+    my ($self, $mgr) = @_;
+
+    my $page_id     = $mgr->{CGI}->param('page') || '0';
+    my $search_lang = $mgr->{CGI}->param('search_langs');
+    my $search_text = $mgr->{CGI}->param('search_text');
+
+    $mgr->{TmplData}{PAGE_LANG_000024} = $mgr->{Func}->get_text($mgr, 24);
+    $mgr->{TmplData}{PAGE_LANG_000025} = $mgr->{Func}->get_text($mgr, 25);
+    $mgr->{TmplData}{PAGE_LANG_000026} = $mgr->{Func}->get_text($mgr, 26);
+    $mgr->{TmplData}{PAGE_LANG_000027} = $mgr->{Func}->get_text($mgr, 27);
+    $mgr->{TmplData}{PAGE_LANG_009002} = $mgr->{Func}->get_text($mgr, 9002);
+
+    my $dbh = $mgr->connect();
+    my $sth = $dbh->prepare(sprintf("SELECT * FROM %s WHERE lang_id = ? AND status = 1 AND text_header LIKE ? OR
+                                     text_desc LIKE ? OR text_content LIKE ?", $mgr->{Tables}->{TEXT}));
+
+    $search_text = "%".$search_text."%";
+
+    unless ($sth->execute($search_lang, $search_text, $search_text, $search_text)) {
+	warn sprintf("[Error:] Trouble selecting data from [%s].".
+		     "Reason: [%s].", $mgr->{Tables}->{TEXT}, $dbh->errstr());
+    	$mgr->fatal_error("Database error.");
+    }
+
+    my $count = 0;
+    my @result;
+
+    # Fill the text loop.
+    # TODO: Paging ...
+    while (my (@text) = $sth->fetchrow_array()) {
+	$result[$count]{TEXT_SHOW_LINK} = sprintf("%s&text_id=%s", 
+						  $mgr->my_url(ACTION => "text",
+							       METHOD => "text_show"),
+						  $text[0]
+						  );
+	$result[$count]{TEXT_HEADER}    = $text[2];
+	$result[$count]{TEXT_DESC}      = $text[3];
+	$result[$count]{TEXT_LANG}      = $mgr->{Func}->get_lang($mgr, $text[6]);
+	$result[$count]{TEXT_AVG_RAT}   = $text[12];
+	$result[$count]{TEXT_NUM_RAT}   = $text[13];
+	$count++;
+    }
+    
+    $mgr->{TmplData}{LOOP_CAT_TEXTS} = \@result;
+    $mgr->{Template}                 = $mgr->{TmplFiles}->{Search_Result};
 }
 
 #-----------------------------------------------------------------------------#

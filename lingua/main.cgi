@@ -48,7 +48,7 @@ use fields (
 use vars qw(%FIELDS $VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.16 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.17 $ =~ /(\d+)\.(\d+)/;
 
 &handler();
 
@@ -165,155 +165,155 @@ sub handler {
 }
 
 sub new {
-  my ($class, %params) = @_;
+    my ($class, %params) = @_;
 	
-  no strict 'refs';
-  my $self = bless [\%{"$class\::FIELDS"}], $class;
+    no strict 'refs';
+    my $self = bless [\%{"$class\::FIELDS"}], $class;
 
-  while (my ($key, $value) = each(%params)) {
-    eval {
-      $self->{$key} = $value;
-    };
+    while (my ($key, $value) = each(%params)) {
+	eval {
+	    $self->{$key} = $value;
+	};
 
-    if ($@) {
-      if ($@ =~ /No such array field/i) {
-	warn "Ignoring unknown key: [$key].";
-	warn "[Error:] $@";
-      }
+	if ($@) {
+	    if ($@ =~ /No such array field/i) {
+		warn "Ignoring unknown key: [$key].";
+		warn "[Error:] $@";
+	    }
+	}
     }
-  }
 
-  $self;
+    $self;
 }
 
 sub connect {
-  my $self      = shift;
-  my $db_string = sprintf("DBI:mysql:%s;host=%s;port=%s;",
-			  $self->{DbData}->{DataBase},
-			  $self->{DbData}->{DbHost},
-			  $self->{DbData}->{DbPort}
-			 );
+    my $self      = shift;
+    my $db_string = sprintf("DBI:mysql:%s;host=%s;port=%s;",
+			    $self->{DbData}->{DataBase},
+			    $self->{DbData}->{DbHost},
+			    $self->{DbData}->{DbPort}
+			    );
 	
-  $self->{DbHandle} ||= DBI->connect(
-				     $db_string,
-				     $self->{DbData}->{DbUser},
-				     $self->{DbData}->{DbPass},
-				     {
-				      RaiseError => 1
-				     }
-				    ) or $self->fatal_error("Can't connect to database.");
+    $self->{DbHandle} ||= DBI->connect(
+				       $db_string,
+				       $self->{DbData}->{DbUser},
+				       $self->{DbData}->{DbPass},
+				       {
+					   RaiseError => 1
+					   }
+				       ) or $self->fatal_error("Can't connect to database.");
 }
 
 sub header {
-  my $self = shift;
+    my $self = shift;
 
-  print sprintf("Content-type: text/html; charset=%s\n\n", $self->{Charset});
+    print sprintf("Content-type: text/html; charset=%s\n\n", $self->{Charset});
 }
 
 sub to_unicode {
-  my $self = shift;
-  my $text = shift || '';
-  my $tmp  = latin1($text);
-
-  return $tmp->utf8();
+    my $self = shift;
+    my $text = shift || '';
+    my $tmp  = latin1($text);
+    
+    return $tmp->utf8();
 }
 
 sub from_unicode {
-  my $self = shift;
-  my $text = shift || '';
-  my $tmp  = utf8($text);
-
-  return $tmp->latin1();
+    my $self = shift;
+    my $text = shift || '';
+    my $tmp  = utf8($text);
+    
+    return $tmp->latin1();
 }
 
 sub escape {
-  my $self = shift;
-  my $text = shift || '';
+    my $self = shift;
+    my $text = shift || '';
+    
+    $text =~ s/\"/&quot;/g;
+    $text =~ s/</&lt;/g;
+    $text =~ s/>/&gt;/g;
+    $text =~ s/\\n/<br>/g;
 
-  $text =~ s/\"/&quot;/g;
-  $text =~ s/</&lt;/g;
-  $text =~ s/>/&gt;/g;
-  $text =~ s/\\n/<br>/g;
-
-  return $text;
+    return $text;
 }
 
 sub unescape {
-  my $self = shift;
-  my $text = shift || '';
+    my $self = shift;
+    my $text = shift || '';
+    
+    $text =~ s/&quot;/\"/g;
+    $text =~ s/&lt;/</g;
+    $text =~ s/&gt;/>/g;
+    $text =~ s/<br>/\\n/g;
 
-  $text =~ s/&quot;/\"/g;
-  $text =~ s/&lt;/</g;
-  $text =~ s/&gt;/>/g;
-  $text =~ s/<br>/\\n/g;
-
-  return $text;
+    return $text;
 }
 
 sub set_lang {
-  my $self = shift;
+    my $self = shift;
 
-  if (defined $self->{CGI}->param('change_lang')) {
-    my $lang = $self->{CGI}->param('system_langs') || 1;
+    if (defined $self->{CGI}->param('change_lang')) {
+	my $lang = $self->{CGI}->param('system_langs') || 1;
 
-    $self->{Language} = $lang;
-  } else {
-    my $lang = $self->{CGI}->param('lang') || 'de';
-
-    if (defined $self->{CGI}->param('login')) {
-      $self->{Language} = $self->{UserData}->{UserLang} || 1;
+	$self->{Language} = $lang;
     } else {
-      foreach my $tmp (keys %{$self->{SystemLangs}}) {
-	if ($lang eq $self->{SystemLangs}->{$tmp}) {
-	  $self->{Language} = $tmp;
+	my $lang = $self->{CGI}->param('lang') || 'de';
+
+	if (defined $self->{CGI}->param('login')) {
+	    $self->{Language} = $self->{UserData}->{UserLang} || 1;
+	} else {
+	    foreach my $tmp (keys %{$self->{SystemLangs}}) {
+		if ($lang eq $self->{SystemLangs}->{$tmp}) {
+		    $self->{Language} = $tmp;
+		}
+	    }
 	}
-      }
     }
-  }
 }
 
 sub check_login {
-  my $self = shift;
-
-  unless ($self->check_session()) {
-    if (defined $self->{CGI}->param('login')) {
-      my $username = $self->{CGI}->param('login_username') || '';
-      my $password = $self->{CGI}->param('login_password') || '';
-
-      my $table = $self->{Tables}->{USER};
-
-      my $dbh = $self->connect();
-      my $sth = $dbh->prepare(<<SQL);
+    my $self = shift;
+    
+    unless ($self->check_session()) {
+	if (defined $self->{CGI}->param('login')) {
+	    my $username = $self->{CGI}->param('login_username') || '';
+	    my $password = $self->{CGI}->param('login_password') || '';
+	    
+	    my $table = $self->{Tables}->{USER};
+	    
+	    my $dbh = $self->connect();
+	    my $sth = $dbh->prepare(<<SQL);
 
 SELECT user_id, username, points, level, system_lang
 FROM $table
 WHERE username = ? AND password = ? AND status = '1'
 
 SQL
-      unless ($sth->execute($username, $password)) {
+    unless ($sth->execute($username, $password)) {
 	warn sprintf("[Error:] Trouble selecting data from [%s].".
 		     "Reason: [%s].", $table, $dbh->errstr());
-        $self->fatal_error("Database error.");
-      }
-
-      my (@data) = $sth->fetchrow_array();
-      $sth->finish();
-
-      if (@data) {
-	my $sid = $self->{Session}->start_session(UserId      => $data[0],
-						  UserLevel   => $data[3],
-						  UserName    => $data[1],
-						  UserLang    => $data[4]);
-	$self->{Language}                = $data[4];
-	$self->{LoginOk}                 = 1;
-	$self->{SessionId}               = $sid;
-	$self->{UserData}->{UserId}      = $data[0];
-	$self->{UserData}->{UserLevel}   = $data[3];
-	$self->{UserData}->{UserName}    = $data[1];
-	$self->{UserData}->{UserLang}    = $data[4];
-	
-	$dbh->do("LOCK TABLES $table WRITE");
-	$sth = $dbh->prepare(<<SQL);
+	$self->fatal_error("Database error.");
+    }
+	    
+	    my (@data) = $sth->fetchrow_array();
+	    $sth->finish();
+	    
+	    if (@data) {
+		my $sid = $self->{Session}->start_session(UserId      => $data[0],
+							  UserLevel   => $data[3],
+							  UserName    => $data[1],
+							  UserLang    => $data[4]);
+		$self->{Language}                = $data[4];
+		$self->{LoginOk}                 = 1;
+		$self->{SessionId}               = $sid;
+		$self->{UserData}->{UserId}      = $data[0];
+		$self->{UserData}->{UserLevel}   = $data[3];
+		$self->{UserData}->{UserName}    = $data[1];
+		$self->{UserData}->{UserLang}    = $data[4];
+		
+		$dbh->do("LOCK TABLES $table WRITE");
+		$sth = $dbh->prepare(<<SQL);
 
 UPDATE $table
 SET last_login = ?
@@ -321,138 +321,138 @@ WHERE user_id = ?
 
 SQL
 
-	unless ($sth->execute(time(), $data[0])) {
-	  warn sprintf("[Error:] Trouble selecting data from [%s].".
-		       "Reason: [%s].", $table, $dbh->errstr());
-	  $dbh->do("UNLOCK TABLES");
-	  $self->fatal_error("Database error");
-	}
-	
+    unless ($sth->execute(time(), $data[0])) {
+	warn sprintf("[Error:] Trouble selecting data from [%s].".
+		     "Reason: [%s].", $table, $dbh->errstr());
 	$dbh->do("UNLOCK TABLES");
-	$sth->finish();
-	
-	$self->{Points}->update_points($self, $data[0]);
-      } else {
-	$self->{TmplData}{PAGE_LOGIN_ERROR} = $self->{Func}->get_text($self, 12);
-      }
+	$self->fatal_error("Database error");
     }
-  } else {
-    if (defined $self->{CGI}->param('logout')) {  
-      $self->{Session}->kill_session($self->{SessionId});
-      $self->{LoginOk}                 = 0;
-      $self->{SessionId}               = undef;
-      $self->{UserData}->{UserId}      = undef;
-      $self->{UserData}->{UserLevel}   = undef;
-      $self->{UserData}->{UserName}    = undef;
-      $self->{UserData}->{UserLang}    = undef;
-
-      return "home";
+		
+		$dbh->do("UNLOCK TABLES");
+		$sth->finish();
+		
+		$self->{Points}->update_points($self, $data[0]);
+	    } else {
+		$self->{TmplData}{PAGE_LOGIN_ERROR} = $self->{Func}->get_text($self, 12);
+	    }
+	}
+    } else {
+	if (defined $self->{CGI}->param('logout')) {  
+	    $self->{Session}->kill_session($self->{SessionId});
+	    $self->{LoginOk}                 = 0;
+	    $self->{SessionId}               = undef;
+	    $self->{UserData}->{UserId}      = undef;
+	    $self->{UserData}->{UserLevel}   = undef;
+	    $self->{UserData}->{UserName}    = undef;
+	    $self->{UserData}->{UserLang}    = undef;
+	    
+	    return "home";
+	}
     }
-  }
 }
 
 sub check_session {
-  my $self = shift;
-  my $sid  = $self->{CGI}->param('sid') || undef;
+    my $self = shift;
+    my $sid  = $self->{CGI}->param('sid') || undef;
 
-  $self->{Session} = lib::Session->new(directory  => $self->{SessionData}->{SessDir},
-				       file       => $self->{SessionData}->{SessFile},
-				       exp_time   => $self->{SessionData}->{ExpTime});
+    $self->{Session} = lib::Session->new(directory  => $self->{SessionData}->{SessDir},
+					 file       => $self->{SessionData}->{SessFile},
+					 exp_time   => $self->{SessionData}->{ExpTime});
 
-  $self->{Session}->check_sessions();
+    $self->{Session}->check_sessions();
+    
+    if (defined $sid) {
+	$self->{Session}->set_sid($sid);
 
-  if (defined $sid) {
-    $self->{Session}->set_sid($sid);
+	my $check;
 
-    my $check;
+	eval {
+	    $check = $self->{Session}->check_sid($sid);
+	};
 
-    eval {
-      $check = $self->{Session}->check_sid($sid);
-    };
+	if ($@) {
+	    warn "[Error:] Trouble checking sessiond id [$sid].";
+	    $self->fatal_error();
+	}
 
-    if ($@) {
-      warn "[Error:] Trouble checking sessiond id [$sid].";
-      $self->fatal_error();
+	if ($check) {
+	    $self->{LoginOk}               = 1;
+	    $self->{SessionId}             = $sid;
+	    $self->{UserData}->{UserId}    = $self->{Session}->get("UserId");
+	    $self->{UserData}->{UserLevel} = $self->{Session}->get("UserLevel");
+	    $self->{UserData}->{UserName}  = $self->{Session}->get("UserName");
+	    $self->{UserData}->{UserLang}  = $self->{Session}->get("UserLang");
+
+	    return 1;
+	}
     }
 
-    if ($check) {
-      $self->{LoginOk}               = 1;
-      $self->{SessionId}             = $sid;
-      $self->{UserData}->{UserId}    = $self->{Session}->get("UserId");
-      $self->{UserData}->{UserLevel} = $self->{Session}->get("UserLevel");
-      $self->{UserData}->{UserName}  = $self->{Session}->get("UserName");
-      $self->{UserData}->{UserLang}  = $self->{Session}->get("UserLang");
-
-      return 1;
-    }
-  }
-
-  return undef;
+    return undef;
 }
 
 sub fatal_error {
-  my ($self, $error) = @_;
+    my ($self, $error) = @_;
 
-  $self->{Template}            = $self->{TmplFiles}->{Error};
-  $self->{TmplData}            = undef;
-  $self->{TmplData}{ERROR_TXT} = $self->to_unicode($error);
+    $self->{Template}            = $self->{TmplFiles}->{Error};
+    $self->{TmplData}            = undef;
+    $self->{TmplData}{ERROR_TXT} = $self->to_unicode($error);
 
-  warn "[Fatal Error:] $error" if $error;
-  $self->output;
+    warn "[Fatal Error:] $error" if $error;
+    $self->output;
 }
 
 sub my_url {
-  my ($self, %args) = @_;
+    my ($self, %args) = @_;
+    
+    my $lang = $self->{Language};
 
-  my $lang = $self->{Language};
-
-  $self->{MyUrl} = sprintf("%s?action=%s&lang=%s",
-			   $self->{ScriptName},
-			   $args{ACTION} || $self->{Action},
-			   $self->{SystemLangs}->{$lang}
+    $self->{MyUrl} = sprintf("%s?action=%s&lang=%s",
+			     $self->{ScriptName},
+			     $args{ACTION} || $self->{Action},
+			     $self->{SystemLangs}->{$lang}
 			  );
+    
+    if ($self->{LoginOk} == 1) {
+	$self->{MyUrl} .= sprintf("&sid=%s", $self->{SessionId});
+    }
+    
+    if (defined $args{METHOD}) {
+	$self->{MyUrl} .= sprintf("&method=%s", $args{METHOD});
+    }
 
-  if ($self->{LoginOk} == 1) {
-    $self->{MyUrl} .= sprintf("&sid=%s", $self->{SessionId});
-  }
+    if (defined $args{MODE}) {
+	$self->{MyUrl} .= sprintf("&mode=%s", $args{MODE});
+    }
 
-  if (defined $args{METHOD}) {
-    $self->{MyUrl} .= sprintf("&method=%s", $args{METHOD});
-  }
+    if (defined $self->{CGI}->param('open')) {
+	$self->{MyUrl} .= sprintf("&open=%s", $self->{CGI}->param('open'));
+    }
 
-  if (defined $args{MODE}) {
-    $self->{MyUrl} .= sprintf("&mode=%s", $args{MODE});
-  }
-
-  if (defined $self->{CGI}->param('open')) {
-    $self->{MyUrl} .= sprintf("&open=%s", $self->{CGI}->param('open'));
-  }
-
-  return $self->{MyUrl};
+    return $self->{MyUrl};
 }
 
 sub output {
-  my $self = shift;
-  my $content;
-
-  unless (-r $self->{TmplDir}."/".$self->{Template}) {
-    warn "Template [$self->{Template}] not found in [$self->{TmplDir}].";
-
-    if ($self->{Template} eq $self->{TmplFiles}->{Error}) {
-      $self->template_error();
-    } else {
-      $self->fatal_error();
+    my $self = shift;
+    my $content;
+    
+    unless (-r $self->{TmplDir}."/".$self->{Template}) {
+	warn "Template [$self->{Template}] not found in [$self->{TmplDir}].";
+	
+	if ($self->{Template} eq $self->{TmplFiles}->{Error}) {
+	    $self->template_error();
+	} else {
+	    $self->fatal_error();
+	}
     }
-  }
 
-  my $template = HTML::Template->new(filename          => $self->{Template},
-				     path              => $self->{TmplDir},
-				     loop_context_vars => 1);
+    my $template = HTML::Template->new(filename          => $self->{Template},
+				       path              => $self->{TmplDir},
+				       loop_context_vars => 1);
 
-  $template->param(%{$self->{TmplData}});
+    $template->param(%{$self->{TmplData}});
 
-  print "Content-type: text/html;\n\n";			#geändert:  Giovanni N.
-  print $template->output;
+    print "Content-type: text/html;\n\n";			#geändert:  Giovanni N.
+    print $template->output;
 
 #  $self->header();
 #  print $self->to_unicode($template->output());
@@ -460,22 +460,22 @@ sub output {
 }
 
 sub template_error {
-  my $self  = shift;
-  my $error = $self->to_unicode("Template parser error");
+    my $self  = shift;
+    my $error = $self->to_unicode("Template parser error");
 
-  $self->header();
+    $self->header();
 
-  print qq{
-	    <html>
-	    <body>
-	
-	    <h1>$error</h1>
+    print qq{
+	<html>
+	<body>
+		
+		<h1>$error</h1>
 
-	    </body>
-	    </html>
-	   };
+	</body>
+	</html>
+	};
 
-  exit;
+    exit;
 }
 
 1;

@@ -67,6 +67,7 @@ $TABLES = {
 };
 
 $TMPL = {
+         Search_Result        => 'lingua_search_result.tmpl',
 	 Cat_New              => 'lingua_cat_new.tmpl',
 	 Cat_Change           => 'lingua_cat_change.tmpl',
          Error                => 'lingua_error.tmpl',
@@ -96,12 +97,12 @@ $TMPL = {
 	 Text_User_Mes        => 'lingua_text_user.tmpl',
 	 Text_Trans_Download  => 'lingua_text_to_trans_download.tmpl',
 	 Text_Download 	      => 'lingua_text_download.tmpl',
-	 Text_Show            => 'lingua_text_show.tmpl',          #by HENDRIK Erler
-         Text_Delete          => 'lingua_text_delete.tmpl',        #by HENDRIK Erler
-         Text_Delete_ALL_Ok   => 'lingua_text_delete_all_ok.tmpl', #by HENDRIK Erler
-         Text_Delete_TRANS_Ok => 'lingua_text_delete_trans_ok.tmpl',#by HENDRIK Erler
-	 Texts_Own            => 'lingua_texts_own.tmpl',           #by HENDRIK Erler
-	 Trans_Own            => 'lingua_trans_own.tmpl'           #by HENDRIK Erler
+	 Text_Show            => 'lingua_text_show.tmpl',          
+         Text_Delete          => 'lingua_text_delete.tmpl',        
+         Text_Delete_ALL_Ok   => 'lingua_text_delete_all_ok.tmpl', 
+         Text_Delete_TRANS_Ok => 'lingua_text_delete_trans_ok.tmpl',
+	 Texts_Own            => 'lingua_texts_own.tmpl',           
+	 Trans_Own            => 'lingua_trans_own.tmpl'           
 };
 
-	1;
+1;

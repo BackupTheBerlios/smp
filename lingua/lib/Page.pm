@@ -11,29 +11,34 @@ sub new {
 }
 
 sub fill_main_part {
-  my ($self, $mgr) = @_;
+    my ($self, $mgr) = @_;
 
-  my $link = "%s?action=%s&lang=%s";
-  $link   .= "&sid=".$mgr->{SessionId} if (defined $mgr->{SessionId});
+    my $link = "%s?action=%s&lang=%s";
+    $link   .= "&sid=".$mgr->{SessionId} if (defined $mgr->{SessionId});
 
-  my $lang = $mgr->{Language};
-  $lang    = $mgr->{SystemLangs}->{$lang};
+    my $lang = $mgr->{Language};
+    $lang    = $mgr->{SystemLangs}->{$lang};
 
-  $mgr->{TmplData}{PAGE_SCRIPT}         = $mgr->{ScriptName};
-  $mgr->{TmplData}{PAGE_CHARSET}        = $mgr->{Charset};
-  $mgr->{TmplData}{PAGE_ACTION}         = $mgr->{Action};
-  $mgr->{TmplData}{PAGE_SID}            = $mgr->{SessionId};
-  $mgr->{TmplData}{PAGE_LANG}           = $lang;
-  $mgr->{TmplData}{PAGE_OPEN}           = $mgr->{CGI}->param('open') || '';
+    $mgr->{TmplData}{PAGE_SCRIPT}         = $mgr->{ScriptName};
+    $mgr->{TmplData}{PAGE_CHARSET}        = $mgr->{Charset};
+    $mgr->{TmplData}{PAGE_ACTION}         = $mgr->{Action};
+    $mgr->{TmplData}{PAGE_SID}            = $mgr->{SessionId};
+    $mgr->{TmplData}{PAGE_LANG}           = $lang;
+    $mgr->{TmplData}{PAGE_OPEN}           = $mgr->{CGI}->param('open') || '';
 
-  $mgr->{TmplData}{PAGE_LANG_000005}    = $mgr->{Func}->get_text($mgr, 5);
-  $mgr->{TmplData}{PAGE_LANG_000006}    = $mgr->{Func}->get_text($mgr, 6);
+    # languages
+    $mgr->{TmplData}{PAGE_LANG_000005}    = $mgr->{Func}->get_text($mgr, 5);
+    $mgr->{TmplData}{PAGE_LANG_000006}    = $mgr->{Func}->get_text($mgr, 6);
 
-  $mgr->{TmplData}{PAGE_LEFT_LINK_HOME} = $mgr->my_url(ACTION => "home");
+    # serach
+    $mgr->{TmplData}{PAGE_LANG_009000}    = $mgr->{Func}->get_text($mgr, 9000);
+    $mgr->{TmplData}{PAGE_LANG_009001}    = $mgr->{Func}->get_text($mgr, 9001);
 
-  # info/help link (by misterp)
-  $mgr->{TmplData}{PAGE_LANG_002001}    = $mgr->{Func}->get_text($mgr, 2001);
-  $mgr->{TmplData}{PAGE_LEFT_LINK_HELP} = $mgr->my_url(ACTION => "help") . "&index=1";
+    $mgr->{TmplData}{PAGE_LEFT_LINK_HOME} = $mgr->my_url(ACTION => "home");
+
+    # info/help link (by misterp)
+    $mgr->{TmplData}{PAGE_LANG_002001}    = $mgr->{Func}->get_text($mgr, 2001);
+    $mgr->{TmplData}{PAGE_LEFT_LINK_HELP} = $mgr->my_url(ACTION => "help") . "&index=1";
 }
 
 sub fill_user_part {

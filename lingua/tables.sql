@@ -309,7 +309,7 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
        ('1054', 'System Language', 'Systemsprache');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
-       ('1055', 'Change', 'ändern');
+       ('1055', 'Change', 'Ändern');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
        ('1056', 'User level', 'Benutzer-Level');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
@@ -371,7 +371,7 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('1084', 'Base Knowledge', 'Grundkenntnisse', 'Connaissance de base');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
-       ('1085', 'Not at all', 'überhaupt nicht');
+       ('1085', 'Not at all', 'Überhaupt nicht');
 
 # User Level (1088 - 1090)
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
@@ -403,9 +403,9 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('1110', 'Personal Page of', 'Persönliche Seite von', 'Page personnelle de');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
-       ('1111', 'Here, you can change your system language', 'ändern der Systemsprache');
+       ('1111', 'Here, you can change your system language', 'Ändern der Systemsprache');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
-       ('1112', 'Change', 'ändern');
+       ('1112', 'Change', 'Ändern');
 
 # language update (1115 - 1121)
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
@@ -417,7 +417,7 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
        ('1118', 'Degree of knowledge', 'Kenntnisstand');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
-       ('1119', 'Change', 'ändern');
+       ('1119', 'Change', 'Ändern');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
        ('1120', 'Add a Language', 'Eine Sprache hinzufügen');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
@@ -429,7 +429,7 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('1125', 'Personal Page of', 'Persönliche Seite von', 'Page personnelle de');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
-       ('1126', 'Here, you can change your password', 'ändern des Passworts');
+       ('1126', 'Here, you can change your password', 'Ändern des Passworts');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
        ('1127', 'Your password must have 5 to 10 characters', 'Ihr Password muss 5 bis 10 Buchstaben haben');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
@@ -439,7 +439,7 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
        ('1130', 'Password (retype)', 'Passwort (bestätigen)');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
-       ('1131', 'Submit', 'ändern');
+       ('1131', 'Submit', 'Ändern');
 
 # password update errors (1134 - 1136)
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
@@ -467,7 +467,7 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
        ('1147', 'Change', 'Wechseln');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
-       ('1148', 'Submit', 'ändern');
+       ('1148', 'Submit', 'Ändern');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
        ('1149', 'Back', 'Zurück');
 
@@ -576,7 +576,7 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
        ('1207', 'Change', 'Wechseln');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
-       ('1208', 'Submit', 'ändern');
+       ('1208', 'Submit', 'Ändern');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
        ('1209', 'Back', 'Zurück');
 

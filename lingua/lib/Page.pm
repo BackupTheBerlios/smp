@@ -30,6 +30,10 @@ sub fill_main_part {
   $mgr->{TmplData}{PAGE_LANG_000006}    = $mgr->{Func}->get_text($mgr, 6);
 
   $mgr->{TmplData}{PAGE_LEFT_LINK_HOME} = $mgr->my_url(ACTION => "home");
+
+  # info/help link (by misterp)
+  $mgr->{TmplData}{PAGE_LANG_002001}    = $mgr->{Func}->get_text($mgr, 2001);
+  $mgr->{TmplData}{PAGE_LEFT_LINK_HELP} = $mgr->my_url(ACTION => "help") . "&index=1";
 }
 
 sub fill_user_part {

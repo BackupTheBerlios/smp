@@ -9,7 +9,7 @@ use lib::Config;
 use lib::Func;
 use lib::Page;
 use lib::Session;
-use Unicode::String qw(latin1 utf8 utf16);
+use Unicode::String qw(latin1 utf8);
 use fields (
 	    'Action',              # Current action name.
 	    'CGI',                 # CGI object.
@@ -41,7 +41,7 @@ use fields (
 use vars qw(%FIELDS $VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/;
 
 &handler();
 
@@ -75,9 +75,7 @@ sub handler {
 			       UserData            => {
 						       UserId      => undef,
 						       UserLevel   => undef,
-						       UserName    => undef,
-						       UserPoints1 => undef,
-						       UserPoints2 => undef
+						       UserName    => undef
 						       }
 			      );
 
@@ -122,11 +120,10 @@ sub handler {
   }
 
   $self->set_lang();
-
   $self->check_login();
 
   if ($class->can("parameter")) {
-    $self->check_session();
+    # $self->check_session();
 
     eval {
       $class->parameter($self);
@@ -199,6 +196,14 @@ sub to_unicode {
   return $tmp->utf8();
 }
 
+sub from_unicode {
+  my $self = shift;
+  my $text = shift || '';
+  my $tmp  = utf8($text);
+
+  return $tmp->latin1();
+}
+
 sub set_lang {
   my $self = shift;
 
@@ -254,6 +259,9 @@ SQL
 	$self->{Language}  = $data[4];
 	$self->{LoginOk}   = 1;
 	$self->{SessionId} = $sid;
+	$self->{UserData}->{UserId}      = $data[0];
+	$self->{UserData}->{UserLevel}   = $data[3];
+	$self->{UserData}->{UserName}    = $data[1];
 
 	$dbh->do("LOCK TABLES $table WRITE");
 	$sth = $dbh->prepare(<<SQL);
@@ -275,7 +283,7 @@ SQL
 	$sth->finish();
       } else {
 	$self->{TmplData}{PAGE_LOGIN_ERROR} = 
-	  $self->to_unicode($self->{Func}->get_text($self, 44));
+	  $self->to_unicode($self->{Func}->get_text($self, 12));
       }
     }
   } else {
@@ -286,8 +294,6 @@ SQL
       $self->{UserData}->{UserId}      = undef;
       $self->{UserData}->{UserLevel}   = undef;
       $self->{UserData}->{UserName}    = undef;
-      $self->{UserData}->{UserPoints1} = undef;
-      $self->{UserData}->{UserPoints2} = undef;
     }
   }
 }
@@ -323,8 +329,6 @@ sub check_session {
       $self->{UserData}->{UserId}      = $self->{Session}->get("UserId");
       $self->{UserData}->{UserLevel}   = $self->{Session}->get("UserLevel");
       $self->{UserData}->{UserName}    = $self->{Session}->get("UserName");
-      $self->{UserData}->{UserPoints1} = $self->{Session}->get("UserPoints1");
-      $self->{UserData}->{UserPoints2} = $self->{Session}->get("UserPoints2");
       $self->{UserData}->{UserLevel}   = $self->{Session}->get("UserLevel");
 
       return 1;
@@ -386,7 +390,7 @@ sub output {
   $template->param(%{$self->{TmplData}});
   $self->header();
 
-  print $template->output();
+  print $self->to_unicode($template->output());
 }
 
 sub template_error {

@@ -4,25 +4,21 @@ $CONFIG = {
 	   Charset       => 'utf-8',
 	   DefaultModule => {
 			     action  => 'home',
-			     script  => 'Home',
-			     session => '0'
+			     script  => 'Home'
 			    },
 	   ModuleDir     => 'modules',
 	   Modules       => [
 			     {
 			      action  => 'home',
-			      script  => 'Home',
-			      session => '0'
+			      script  => 'Home'
 			     },
                              {
                               action  => 'text',
-                              script  => 'Text',
-                              session => '0'
+                              script  => 'Text'
                              },
 			     {
 			      action  => 'user',
-			      script  => 'User',
-			      session => '0'
+			      script  => 'User'
 			     },
 			    ],
 	   TmplDir       => 'templates'	

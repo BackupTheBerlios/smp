@@ -142,4 +142,22 @@ SQL
   return @cats;
 }
 
+#-----------------------------------------------------------------------------#
+# CALL: $self->check_for_user($mgr, $user_type).                              #
+#                                                                             #
+#       $mgr       = manager object.                                          #
+#       $user_type = user type.                                               #
+#-----------------------------------------------------------------------------#
+sub check_for_user {
+  my ($self, $mgr, $user_type) = @_;
+
+  if ($mgr->{Session}->check_sid($mgr->{SessionId})) {
+    if ($mgr->{UserData}->{UserType} != $user_type) {
+      return undef;
+    }
+  }
+
+  return 1;
+}
+
 1;

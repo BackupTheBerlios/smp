@@ -5,7 +5,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/;
 
 sub parameter {
   my ($self, $mgr) = @_;
@@ -16,9 +16,28 @@ sub parameter {
   $mgr->{Page}->fill_user_part($mgr);
   $mgr->{Page}->fill_lang_part($mgr);
 
-  $self->show_categories($mgr);
+  my $method = $mgr->{CGI}->param('method') || undef;
+
+  if (defined $method) {
+    if ($method eq "cat_admin") {
+      $self->show_category_admin($mgr);
+    }
+  } else {
+    $self->show_categories($mgr);
+  }
 
   1;
+}
+
+sub show_category_admin {
+  my ($self, $mgr) = @_;
+
+  unless ($mgr->{Func}->check_for_user($mgr, 2)) {
+    # Error handling ...
+    return 1;
+  }
+
+  # Display categories for administration.
 }
 
 sub show_categories {

@@ -30,8 +30,13 @@ INSERT INTO lingua_dictionary (en, de) VALUES ('Login', 'Anmelden');
 INSERT INTO lingua_dictionary (en, de) VALUES ('Points existence', 'Punkte vorhanden');
 INSERT INTO lingua_dictionary (en, de) VALUES ('Points in work', 'Punkte in arbeit');
 INSERT INTO lingua_dictionary (en, de) VALUES ('personal page', 'persöhnliche Seite');
+INSERT INTO lingua_dictionary (en, de) VALUES ('Logout', 'Abmelden');
+INSERT INTO lingua_dictionary (en, de) VALUES 
+	('Wrong username or password.', 'Falscher Benutzername oder Passwort.');
+INSERT INTO lingua_dictionary (en, de) VALUES ('Put in a text', 'Text rein stellen');
+INSERT INTO lingua_dictionary (en, de) VALUES ('Category admin', 'Kategorien verwalten');
 
-INSERT INTO lingua_dictionary (de) VALUES ('Geschichte, Politik');
+INSERT INTO lingua_dictionary (dict_id, de) VALUES (4001,'Geschichte, Politik');
 INSERT INTO lingua_dictionary (de) VALUES ('Jura');
 INSERT INTO lingua_dictionary (de) VALUES ('Naturwissenschaften');
 INSERT INTO lingua_dictionary (de) VALUES ('Sport');
@@ -107,8 +112,6 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
        ('1018', 'Base Knowledge', 'Grundkenntnisse');
 
-
-
 DROP TABLE IF EXISTS lingua_user;
 
 CREATE TABLE lingua_user (
@@ -177,40 +180,45 @@ CREATE TABLE lingua_categories (
 );
 
 # Categories level: 1.
-INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('11', '7');
-INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('12', '2');
-INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('13', '5');
-INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('14', '0');
-INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('15', '9');
-INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('16', '0');
-INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('17', '0');
+INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('4001', '7');
+INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('4002', '2');
+INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('4003', '5');
+INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('4004', '0');
+INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('4005', '9');
+INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('4006', '0');
+INSERT INTO lingua_categories (lang_id, cat_count) VALUES ('4007', '0');
 
 # Categories level: 2
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('18', '1');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('19', '1');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('20', '1');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('21', '1');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('22', '1');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('23', '1');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('24', '1');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('25', '2');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('26', '2');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('27', '3');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('28', '3');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('29', '3');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('30', '3');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('31', '3');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('32', '5');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('33', '5');
-INSERT INTO lingua_categories (lang_id, parent_id, cat_count) VALUES ('34', '5', '2');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('35', '5');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('36', '5');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('37', '5');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('38', '5');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('39', '5');
-INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('40', '5');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4008', '1');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4009', '1');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4010', '1');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4011', '1');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4012', '1');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4013', '1');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4014', '1');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4015', '2');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4016', '2');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4017', '3');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4018', '3');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4019', '3');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4020', '3');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4021', '3');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4022', '5');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4023', '5');
+INSERT INTO lingua_categories (lang_id, parent_id, cat_count) VALUES ('4024', '5', '2');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4025', '5');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4026', '5');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4027', '5');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4028', '5');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4029', '5');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4030', '5');
 
 # Categories level: 3
+<<<<<<< tables.sql
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4031', '24');
+INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('4032', '24');
+
+=======
 INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('41', '24');
 INSERT INTO lingua_categories (lang_id, parent_id) VALUES ('42', '24');
 
@@ -275,3 +283,4 @@ CREATE TABLE lingua_text_header (
 	submit_time     TIMESTAMP,
 	PRIMARY KEY(header_id)
 );
+>>>>>>> 1.3

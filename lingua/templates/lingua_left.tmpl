@@ -68,30 +68,33 @@
     <TMPL_VAR PAGE_POINTS>
     </span>
     <hr noshade>
-    <a class="normal" href="<TMPL_VAR PAGE_USER_LINK>"><TMPL_VAR PAGE_LANG_000009></a>
-    <p>
     <input type="submit" name="logout" value="<TMPL_VAR PAGE_LANG_000010>">
-    </p>
   </td>
 </tr>
 <tr>
-  <TMPL_IF PAGE_USER_TYPE_0>
   <td>
+    <hr noshade></td>
+</tr>
+<tr>
+  <td>
+    <ul>
+      <li><a class="normal" href="<TMPL_VAR PAGE_USER_LINK>"><TMPL_VAR PAGE_LANG_000009></a></li>
+      <li><a class="normal" href="<TMPL_VAR PAGE_TEXT_LINK>"><TMPL_VAR PAGE_LANG_000012></a></li>
 
-  </td>
+  <TMPL_IF PAGE_USER_TYPE_0>
+
   </TMPL_IF>
 
   <TMPL_IF PAGE_USER_TYPE_1>
-  <td>
 
-  </td>
   </TMPL_IF>
 
   <TMPL_IF PAGE_USER_TYPE_2>
-  <td>
-
-  </td>
+    <li><a class="normal" href="<TMPL_VAR PAGE_CATEGORY_ADMIN>"><TMPL_VAR PAGE_LANG_000011></a></li>
   </TMPL_IF>
+
+    </ul>
+  </td>
 </tr>
 </TMPL_IF>
 

@@ -44,23 +44,31 @@ sub fill_user_part {
     $mgr->{TmplData}{PAGE_LANG_000006} = $mgr->{Func}->get_text($mgr, 8);
     $mgr->{TmplData}{PAGE_LANG_000007} = $mgr->{Func}->get_text($mgr, 9);
     $mgr->{TmplData}{PAGE_LANG_000009} = $mgr->{Func}->get_text($mgr, 10);
-    $mgr->{TmplData}{PAGE_LANG_000010} = $mgr->{Func}->get_text($mgr, 43);
+    $mgr->{TmplData}{PAGE_LANG_000010} = $mgr->{Func}->get_text($mgr, 11);
     $mgr->{TmplData}{PAGE_USER_LINK}   =
       sprintf("%s?action=%s&lang=%s&sid=%s",
 	      $mgr->{ScriptName}, "user",
+	      $mgr->{SystemLangs}->{$lang},
+	      $mgr->{SessionId});
+    $mgr->{TmplData}{PAGE_LANG_000012} = $mgr->{Func}->get_text($mgr, 13);
+    $mgr->{TmplData}{PAGE_TEXT_LINK}   =
+      sprintf("%s?action=%s&lang=%s&sid=%s",
+	      $mgr->{ScriptName}, "text",
 	      $mgr->{SystemLangs}->{$lang},
 	      $mgr->{SessionId});
 
     $mgr->{TmplData}{PAGE_USERNAME}   = 
       $mgr->to_unicode($mgr->{UserData}->{UserName});
     $mgr->{TmplData}{PAGE_ALL_POINTS} = 
-      $mgr->to_unicode($mgr->{UserData}->{UserPoints1} || '0');
+      $mgr->to_unicode($mgr->{Session}->get("UserPoints1") || '0');
     $mgr->{TmplData}{PAGE_POINTS}     = 
-      $mgr->to_unicode($mgr->{UserData}->{UserPoints2} || '0');
+      $mgr->to_unicode($mgr->{Session}->get("UserPoints2") || '0');
 
     if (defined $mgr->{UserData}->{UserLevel}) {
       if ($mgr->{UserData}->{UserLevel} == 2) {
-
+	$mgr->{TmplData}{PAGE_USER_TYPE_2}    = 1;
+	$mgr->{TmplData}{PAGE_CATEGORY_ADMIN} = sprintf("%s&method=cat_admin", $mgr->my_url());
+	$mgr->{TmplData}{PAGE_LANG_000011}    = $mgr->{Func}->get_text($mgr, 14);
       } elsif ($mgr->{UserData}->{UserLevel} == 1) {
 
       } else {

@@ -123,7 +123,7 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('1014', 'Mother tongue', 'Muttersprache', 'Langue maternelle');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
        ('1015', 'Fluent', 'Flie&szlig;end', 'Couremment');
-INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('1016', 'Good', 'Gut', 'Bien');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
        ('1017', 'Mediocre', 'Mittelm&auml;&szlig;ig', 'Mediocre');
@@ -323,7 +323,26 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 	(2105, 'Number of ratings','Anzahl der Bewertungen','Anzahl der Bewertungenfr');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 	(2106, 'Translate Text','Text übersetzen','Text Übersetzenfr');
-
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2107', 'Very good', 'Sehr gut', 'sehr gut fr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2108', 'Good', 'Gut', 'Bien');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2109', 'is ok', 'geht so', 'geht sofr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2110', 'Bad', 'schlecht', 'schlechtfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2111', 'Very bad', 'Sehr schlecht', 'Sehr schlecht');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2112', 'Rating of content', 'Inhaltsbewertung', 'Inhaltsbewertungfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2113', 'rate', 'bewerten', 'bewerternfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2114', 'Delete text', 'Text löschen', 'Text löschenfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2115', 'Rating of translation', 'Übersetzungsbewertung', 'Übersetzungsbewertungfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2116', 'Prepare date', 'Erstellungsdatum', 'Erstellungsdatumfr');
 
 DROP TABLE IF EXISTS lingua_user;
 

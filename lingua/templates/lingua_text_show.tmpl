@@ -27,6 +27,7 @@
 						<td><TMPL_VAR PAGE_LANG_002103></td>
 						<td><TMPL_VAR PAGE_LANG_002104></td>
 						<td><TMPL_VAR PAGE_LANG_002105></td>
+						<td><TMPL_VAR PAGE_LANG_002116></td>
 						<td><TMPL_VAR PAGE_LANG_002101></TD>
 					</TR>
 					<TR> 	<td><TMPL_VAR TEXT_TITLE></td>
@@ -47,13 +48,33 @@
 						</td>
 						<td><TMPL_VAR TEXT_RATING></td>
 						<td><TMPL_VAR TEXT_RATING_NUMBER></td>
+						<td><TMPL_VAR TEXT_SUBMIT_TIME></td>
 						<td><TMPL_VAR TEXT></td>
 					</TR>
 
+				</table>
+
+
+				<p>
+					<TMPL_VAR PAGE_LANG_002112><!-- content rating -->
+					<TMPL_VAR PAGE_LANG_002115><!-- translation rating -->
+				</p>
+				<table>
+
 					<TR>
-						<input type="submit" name="text_trans_contents" value="<TMPL_VAR PAGE_LANG_002106>">
+
+						<td><input name=rating type="radio" value="very_good"><TMPL_VAR PAGE_LANG_002107></td>
+						<td><input name=rating type="radio" value="good"><TMPL_VAR PAGE_LANG_002108></td>
+						<td><input name=rating type="radio" value="good"><TMPL_VAR PAGE_LANG_002109></td>
+						<td><input name=rating type="radio" value="good"><TMPL_VAR PAGE_LANG_002110></td>
+						<td><input name=rating type="radio" value="good"><TMPL_VAR PAGE_LANG_002111></td>
+						<td><input type="submit" name="text_rating" value="<TMPL_VAR PAGE_LANG_002113>"></td>
 					</TR>
 				</table>
+				<p>
+					<input type="submit" name="text_trans_contents" value="<TMPL_VAR PAGE_LANG_002106>">
+					<input type="submit" name="delete_text" value="<TMPL_VAR PAGE_LANG_002114>">
+				</p>
 			</td>
 </tr>
 

@@ -159,6 +159,35 @@ INSERT INTO lingua_dictionary (dict_id, en, de) VALUES
        ('1032', 'Upon the next step you will be a member of LINGUA', 'Im n&auml;chsten Schritt werden Sie Mitglied von LINUGA.');
 INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
        ('1033', 'Please press this button only once.', 'Bitte dr&uuml;cken Sie diesen Knopf nur einmal.');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1034', 'Registration - Step 4', 'Registrierung - Schritt 4');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1035', 'Please enter a short description of yourself.', 'Bitte geben Sie eine kurze Beschreibung Ihrer Person ein!');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1036', 'You can enter this description in as many languages as you like.', 'Sie k&ouml;nnen diese Beschreibung in beliebig vielen Sprachen angeben.');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1037', 'Language of the description', 'Sprache der Beschreibung');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1038', 'Description', 'Beschreibung');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1039', 'Another Language', 'In weiterer Sprache');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1040', 'Registration - Step 3', 'Registrierung - Schritt 3');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1041', 'Please specify the languages you speak', 'Bitte geben Sie die Sprachen an, die Sie sprechen');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1042', 'Language', 'Sprache');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1043', 'Degree of knowledge', 'Kenntnisstand');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1044', 'Another Language', 'Weitere Sprache');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1045', 'Registration - Done!', 'Registrierung - Erledigt!');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1046', 'Congratulations!', 'Gl&uuml;ckwunsch!');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1047', 'You are now a member of LINGUA', 'Sie sind jetzt Mitglied bei LINGUA');
+
 
 
 ##############################################

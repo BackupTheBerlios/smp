@@ -5,7 +5,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.7 $ =~ /(\d+)\.(\d+)/;
 
 sub parameter {
   my ($self, $mgr) = @_;
@@ -25,7 +25,8 @@ sub parameter {
   }
 
   $mgr->{TmplData}{PAGE_CAT_ID} = $mgr->{CGI}->param('cat_id') || '';
-  $mgr->{TmplData}{PAGE_OPEN}   = $mgr->{CGI}->param('open') || '';
+  $mgr->{Session}->set(HomeCatsOpen => $mgr->{Session}->get("HomeCatsOpen") || '')
+    if (defined $mgr->{SessionId});
 }
 
 sub show_category_admin {
@@ -37,7 +38,7 @@ sub show_category_admin {
   }
 
   my $cat_id = $mgr->{CGI}->param('cat_id') || "0";
-  my @open   = split (',', $mgr->{CGI}->param('open') || '');
+  my @open   = split (',', $mgr->{Session}->get("HomeCatsOpen") || '');
   my %list;
 
   # Get all the ids, which are open.
@@ -77,9 +78,9 @@ sub show_cat_tree {
 
       # Create a link for closing the category.
       $result[$count]{PAGE_CLOSE_BUTTON} = 1;
-      $result[$count]{PAGE_CLOSE_LINK}   = sprintf("%s&cat_id=%s&open=%s", 
+      $result[$count]{PAGE_CLOSE_LINK}   = sprintf("%s&cat_id=%s", 
 						   $mgr->my_url(METHOD => "cat_close"), 
-						   $cat->[0], join(',', keys %list));
+						   $cat->[0]);
       $count++;
 
       my $tmp_count = $count;
@@ -108,9 +109,9 @@ sub show_cat_tree {
       # Create a link for opening the category.
       if ($cat->[3] != 0) {
 	$result[$count]{PAGE_OPEN_BUTTON} = 1;
-	$result[$count]{PAGE_OPEN_LINK}   = sprintf("%s&cat_id=%s&open=%s", 
+	$result[$count]{PAGE_OPEN_LINK}   = sprintf("%s&cat_id=%s", 
 						    $mgr->my_url(METHOD => "cat_open"), 
-						    $cat->[0], join(',', keys %list));
+						    $cat->[0]);
       }
 
       $result[$count]{PAGE_CAT_NAME} = $cat->[1];
@@ -202,7 +203,7 @@ sub open_category {
   $mgr->{CGI}->param(-name => "cat_id", -value => "0");
 
   if (((defined $cat[1]) && ($cat[1] ne 0)) || ((defined $cat[3]) && ($cat[3] ne 0))) {
-    my @open = split(',', $mgr->{CGI}->param('open') || '');
+    my @open = split(',', $mgr->{Session}->get("HomeCatsOpen") || '');
     my %list;
 
     foreach my $open (@open) {
@@ -211,7 +212,7 @@ sub open_category {
 
     $list{$cat_id} = 1;
 
-    $mgr->{CGI}->param(-name => "open", -values => join(',', keys %list));
+    $mgr->{Session}->set(HomeCatsOpen => join(',', keys %list));
   }
 
   $self->show_category_admin($mgr);
@@ -224,7 +225,7 @@ sub close_category {
 
   $mgr->{CGI}->param(-name => "cat_id", -value => "0");
 
-  my @open = split(',', $mgr->{CGI}->param('open') || '');
+  my @open = split(',', $mgr->{Session}->get("HomeCatsOpen") || '');
   my %list;
 
   foreach my $open (@open) {
@@ -233,7 +234,8 @@ sub close_category {
     $list{$open} = 1;
   }
 
-  $mgr->{CGI}->param(-name => "open", -values => join(',', keys %list));
+  $mgr->{Session}->del("HomeCatsOpen");
+  $mgr->{Session}->set(HomeCatsOpen => join(',', keys %list));
 
   $self->show_category_admin($mgr);
 }

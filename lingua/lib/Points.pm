@@ -2,12 +2,6 @@ package lib::Points;
 
 use strict;
 
-# Punktekosten zum Reinstellen von Texten pro Wort:
-my $text_points = 1;
-
-# Punktegutschrift für Übersetzungen pro Wort:
-my $trans_points = 2;
-
 sub new {
   my $proto = shift;
   my $class = ref($proto) || $proto;
@@ -76,7 +70,7 @@ sub get_activ_points {
 
   my $dbh = $mgr->connect();
   unless ($dbh->do("LOCK TABLES $mgr->{Tables}->{USER} READ")) {
-    warn srpintf("[Error]: Trouble locking table [%s]. Reason: [%s].",$mgr->{Tables}->{USER}, $dbh->ersstr);
+    warn sprintf("[Error]: Trouble locking table [%s]. Reason: [%s].",$mgr->{Tables}->{USER}, $dbh->ersstr);
   };
 
   my $sth = $dbh->prepare(qq{SELECT points FROM $mgr->{Tables}->{USER} WHERE  user_id = $user_id});

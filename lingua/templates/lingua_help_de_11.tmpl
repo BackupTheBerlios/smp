@@ -1,0 +1,222 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#31639C" width="600">
+
+    <input type="hidden" name="index" value="<TMPL_VAR HELP_INDEX>">
+
+    <a href="<TMPL_VAR HELP_MYURL>&index=1">Zur&uuml;ck zum Inhalt</a>
+    <hr>
+
+    <h1 align="center">Etwas &uuml;ber Unicode</h1>
+
+<div align="justify">
+<span class="normal">
+
+Unicode ist ein weltweiter Zeichensatz-Standard, der die gängigsten Buchstaben 
+und Zeichen enthält, die weltweit in der  Geschäftswelt Verwendung finden. Mit 
+Hilfe von Systemen, die Unicode verarbeiten können, wird die Erstellung und 
+Verwaltung von Software für verschiedenste Sprachen stark vereinfacht. Anstatt 
+für jede Sprache einen eigenen Zeichensatz einsetzen zu müssen, erlaubt Unicode 
+das Hantieren von mehrsprachigen Texten allein mit dem Unicode Zeichensatz. 
+<br><br>
+
+Unicode verwendet 16 Bit zur Darstellung der Zeichen, damit sind über 60.000 
+verschiedene Zeichen gleichzeitig in einem Dokument möglich. Unicode weist jedem
+Zeichen eine 2 Byte lange Nummer zu (von 0 bis 65535), sodass das Zeichen in der
+Computerwelt unabhängig von Plattform, Programm und Sprache verwendet werden kann.
+
+
+<br><br>
+<b>Unicode unter Windows</b>
+<br><br>
+
+** Erstellen unter Windows Textdateien im Unicodeformat, die sowohl deutsche als auch
+kyrillische Zeichen enthalten.
+<br><br>
+
+Unter Windows NT klappt es mit dem normalen Editor, wenn man als Standardschrift eine 
+Schrift mit kyrillischem Subset einstellt (z.B. Arial).  
+<br><br>
+
+Unter Windows 98 klappt es so nicht, der Editor von Windows 98 kann kein Unicode. Die
+beste Lösung unter Win98 ist immer noch Word 2000: In Word 2000 wählt "Speichern 
+unter...", dann als Dateityp "Codierter Text (*.txt)", als nächstes wird man dann in 
+einem Dialogfenster nach der gewünschten Codierung gefragt, hier wählt man "Unicode" 
+und voila hat man ein Unicode-Textdokument! (Das ist wirklich ein reines Textdokument
+ohne irgendwelche Formatierungen.)
+<br><br>
+
+Auf die gleiche Weise kann man Text auch in beliebigen anderen Zeichensätzen abspeichern, 
+z.B. Kyrillisch (Windows), Kyrillisch (Mac) usw. Eine Vorschau zeigt im Text die 
+Zeichen rot an, die im gewählten Zeichensatz nicht unterstützt werden  und beim Speichern 
+verloren gehen würden.<br>
+Wirklich gut.
+<br><br>
+
+Alternativ gibt es für Windows einen einfachen Unicode-Texteditor namens "SC Unipad" 
+(Freeware), erhältlich unter www.sharmahd.com, auch sehr empfehlenswert.
+
+
+<br><br>
+<b>Unicode: Vorteile (+) und Nachteile (-)</b>
+<br><br>
+ 
+<ul>
+  <li> Alle Dateien sind Bytefolgen  als Text interpretierbar <br>
+       - also keine Systemunterstützung für index-sequentielle Organisation <br>
+       - Jedoch zugriff auf Puffer und byteweise Adressierung unterstützt <br><br>
+  <li> Bearbeitbar mit Texteditor <br>
+       + Kein spezielles Werkzeug abhängig vom Dateityp nötig <br>
+       - semantische Konsequenz der Bearbeitung nicht überprüft <br><br>
+  <li> Ein/Ausgaben mit wenigen Ausnahmen als Text, nicht binär <br>
+       + Plattformenabhängig , da ASCII/ISO-8859 /Unicode verschlüsselt
+</ul>
+
+
+<br>
+<b>Warum Unicode?</b>
+<br><br>
+
+Jeder, der ausgiebig im Internet unterwegs ist, kennt das: Suchmaschinen spucken 
+Ergebnisse manchmal als Buchstabensuppe aus, Seiten aus Skandinavien sehen aus, 
+als hätte man mit der Schrotflinte auf den Text geschossen, und auf russischen 
+oder asiatischen Seiten herrscht typographischer Notzustand: !&%&uuml;?. Ursache 
+dafür sind unterschiedliche Zeichensätze in den jeweiligen Ländern: 
+<br><br>
+
+1965 hatte das amerikanische Institut für Normung, ANSI, den amerikanischen 
+Standard-Code für Informationsaustausch festgelegt, der erst einmal mit 7 Bit und 
+128 Zeichen auskam und auf Umlaute und andere Sonderzeichen verzichtete.
+<br><br>
+
+Anfang der 70er Jahre nutzten deutsche Informatiker die Codeplätze der eckigen 
+Klammern, um Umlaute darzustellen. Auch in anderen Ländern entstanden eigene 
+Zeichensätze. Mit der Einführung des PC verwendete IBM das 8. Bit eines kompletten 
+Bytes für Sonderzeichen wie Umlaute. Der IBM-Zeichensatz enthielt zwar die 128 
+ASCII-Zeichen an den ursprünglichen Stellen, doch genauso viele Zeichen unterschieden 
+sich. Die internationale Organisation für Normen, ISO, begegnete in den 80er Jahren 
+dem Wildwuchs bei den 8-Bit-Codierungen recht erfolgreich mit der Serie von 
+ISO-8859-Standards. Weitverbreitet ist ISO 8859-1, oft auch ISO Latin-1 genannt. In 
+ihm sind die Zeichen der meisten europäischen Sprachen zusammengefasst. <br>
+
+Im Chinesischen, Japanischen und Koreanischen bilden aber nicht Buchstaben die 
+kleinsten Texteinheiten, sondern Schriftzeichen, von denen es Zehntausende gibt. Das 
+sprengt das Fassungsvermögen einer 8-Bit-Codierung; man verwendet deshalb in Fernost
+eine 16-Bit-Codierung und spezielle Umschaltverfahren, die mit reservierten 
+Steuerzeichen arbeiten. 
+<br><br>
+
+Ein Über-Alphabet - Unicode - soll den Wirrwarr beenden. Ende der 80er Jahre wurde der
+Ruf nach einem neuen internationalen Standard für die Zeichendarstellung laut. Er sollte
+ganz ohne Sonderfälle auskommen und möglichst alle Zeichen aller Sprachen des Planeten in
+einem Zahlenraum vereinigen. Unicode war geboren.
+<br><br>
+
+In Unicode hat jedes Zeichen einen 16-Bit-Code. Die ersten 256 Plätze entsprechen ISO 
+Latin-1. Die Rückwärtskompatibilität ist jedoch nicht so einfach. Wenn nicht besondere
+Codierungen (UTF-8) verwendet werden, wird der Buchstabe A in Unicode zu 0041, der 
+ASCII-Code wäre dagegen 41 (jeweils hexadezimal). 
+<br><br>
+
+Der 16-Bit Code des Unicode Systems bietet einen Zahlenraum ("code space") für über 65536
+Zeichen. In der Unicode 2.0 Version sind knapp 30.000 vom Unicode-Konsortium offiziell 
+vergeben. In der Version 3.0, sind bereits knapp 40.000 Zeichen vergeben. Diese Version 
+enthält bereits die Zeichen für so alltägliche Bedürfnisse, wie das Schreiben mit 
+altgermanischen Runen, oder das Kommunizieren mit den knapp 50.000 Cherokee-Indianer in 
+Oklahoma. Der Rest ist in Reserve. Jedes Zeichen, welches neu aufgenommen werden soll muss
+beantragt und von der Organisation abgesegnet werden: <br>
+
+Innerhalb des Zahlenraums ("code space") sind zusammengehörige Zeichen in sogenannten 
+Skripten zusammengefasst: Auf das lateinische Alphabet folgen griechische, kyrillische, 
+hebräische, arabische, indische und andere Skripte, dann Satzzeichen und Symbole; weiter
+geht es mit Hiragana, Katakana, Bopomofo, Hangul.  
+<br><br>
+
+Eine besondere Leistung haben die Wissenschaftler bei den zirka 31.000 Schriftzeichen des
+chinesischen, japanischen und koreanischen (CJK-Texte) vollbracht. In Unicode kommen etwa
+21.000 Ideogramme vor, denn 10.000 Schriftzeichen sehen in diesen drei asiatischen 
+Sprachen gleich aus. Was nicht heißt, dass sie immer die gleiche Bedeutung hätten - hier 
+ist von Vorteil, dass Unicode sprachenneutral ist. Gegen Ende des Zahlenraumes sind 
+6.000 Plätze für den internen Gebrauch reserviert, zum Beispiel für Firmensymbole.
+<br><br>
+
+Unicode genügen vier Steuerzeichen: 
+
+Je eines für Zeilenende und Absatzende sowie zwei für die Schreibrichtung. 
+Das Steuerzeichen für die Schreibrichtung von rechts nach links kommt zum Beispiel im 
+Arabischen vor, das Steuerzeichen von links nach rechts hingegen nur am Ende einer 
+gegenläufigen Passage als Markierung für den Richtungswechsel. Der Standard fasst 
+allmählich Fuß: Sowohl Java als auch Windows NT arbeiten intern mit Unicode. NT enthält
+mit Lucida Sans Serif einen 1.300 Zeichen umfassenden Font. Und auch MacOS von Apple 
+gestattet Dateinamen in Unicode. Außerdem hat das World Wide Web Consortium (WWWC bzw. 
+W3C) Unicode in den Standard von HTML4.0 aufgenommen. Jetzt liegt es vor allem an den 
+Anwendungsentwicklern, ob Internet oder Textverarbeitungen wirklich zu universellen
+Werkzeugen werden. 
+<br><br>
+
+<b>Hinweis</b>: Es gibt eine Schrift, welche die alle vergebenen Unicode-Zeichen gemäss der 
+Unicode Version 2 darstellen kann. Somit kann diese Schriftart die Zeichen auch vieler 
+zentral- und ostasiatische Schriftsprachen darstellen. Diese Schrift nennt sich "Arial 
+Unicode MS". Die Schrift ist nicht frei verfügbar, sondern muss z.B. im Zusammenhang mit 
+dem MS Office2000 erworben werden. Diese Schriftdatei ist 23 MB groß und befindet sich z.B. 
+auf der MS Office2000 CD 2 und zwar unter dem Namen Arialuni.ttf in komprimierter Form im 
+OFFCD2_1.CAB.
+
+
+<br><br>
+<b>Unicode-Links</b>
+<br><br>
+
+ ** Unicode-Texteditor (Freeware. sehr empfehlenswert) <br>
+ <a class="normal" href="www.sharmahd.com" target=blank>www.sharmahd.com</a> (Windows 95/ 98 / NT 4.0 / 2000)<br><br>
+ ** Unicode Tabellen (Universal Character Set) - PDF Format ( 3.4 MB ) <br>
+ <a class="normal" href="http://mypage.bluewin.ch/reprobst/PDF/UCS.pdf" target=blank>
+   http://mypage.bluewin.ch/reprobst/PDF/UCS.pdf</a> <br><br>
+ ** Wo kann ich den Unicode eines Zeichens finden, bzw. eine Tabelle für eine Unicode-Familie erstellen? <br>
+ <a class="normal" href="http://mypage.bluewin.ch/reprobst/WordFAQ/Unicode.htm" target=blank>
+   http://mypage.bluewin.ch/reprobst/WordFAQ/Unicode.htm</a> <br><br>
+ ** Welche Schriften welchen Unicode-Bereich abdecken? <br>
+ <a class="normal" href="http://www.hclrss.demon.co.uk/unicode/fontsbyrange.html" target=blank>
+   http://www.hclrss.demon.co.uk/unicode/fontsbyrange.html</a> <br><br>
+ ** Kostenlose Schriften von Microsoft und andere Links <br>
+ <a class=normal" href="http://privat.schlund.de/R/Rainer_Seitel/unicode.html" target=blank>
+   http://privat.schlund.de/R/Rainer_Seitel/unicode.html</a> <br><br>
+ ** Test für kyrillische Unicode-Zeichen <br>
+ <a class="normal" href="http://home.germany.net/100-163279/illeguan/unicode.htm" target=blank>
+   http://home.germany.net/100-163279/illeguan/unicode.htm</a> 
+
+</span>
+</div> <!-- align=justify -->
+
+    <hr>
+    <a href="<TMPL_VAR HELP_MYURL>&index=1">Zur&uuml;ck zum Inhalt</a>
+
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  <td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
+

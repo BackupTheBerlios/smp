@@ -1,0 +1,98 @@
+<table cellspacing="0" cellpadding="0" border="0" width="100%">
+<tr>
+  <td>
+    <ul>
+      <li><a class="normal" href="<TMPL_VAR PAGE_LEFT_LINK_HOME>">Home</a></li>
+    </ul>
+  </td>
+</tr>
+<tr>
+  <td>
+    <hr noshade></td>
+</tr>
+<tr>
+  <td>
+    <span class="normal">
+      <b><TMPL_VAR PAGE_LANG_000001><b>
+    </span>
+    <br>
+    <select name="system_langs">
+    <TMPL_LOOP PAGE_LOOP_SYSTEM_LANG>
+      <option value="<TMPL_VAR PAGE_SYSTEM_LANG_ID>" <TMPL_IF PAGE_IF_SYSTEM_LANG>checked</TMPL_IF>>
+        <TMPL_VAR PAGE_SYSTEM_LANG_NAME></option>
+    </TMPL_LOOP>
+    </select>
+    <input type="submit" name="change_lang" value="<TMPL_VAR PAGE_LANG_000002>">
+  </td>
+<tr>
+<tr>
+  <td>
+    <hr noshade></td>
+</tr>
+
+<TMPL_IF PAGE_IF_LOGIN>
+<tr>
+  <td>
+    <span class="alert">
+      <TMPL_VAR PAGE_LOGIN_ERROR>
+    </span>
+    <br>
+    <span class="normal"><TMPL_VAR PAGE_LANG_000003></span>:
+    <br>
+    <input type="text" name="login_username" value="<TMPL_VAR PAGE_USERNAME>">
+    <br>
+    <span class="normal"><TMPL_VAR PAGE_LANG_000004></span>:
+    <br>
+    <input type="password" name="login_password" value="<TMPL_VAR PAGE_PASSWORD>">
+    <p>
+    <input type="submit" name="login" value="<TMPL_VAR PAGE_LANG_000005>">
+    </p>
+  </td>
+</tr>
+<TMPL_ELSE>
+<tr>
+  <td>
+    <span class="normal">
+    <b><TMPL_VAR PAGE_LANG_000008></b>:
+    <TMPL_VAR PAGE_USERNAME>
+    </span>
+  </td>
+</tr>
+<tr>
+  <td>
+    <span class="normal">
+    <b><TMPL_VAR PAGE_LANG_000006></b>:
+    <TMPL_VAR PAGE_ALL_POINTS>
+    <br>
+    <b><TMPL_VAR PAGE_LANG_000007></b>:
+    <TMPL_VAR PAGE_POINTS>
+    </span>
+    <hr noshade>
+    <a class="normal" href="<TMPL_VAR PAGE_USER_LINK>"><TMPL_VAR PAGE_LANG_000009></a>
+    <p>
+    <input type="submit" name="logout" value="<TMPL_VAR PAGE_LANG_000010>">
+    </p>
+  </td>
+</tr>
+<tr>
+  <TMPL_IF PAGE_USER_TYPE_0>
+  <td>
+
+  </td>
+  </TMPL_IF>
+
+  <TMPL_IF PAGE_USER_TYPE_1>
+  <td>
+
+  </td>
+  </TMPL_IF>
+
+  <TMPL_IF PAGE_USER_TYPE_2>
+  <td>
+
+  </td>
+  </TMPL_IF>
+</tr>
+</TMPL_IF>
+
+</table>

@@ -1,0 +1,63 @@
+<TMPL_INCLUDE lingua_header.tmpl>
+
+<input type="hidden" name="cat_id" value="<TMPL_VAR PAGE_CAT_ID>">
+
+<table cellspacing="5" cellpadding="2" border="0" width="800" align="center">
+<tr valign="top">
+  <td colspan="2">
+    <TMPL_INCLUDE lingua_logo.tmpl>
+  </td>
+</tr>
+<tr valign="top">
+  <td width="200">
+    <TMPL_INCLUDE lingua_left.tmpl>
+  </td>
+  <td bgcolor="#ababab" width="600">
+    <table cellspacing="5" cellpadding="0" border="0">
+    <TMPL_LOOP PAGE_LOOP_CATS>
+  
+      <TMPL_IF PAGE_CAT_OPEN_TR> 
+      <tr valign="top">
+      </TMPL_IF>
+ 
+        <td <TMPL_IF PAGE_CAT_COLSPAN>colspan="2"</TMPL_IF>>
+
+          <TMPL_IF PAGE_CAT_LINK>
+            <a class="normal" href="<TMPL_VAR PAGE_CAT_LINK>"><b><TMPL_VAR PAGE_CAT_NAME></b><a>
+          <TMPL_ELSE>
+            <b><span class="normal"><TMPL_VAR PAGE_CAT_NAME></span></b>
+          </TMPL_IF>
+          (<TMPL_VAR PAGE_CAT_TEXT_COUNT>)
+          <br>
+          <font color="#000000">
+          <TMPL_LOOP PAGE_LOOP_P_CAT>
+            <TMPL_IF PAGE_P_CAT_LINK>
+              <a class="small" href="<TMPL_VAR PAGE_P_CAT_LINK>"><TMPL_VAR PAGE_P_CAT_NAME></a>
+            <TMPL_ELSE>
+              <span class="small"><TMPL_VAR PAGE_P_CAT_NAME></small>
+            </TMPL_IF>
+            <span class="small"> 
+            (<TMPL_VAR PAGE_P_CAT_TEXT_COUNT>)
+            <TMPL_IF __INNER__>,</TMPL_IF>
+            </span>
+          </TMPL_LOOP>
+          </font>
+
+        </td>
+     
+      <TMPL_IF PAGE_CAT_CLOSE_TR>
+      </tr>
+      </TMPL_IF>
+
+    </TMPL_LOOP>
+    <table>
+  </td>
+</tr>
+<tr>
+  <td colspan="2">
+
+  <td>
+</tr>
+</table>
+
+<TMPL_INCLUDE lingua_footer.tmpl>

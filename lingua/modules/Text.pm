@@ -15,7 +15,7 @@ use base 'Class::Singleton';
 use vars qw($VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.12 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.13 $ =~ /(\d+)\.(\d+)/;
 
 #################################################################
 #NAME: parameter($mgr).						#
@@ -327,7 +327,7 @@ return $text_id;
 
 
 #################################################################################################
-#CALL: $self->title_save($mgr, $text_id, $lang_id).									#						
+#CALL: $self->title_save($mgr, $text_id, $lang_id).									#
 #
 #DESC:  Save a title of a text, a translation or a description								#
 #      												#
@@ -1092,16 +1092,17 @@ sub show_text_see {
   my $text_id = $mgr->{CGI}->param('text_id') || undef;
   my $trans_text_id = $mgr->{CGI}->param('trans_text_id') || undef;
   my $text_rating = $mgr->{CGI}->param('text_rating') || undef;
+  my $view_trans = $mgr->{CGI}->param('view_trans') || undef;
+
+  $mgr->{Template} = $mgr->{TmplFiles}->{Text_Show};
+  $mgr->{TmplData}{TRANS_TEXT_ID} = $trans_text_id;
+  $mgr->{TmplData}{TEXT_ID} = $text_id;
 
   if (defined $text_rating && defined $text_id){ $self->text_original_rating($mgr); }
+  elsif (defined $view_trans){ $self->view_trans($mgr); }
   elsif (defined $text_rating && defined $trans_text_id){ $self->text_trans_rating($mgr);}
   elsif ($trans_text_id ne undef){ $self->show_text_translation($mgr);}
-  elsif ($text_id ne undef){ $self->show_text_original($mgr);}
-
-
-  #$mgr->{TmplData}{TEXT_ORIG_LANG} = $mgr->{Func}->get_text($mgr, $lang_id);
-
-  #return $langs_id;
+  elsif ($text_id ne undef && $trans_text_id eq undef){ $self->show_text_original($mgr);}
 }
 
 
@@ -1121,23 +1122,6 @@ my ($self, $mgr) = @_;
   my $current_user_id =$mgr->{Session}->get("UserId");
   my $current_user_level = $mgr->{Session}->get("UserLevel");
 
-  $mgr->{Template} = $mgr->{TmplFiles}->{Text_Show};
-
-  $mgr->{TmplData}{TRANS_TEXT_ID} = $trans_text_id;
-
-#  $mgr->{TmplData}{PAGE_LANG_002023} = $mgr->{Func}->get_text($mgr, 2023);
-#  $mgr->{TmplData}{PAGE_LANG_002100} = $mgr->{Func}->get_text($mgr, 2100);
-#  $mgr->{TmplData}{PAGE_LANG_002012} = $mgr->{Func}->get_text($mgr, 2012);
-#  $mgr->{TmplData}{PAGE_LANG_002033} = $mgr->{Func}->get_text($mgr, 2033);
-#  $mgr->{TmplData}{PAGE_LANG_002102} = $mgr->{Func}->get_text($mgr, 2102);
-#  $mgr->{TmplData}{PAGE_LANG_002103} = $mgr->{Func}->get_text($mgr, 2103);
-#  $mgr->{TmplData}{PAGE_LANG_002104} = $mgr->{Func}->get_text($mgr, 2104);
-#  $mgr->{TmplData}{PAGE_LANG_002105} = $mgr->{Func}->get_text($mgr, 2105);
-#  $mgr->{TmplData}{PAGE_LANG_002101} = $mgr->{Func}->get_text($mgr, 2101);
-#  $mgr->{TmplData}{PAGE_LANG_002106} = $mgr->{Func}->get_text($mgr, 2106);
-#  $mgr->{TmplData}{PAGE_LANG_002114} = $mgr->{Func}->get_text($mgr, 2114);
-#  $mgr->{TmplData}{PAGE_LANG_002116} = $mgr->{Func}->get_text($mgr, 2116);
-#  $mgr->{TmplData}{PAGE_LANG_002019} = $mgr->{Func}->get_text($mgr, 2019);
 
 #text wether current user rates this text#############
   my $table = $mgr->{Tables}->{TEXT_RATING};
@@ -1203,7 +1187,7 @@ SQL
   $mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2115);#TEXT_RATING
   $self->show_text_rest($mgr, $trans_text_id, $text_rating, $given_text_id, $trans_id, $trans_text, $num_words, $lang_id, $submit_time, $user_id, $category_id, $status, $avg_rating, $num_ratings, $current_user_id, $current_user_level);
 
-}
+}#end show_text_translation
 
 
 #################################################################
@@ -1222,9 +1206,6 @@ sub show_text_original {
   my $current_user_id = $mgr->{Session}->get('UserId');
   my $current_user_level = $mgr->{Session}->get('UserLevel');
 
-  $mgr->{Template} = $mgr->{TmplFiles}->{Text_Show};
-
-  $mgr->{TmplData}{TEXT_ID} = $given_text_id;
 
 
 #get Textvalues from original_text - Table#############
@@ -1289,7 +1270,7 @@ SQL
   $mgr->{TmplData}{PAGE_LANG_002112} = $mgr->{Func}->get_text($mgr, 2112);#TEXT_RATING
   $self->show_text_rest($mgr, $text_original_id, $text_rating, $given_text_id, $original_id, $original_text, $num_words, $lang_id, $submit_time, $user_id, $category_id, $status, $avg_rating, $num_ratings, $current_user_id, $current_user_level);
 
-}
+}#end show_text_original
 
 
 
@@ -1772,8 +1753,11 @@ $self->show_text_translation($mgr);
 
 }#end text_trans_rating
 
+
+
+
 #################################################################
-#CALL: $self->show_delete_text($mgr)				#
+#CALL: $self->delete_text($mgr)					#
 #								#
 #RETURN: 							#
 #								#
@@ -1783,10 +1767,278 @@ $self->show_text_translation($mgr);
 #################################################################
 sub delete_text {
   my ($self, $mgr) = @_;
-  $mgr->{Template} = $mgr->{TmplFiles}->{Text_Delete};
-  $mgr->{TmplData}{PAGE_LANG_002114} = $mgr->{Func}->get_text($mgr, 2114);#delete_text
-}
 
+  my $text_id = $mgr->{CGI}->param('text_id') || undef;
+  my $trans_text_id = $mgr->{CGI}->param('trans_text_id') || undef;
+  my $delete_trans = $mgr->{CGI}->param('delete_trans') || undef;
+  my $delete_all = $mgr->{CGI}->param('delete_all') || undef;
+  my $dont_delete = $mgr->{CGI}->param('dont_delete') || undef;
+
+  if(defined $delete_trans){$self->elete_trans($mgr);}#delete_trans($mgr);}
+  elsif(defined $delete_all){$self->delete_all($mgr);}#delete_all($mgr);}
+  elsif(defined $dont_delete){$self->show_text_see($mgr);}#show_text_see($mgr);
+  else{
+	$mgr->{Template} = $mgr->{TmplFiles}->{Text_Delete};
+
+	$mgr->{TmplData}{TEXT_ID} = $text_id ;#insert text_id in template as hidden
+	$mgr->{TmplData}{TRANS_TEXT_ID} = $trans_text_id ;#insert trans_text_id in template as hidden
+
+	$mgr->{TmplData}{PAGE_LANG_002114} = $mgr->{Func}->get_text($mgr, 2114);#delete_text Titel of this Page
+
+	if(defined $trans_text_id){
+	$mgr->{TmplData}{PAGE_LANG_002121} = $mgr->{Func}->get_text($mgr, 2121);#Original-text-information
+	$mgr->{TmplData}{PAGE_LANG_002124} = $mgr->{Func}->get_text($mgr, 2124);#delete Translation
+	$mgr->{TmplData}{PAGE_LANG_002125} = $mgr->{Func}->get_text($mgr, 2125);#delete all
+	$mgr->{TmplData}{PAGE_LANG_002128} = $mgr->{Func}->get_text($mgr, 2123);#don't delete
+	$mgr->{TmplData}{PAGE_LANG_002126} = $mgr->{Func}->get_text($mgr, 2126);#delete translation Button
+	$mgr->{TmplData}{PAGE_LANG_002127} = $mgr->{Func}->get_text($mgr, 2127);#delete all Button
+	$mgr->{TmplData}{PAGE_LANG_002123} = $mgr->{Func}->get_text($mgr, 2123);#don't delete Button
+
+	$mgr->{TmplData}{SUBMIT_ORIG_TYPE} = 'hidden';
+	$mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'submit';
+	}
+	else{
+
+	$mgr->{TmplData}{PAGE_LANG_002120} = $mgr->{Func}->get_text($mgr, 2120);#Original-text-information
+	$mgr->{TmplData}{PAGE_LANG_002122} = $mgr->{Func}->get_text($mgr, 2122);#delete Button
+	$mgr->{TmplData}{PAGE_LANG_002123} = $mgr->{Func}->get_text($mgr, 2123);#don't delete Button
+	$mgr->{TmplData}{SUBMIT_ORIG_TYPE} = 'submit';
+	$mgr->{TmplData}{SUBMIT_TRANS_TYPE} = 'hidden';
+
+	}
+  }
+}#end delete_text
+
+#################################################################
+#CALL: $self->delete_trans($mgr)				#
+#								#
+#RETURN: 							#
+#								#
+#DESC: See SQL Statement. 					#
+#								#
+#Author: Hendrik Erler(erler@cs.tu-berlin.de)			#
+#################################################################
+sub delete_trans {
+  my ($self, $mgr) = @_;
+  my $text_trans_id  = $mgr->{CGI}->param('trans_text_id') || undef;
+
+#DELETE Translation##################
+  my $table = $mgr->{Tables}->{TEXT_TRANS};
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+DELETE LOW_PRIORITY
+FROM   $table
+WHERE  trans_id = ?
+
+SQL
+  unless ($sth->execute($text_trans_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+  $sth->finish();
+
+
+
+#DELETE Descriptions of Translation##################
+  my $table = $mgr->{Tables}->{TEXT_DESC};
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+DELETE LOW_PRIORITY
+FROM   $table
+WHERE  trans_id = ?
+
+SQL
+  unless ($sth->execute($text_trans_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+  $sth->finish();
+
+
+#DELETE Titles of Translation##################
+  my $table = $mgr->{Tables}->{TEXT_TITLE};
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+DELETE LOW_PRIORITY
+FROM   $table
+WHERE  trans_id = ?
+
+SQL
+  unless ($sth->execute($text_trans_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+  $sth->finish();
+
+
+#DELETE Ratings of Translations snd Original-Text##################
+  my $table = $mgr->{Tables}->{TEXT_RATING};
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+DELETE LOW_PRIORITY
+FROM   $table
+WHERE  text_trans_id = ?
+
+SQL
+  unless ($sth->execute($text_trans_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+  $sth->finish();
+
+  $self->show_text_see($mgr)
+
+}#delete_trans
+
+
+#################################################################
+#CALL: $self->delete_all($mgr)					#
+#								#
+#RETURN: 							#
+#								#
+#DESC: See SQL Statement. 					#
+#								#
+#Author: Hendrik Erler(erler@cs.tu-berlin.de)			#
+#################################################################
+sub delete_all {
+  my ($self, $mgr) = @_;
+  my $text_orig_id  = $mgr->{CGI}->param('text_id') || undef;
+
+
+#DELETE Translations of Original-Text##################
+  my $table = $mgr->{Tables}->{TEXT_TRANS};
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+DELETE LOW_PRIORITY
+FROM   $table
+WHERE  original_id = ?
+
+SQL
+  unless ($sth->execute($text_orig_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+  $sth->finish();
+
+#DELETE Descriptions of Translations Original-Text##################
+  my $table = $mgr->{Tables}->{TEXT_DESC};
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+DELETE LOW_PRIORITY
+FROM   $table
+WHERE  text_id = ?
+
+SQL
+  unless ($sth->execute($text_orig_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+  $sth->finish();
+
+
+#DELETE Titles of Translations snd Original-Text##################
+  my $table = $mgr->{Tables}->{TEXT_TITLE};
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+DELETE LOW_PRIORITY
+FROM   $table
+WHERE  text_id = ?
+
+SQL
+  unless ($sth->execute($text_orig_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+  $sth->finish();
+
+
+#DELETE Ratings of Translations snd Original-Text##################
+  my $table = $mgr->{Tables}->{TEXT_RATING};
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+DELETE LOW_PRIORITY
+FROM   $table
+WHERE  text_original_id = ?
+
+SQL
+  unless ($sth->execute($text_orig_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+  $sth->finish();
+
+#DELETE Original-Text##################
+  my $table = $mgr->{Tables}->{TEXT_ORIG};
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+DELETE LOW_PRIORITY
+FROM   $table
+WHERE  original_id = ?
+
+SQL
+  unless ($sth->execute($text_orig_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+  $sth->finish();
+
+
+  $self->show_text_see($mgr)
+
+
+}#delete_all
+
+
+
+#################################################################
+#CALL: $self->view_trans($mgr)					#
+#								#
+#RETURN: 							#
+#								#
+#DESC: See SQL Statement. 					#
+#								#
+#Author: Hendrik Erler(erler@cs.tu-berlin.de)			#
+#################################################################
+sub view_trans {
+  my ($self, $mgr) = @_;
+  my $text_trans_lang_id = $mgr->{CGI}->param('text_trans_lang_id') || undef;
+  my $text_orig_id = $mgr->{CGI}->param('text_id') || undef;
+
+
+#get trans_id if exist. If exist not, then it is original-Text selected#######
+  my $table = $mgr->{Tables}->{TEXT_TRANS};
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+SELECT trans_id, lang_id ,original_id
+FROM   $table
+WHERE  original_id = ? AND lang_id = ?
+
+SQL
+
+  unless ($sth->execute($text_trans_lang_id,$text_orig_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+  my @row = $sth->fetchrow_array();
+  my $trans_id      = @row[0];
+  $sth->finish();
+
+  if(defined $trans_id){$self->{'trans_text_id'} = $trans_id;
+    $self->show_text_translation($mgr);}
+  else{$self->{'trans_text_id'} = undef;
+    $self->show_text_original($mgr);}
+
+}#end view_trans
 
 
 1;

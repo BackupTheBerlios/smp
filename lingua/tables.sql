@@ -316,7 +316,7 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 	(2102, 'Original-Language','Original-Sprache','OriginalSprachefr');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-	(2103, 'Translations','Übersetzungen','Übersetzungenfr');
+	(2103, 'Text exist in','Text existiert in','Text existiert infr');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 	(2104, 'Text-Rating','Text-Bewertung','Bewertungfr');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
@@ -349,6 +349,24 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('2118', 'View', 'Anzeigen', 'Anzeigenfr');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('2119', 'Text-View', 'Text-Anzeige', 'Text-Anzeigefr');
+
+##### Text_Delete.tmpl (2120 -> 2200)######################################
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2120', 'This is an original-text', 'Dies ist ein Originaltext, daher müssen auch die zugehörigen Übersetzungen mitgelöscht werden.', 'Dies ist ein Originaltextfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2121', 'This is not an original-text', 'Dies ist kein Originaltext', 'Dies ist kein Originaltextfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2122', 'Delete', 'löschen', 'löschenfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2123', 'Don\'t Delete', 'nicht löschen', 'nicht löschenfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2124', 'Delete only this translation', 'Nur diese Übersetzung löschen', 'Nur diese Übersetzung löschenfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2125', 'Delete all translations and the original text', 'Alle Übersetzungen und den Originaltext löschen', 'Alle Übersetzungen und den Originaltext löschenfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2126', 'Delete translation', 'Übersetzung löschen', 'Übersetzung löschenfr');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('2127', 'Delete all', 'Alles löschen', 'Alles löschenfr');
 
 DROP TABLE IF EXISTS lingua_user;
 
@@ -498,6 +516,7 @@ CREATE TABLE lingua_text_description (
         desc_text       MEDIUMBLOB   DEFAULT '',
         lang_id         INT(10) UNSIGNED NOT NULL,
         text_id         INT(10) UNSIGNED DEFAULT '0',
+	trans_id         INT(10) UNSIGNED DEFAULT '0',
         user_id         INT(10) UNSIGNED DEFAULT '0',
         submit_time     TIMESTAMP,
         PRIMARY KEY(desc_id)
@@ -510,6 +529,7 @@ CREATE TABLE lingua_text_header (
         header_text     MEDIUMBLOB   DEFAULT '',
         lang_id         INT(10) UNSIGNED NOT NULL,
         text_id         INT(10) UNSIGNED DEFAULT '0',
+	trans_id         INT(10) UNSIGNED DEFAULT '0',
         user_id         INT(10) UNSIGNED DEFAULT '0',
         submit_time     TIMESTAMP,
         PRIMARY KEY(header_id)

@@ -41,7 +41,7 @@ use fields (
 use vars qw(%FIELDS $VERSION);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/;
 
 &handler();
 
@@ -104,11 +104,11 @@ sub handler {
       $check = 1;
       last;
     }
+  }
 
-    unless ($check) {
-      $param = $self->{DefaultModule};
-      require sprintf("%s/%s.pm", $self->{ModuleDir}, $self->{DefaultModule});
-    }
+  unless ($check) {
+    $param = $self->{DefaultModule};
+    require sprintf("%s/%s.pm", $self->{ModuleDir}, $self->{DefaultModule});
   }
 
   eval {

@@ -63,6 +63,43 @@
         <td></td>
       </tr>
 
+      <!-- if user's blocked, show since when and by who ---------------------->
+      <TMPL_IF USER_IF_BLOCKED>
+        <tr>
+          <td></td>
+          <td>
+            <span class="normal"><TMPL_VAR PAGE_LANG_001194>:</span>
+          </td>
+          <td>
+            <span class="normal"><TMPL_VAR USER_BLOCKED_BY></span>
+          </td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td></td>
+          <td>
+	    <a href="mailto:<TMPL_VAR USER_BLOCK_EMAIL>">
+	      <TMPL_VAR USER_BLOCK_EMAIL>
+            </a>
+          </td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td>
+            <span class="normal"><TMPL_VAR PAGE_LANG_001195>:</span>
+          </td>
+          <td>
+            <span class="normal"><TMPL_VAR USER_BLOCK_TIME></span>
+          </td>
+          <td></td>
+        </tr>
+
+      </TMPL_IF> <!-- if blocked -->
+
       <tr>
         <td></td>
         <td></td>

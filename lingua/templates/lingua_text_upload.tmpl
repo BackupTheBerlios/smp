@@ -2,6 +2,7 @@
 <input type="hidden" name="title" value="<TMPL_VAR TEXT_TITLE>">
 <input type="hidden" name="text_desc" value="<TMPL_VAR TEXT_DESCRIPTION>">
 <input type="hidden" name="text_desc_lang_id" value="<TMPL_VAR TEXT_LANG>">
+<input type="hidden" name="trans_lang_id" value="<TMPL_VAR TEXT_TRANS_LANG>">
 <input type="hidden" name="text_cat_id" value="<TMPL_VAR TEXT_CAT>">
 <input type="hidden" name="text_method" value="text_upload">
 
@@ -31,7 +32,7 @@
 <input type="hidden" name="text_desc_lang_id" value="<TMPL_VAR TEXT_LANG>">
 <input type="hidden" name="text_cat_id" value="<TMPL_VAR TEXT_CAT>">
 <input type="hidden" name="text_method" value="text_upload">
-
+<input type="hidden" name="trans_lang_id" value="<TMPL_VAR TEXT_TRANS_LANG>">
 <input type="hidden" name="action" value="<TMPL_VAR PAGE_ACTION>">
 <input type="hidden" name="sid" value="<TMPL_VAR PAGE_SID>">
 <input type="hidden" name="lang" value="<TMPL_VAR PAGE_LANG>">
@@ -43,12 +44,21 @@
             <TD> <INPUT NAME="file" TYPE="file" SIZE="50" MAXLENGTH="100000" ACCEPT="text/*" > </TD>
           </TR>
           <TR>
-            <TD> <INPUT TYPE="submit" name="sendup" value="<TMPL_VAR PAGE_LANG_002004>" > </TD>
+            <TD> <INPUT TYPE="submit" name="sendup" value="<TMPL_VAR PAGE_LANG_002004>" >  </TD>
+	 <TD align="center"> (max: 1MB)	    </TD>
           </TR>
-
+	<tr> <td> <br><center> <a href="/cgi-bin/lingua/main.cgi?action=text&text_method=text_unicode_info&lang=de">Unicode-Info</a> </center>
+	</td> </tr>
          </TABLE>
 </FORM>
-  			
+
+<br>  			
+<br>
+<center>
+<font size=4 color="red"><TMPL_VAR ERROR_MESS></font>
+<br>
+<font size=4 color="blue"><TMPL_VAR ERROR_INDEX></font>
+</center>
   		</td>
 	</tr>
 	<tr>
@@ -58,6 +68,10 @@
 
 <form method="post">
 <TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
 
 
 

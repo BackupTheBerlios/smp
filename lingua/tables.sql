@@ -420,18 +420,13 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
 	(2040, 'Code:','Codierung:','Code:');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
-	(2041, 'Length of Text:','Wortanzahl:','Punktekosten:');
+	(2041, 'Length of Text:','Wortanzahl:','Nombre de mots');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
 	(2042, 'Text-Punct:','Punktekosten:','Points en moins:');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
 	(2043, 'Actual Punkt:','Aktuelle Punkte:','Points actuels:');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
-	(2044, 'Punct after Save:','neuer Punktestand:','Points apres enregistrement:');
-
-
-##### Text_description.tmpl ((2008 -> 2016) + 2026 + 2027)######################################
-
-
+	(2044, 'stand after Save:','neuer Punktestand:','Points apres enregistrement:');
 
 ##### Text_Show.tmpl (2100 -> 2200)######################################
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
@@ -453,50 +448,161 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('2108', 'Good', 'Gut', 'Bien');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2109', 'is ok', 'geht so', 'geht sofr');
+       ('2109', 'is ok', 'geht so', 'acceptable');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2110', 'Bad', 'schlecht', 'schlechtfr');
+       ('2110', 'Bad', 'schlecht', 'mediocre');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2111', 'Very bad', 'Sehr schlecht', 'Sehr schlecht');
+       ('2111', 'Very bad', 'Sehr schlecht', 'Tres Mediocre');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2112', 'Rating of content', 'Inhaltsbewertung', 'Inhaltsbewertungfr');
+       ('2112', 'Rating of content', 'Inhaltsbewertung', 'Valeur du contenue');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2113', 'rate', 'bewerten', 'bewerternfr');
+       ('2113', 'rate', 'bewerten', 'Evaluation');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2114', 'Delete text', 'Text löschen', 'Text löschenfr');
+       ('2114', 'Delete text', 'Text löschen', 'Effacer le texte');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2115', 'Rating of translation', 'Übersetzungsbewertung', 'Übersetzungsbewertungfr');
+       ('2115', 'Rating of translation', 'Übersetzungsbewertung', 'noter la traduction');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('2116', 'Prepare date', 'Erstellungsdatum', 'Erstellungsdatumfr');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2117', 'You rated this text with', 'Sie haben diesen Text bewertet mit', 'Sie haben diesen Text bewertet mitfr');
+       ('2117', 'You rated this text with', 'Sie haben diesen Text bewertet mit', 'Selon vous ,la valeur du text est de');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2118', 'View', 'Anzeigen', 'Anzeigenfr');
+       ('2118', 'View', 'Anzeigen', 'Montrer');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2119', 'Text-View', 'Text-Anzeige', 'Text-Anzeigefr');
+       ('2119', 'Text-View', 'Text-Anzeige', 'Montrer le texte');
 
 ##### Text_Delete.tmpl (2120 -> 2200)######################################
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2120', 'This is an original-text', 'Dies ist ein Originaltext, daher müssen auch die zugehörigen Übersetzungen mitgelöscht werden.', 'Dies ist ein Originaltextfr');
+       ('2120', 'This is an original-text', 'Dies ist ein Originaltext, daher müssen auch die zugehörigen Übersetzungen mitgelöscht werden.', 'C est un text original, c est pourquoi il faut aussi effacer sa traduction');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2121', 'This is not an original-text', 'Dies ist kein Originaltext', 'Dies ist kein Originaltextfr');
+       ('2121', 'This is not an original-text', 'Dies ist kein Originaltext', 'C est pas un texte original');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('2122', 'Delete', 'löschen', 'löschenfr');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2123', 'Don\'t Delete', 'nicht löschen', 'nicht löschenfr');
+       ('2123', 'Don\'t Delete', 'nicht löschen', 'Ne pas effacer');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2124', 'Delete only this translation', 'Nur diese Übersetzung löschen', 'Nur diese Übersetzung löschenfr');
+       ('2124', 'Delete only this translation', 'Nur diese Übersetzung löschen', 'N effacer que cette traduction');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2125', 'Delete all translations and the original text', 'Alle Übersetzungen und den Originaltext löschen', 'Alle Übersetzungen und den Originaltext löschenfr');
+       ('2125', 'Delete all translations and the original text', 'Alle Übersetzungen und den Originaltext löschen', 'Effacer le texte original et ses traductions');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2126', 'Delete translation', 'Übersetzung löschen', 'Übersetzung löschenfr');
+       ('2126', 'Delete translation', 'Übersetzung löschen', 'Effacer la traduction');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
-       ('2127', 'Delete all', 'Alles löschen', 'Alles löschenfr');
+       ('2127', 'Delete all', 'Alles löschen', 'Tout effacer');
 
 
 ##### Text_Delete_ok.tmpl (2128 -> 2200)######################################
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('2128', 'Text was deleted succesful', 'Der Text wurde erfolgreich gelöscht', 'Der Text wurde erfolgreich gelöschtfr');
+
+
+
+
+##### Text_Trans_Contents.tmpl (2500 -> 250)######################################
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2500,'Text:', 'Text:', 'Texte:');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2501,'Translation-Text:', 'Übersetzer-Text', 'Text-traduit:');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2502,'Please give a translation of the text', 'Bitte Text-Übersetzung eingeben', 'Veillez traduire le text');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2503,'Please enter translation text here', 'Bitte geben Sie die Übersetzung hier', 'Veuillez traduire le text ici');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2504,'Back', 'Zurück', 'Retour');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2505,'Send', 'Senden', 'Envoyer');
+
+
+##### Text_Trans_Desc.tmpl (2510 -> 250)######################################
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2510, 'Translation-language:', 'Sprache der Übersetzung:', 'Langue de traduction:');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2511,'Please select a language', 'Bitte wählen Sie eine Sprache aus', 'Veillez choisir une Langue');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2512, 'Text-Title:', 'Title:', 'Titre:');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2513, 'Translation-Title:', 'Übersetzung-Title:', 'Titre-traduit:');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2514,'Please give a translation of the title', 'Bitte Titel-Übersetzung eingeben', 'Veillez traduire le titre');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2515, 'New Title here', 'Neuer Titel hier', 'Titre ici');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2516, 'Description:', 'Beschreibung:', 'Description:');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2517, 'Translation-Description:', 'Übersetzung-Beschreibung:', 'Description-traduite:');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2518, 'Please give a translation of the description', 'Bitte Übersetzung der Beschreibung eingeben', 'Veillez traduire la description');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2519,'Please translate the description here', 'Bitte Übersetzung der Beschreibung hier eingeben', 'Veillez traduire la description du text ici'); 
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2520, 'go on', 'weiter', 'continuer');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2521, 'Your translation have been successfull save.!', 'Ihre Übersetzung wurde erfolgreich gespeichert.!', 'Votre traduction a ete enregistree avec succes.!');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
+	(2522, 'Thank for your translation', 'Danke für die Übersetzung', 'Merci pour votre traduction');
+
+
+##### Text_Upload.tmpl (3000 -> )######################################
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('3000','Code is not OK!', 'Kodierung nicht OK!','Le code du Fichier nest pas conforme au Code Unicode-utf8');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('3001','Error by Byt:', 'Fehler bei Byte:', 'Erreure sur le Byt:');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('3002','File is to big', 'Datei zu groß', 'Fichier trop gros');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+       ('3003','File-size:', 'Datei-größe', 'Grosseur du fiechier');
+
+
+##### Text_Unicode_Info.tmpl (3000 -> )######################################
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	('3004', 'Why Unicode?','Warum Unicode?', 'Pourquoi Unicode');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	('3005', 'What is Unicode?','Was ist nicode?', 'Ce quest Unicode');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	('3006', '-','Unterstützte Version:', '-');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	('3007', '-', 'Unicode unter Windows', '-');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	('3008', '-', 'Unicode unter Linux ', '-');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	('3009', 'Browser and Unicode:', 'Browser und Unicode:', 'Browser et Unicode:');
+
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	('3010','Everyone which is extensive in the Internet on the way knows: Search machines spit results sometimes as letter soup out pages from Scandinavia look as if one would have shot with the shotgun at the text, and on Russian or asiatic pages prevails typographic NOT status A cause for it are the different character sets in the respective countries. The solution is thus one world-wide standard code for information',
+		'Jeder, der ausgiebig im Internet unterwegs ist, kennt das: Suchmaschinen spucken Ergebnisse manchmal als Buchstabensuppe aus, Seiten aus Skandinavien sehen aus, als hätte man mit der Schrotflinte auf den Text geschossen, und auf russischen oder asiatischen Seiten herrscht typographischer Notzustand: !&%ü?. Ursache dafür sind die unterschiedlichen Zeichensätze in den jeweiligen Ländern. Die Lösung ist also einen weltweit Standard-Code für Informationsaustausch',
+		'Chacun qui dans Internet est en route abondant, connaît cela: Des appareils de recherche crachent parfois comme soupe de lettre des résultats, côtés en provenance de Scandinavie aspect, comme si on aurait germé avec le canon de grenaille sur le texte, et du côté russes ou asiatiques létat durgence typographique règne');
+
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	('3011','University code is a world-wide character set standard, which contains the most usual letters and characters. Instead of having to use for each language its own character set, university code permits a being busy of multilingual texts alone with the university code to character set. University code uses 16 bits for the representation of the characters, thus is over 60.000 different characters at the same time in a document possible. University code points 2 byte a long number to each character too (from 0 to 65535), so that the character in the computer world can be used independently of platform, program and language. University code speak neutral is',
+		'Unicode ist ein weltweiter Zeichensatz-Standard, der die gängigsten Buchstaben und Zeichen enthält. Anstatt für jede Sprache einen eigenen Zeichensatz einsetzen zu müssen, erlaubt Unicode das Hantieren von mehrsprachigen Texten allein mit dem Unicode Zeichensatz. Unicode verwendet 16 Bit zur Darstellung der Zeichen, damit sind über 60.000 verschiedene Zeichen gleichzeitig in einem Dokument möglich.Unicode weist jedem Zeichen eine 2 Byte lange Nummer zu (von 0 bis 65535), sodass das Zeichen in der Computerwelt unabhängig von Plattform, Programm und Sprache verwendet werden kann. Unicode sprachenneutral ist',
+		'Unicode est une norme de police de caractères mondiale qui contient les lettres et signes les plus habituels. Au lieu de devoir utiliser pour chaque langue une police de caractères propre , unicode permet seulement manipuler des textes multilingues avec unicode à police de caractères. Unicode utilise 16 bits à la représentation des signes, donc est en même temps dans un document possible sur 60.000 signes différents. Unicode dirige trop 2 octet un long numéro à chaque signe (de 0 65535), de sorte que le signe dans le monde dordinateur peut être utilisé indépendamment de la plate-forme, du programme et dune langue. Unicode sprachenneutral est');
+
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	('3012','Under Windows NT it folds with the normal wordprocessor, if one stops a writing with cyrillic Subset (e.g. Arial) as standard writing.',
+		'Unter Windows NT klappt es mit dem normalen Editor, wenn man als Standardschrift eine Schrift mit kyrillischem Subset einstellt (z.B. Arial).',
+		'Sous Windows NT, il réussit avec le rédacteur normal, si on ajuste une écriture avec une sous-série kyrillischem comme écriture standard (p. ex. Arial)');
+
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	('3013','Under Windows 98 it does not fold in such a way, the wordprocessor of Windows 98 can no university code. The one solution under Win98 is Word 2000: In Word 2000 >memory under... <, then as type of file > coded text (* txt) selects<, next one then in a dialog window for the desired coding asked, here selects one >Unicode(utf-8)< and voilà has one a university code text document!. Alternatively there is a simple university code text editor for Windows named >SC university University of< (Freeware), available under http://www.sharmahd.com /, also very recommendable.',
+		'Unter Windows 98 klappt es so nicht, der Editor von Windows 98 kann kein Unicode. Die eine Lösung unter Win98 ist Word 2000: In Word 2000 wählt >Speichern unter...<, dann als Dateityp >Codierter Text (*.txt)<, als nächstes wird man dann in einem Dialogfenster nach der gewünschten Codierung gefragt, hier wählt man >Unicode(utf-8)< und voilà hat man ein Unicode-Textdokument! Alternativ gibt es für Windows einen einfachen Unicode-Texteditor namens >SC Unipad< (Freeware), erhältlich unter http://www.sharmahd.com/, auch sehr empfehlenswert.',
+		'Sous Windows, il ne plie pas ainsi 98, le rédacteur de Windows 98 peut pas de unicode. Une solution moins de Win98 est un Word 2000: Dans les Word >mémoires...<, comme type de fichiers le >texte codé (* txt)<, on choisit alors 2000 dans une fenêtre de dialogue le codage souhaité est demandé après alors, choisit ici >unicode(utf-8)))< et voilà a un texte de code! Une alternativement disponible http://www.sharmahd.com /, aussi très recommandable un rédacteur de texte simple pour Windows au nom de >SC tampon< Freeware.');
+
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	('3014', '....', '....', '....');
+
+
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	(3500, 'Please select a translation language', 'Bitte wählen Sie eine Übersetzungssprache aus', 'Veillez choisir une Langue de traduction');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	(3501, 'Translation language', 'Übersetzungssprache', 'Langue de traduction');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	(3502, 'Translation language & text language are identical', 'Übersetzungssprache und Textsprache sind gleich', 'Langue de traduction et la langue du text sont identiques');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	(3503, 'words)', 'Wörter)', 'mots)');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	(3504, 'To many words: please text shorten!', 'negativer Punktestand: Text verkürzen!', 'trop de mots:raccourcir le texte!');
+INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
+	(3505, 'Your browser doesn t support Unicode!', 'Ihre Browser unterstutzt nicht Unicode!', 'Votre Browser ne supporte pas Unicode!');
+
+
 
 DROP TABLE IF EXISTS lingua_user;
 
@@ -624,6 +730,7 @@ CREATE TABLE lingua_original_text (
         original_text   MEDIUMBLOB   DEFAULT '',
         num_words       INT(10) UNSIGNED DEFAULT '0',
         lang_id         INT(10) UNSIGNED NOT NULL,
+	trans_lang_id	INT(10) UNSIGNED NOT NULL,
         submit_time     TIMESTAMP,
         user_id         INT(10) UNSIGNED DEFAULT '0',
         category_id     INT(10) UNSIGNED DEFAULT '0',
@@ -715,6 +822,13 @@ INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (1,4,25)
 INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (2,5,25);
 INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (2,6,25);
 INSERT INTO lingua_inactiv_points (userid,translation_id,points) VALUES (2,7,25);
+
+
+
+
+
+
+
 
 
 

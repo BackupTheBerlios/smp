@@ -32,7 +32,7 @@ $DB = {
        DbHost   => 'localhost',
        DbPass   => '',
        DbPort   => '',
-       DbUser   => 'wurch'
+       DbUser   => 'root'
 };
 
 $SESSION = {
@@ -80,12 +80,21 @@ $TMPL = {
 	 Text_Conf_Save       => 'lingua_text_confirm_save.tmpl',
 	 Text_Show            => 'lingua_text_show.tmpl',
 	 Text_Trans_contents  => 'lingua_text_trans_contents.tmpl',
+    	 Text_Trans_Desc      => 'lingua_text_trans_desc.tmpl',
 	 Text_Delete          => 'lingua_text_delete.tmpl',
 	 Text_Delete_ALL_Ok   => 'lingua_text_delete_all_ok.tmpl',
-	 Text_Delete_TRANS_Ok => 'lingua_text_delete_all_ok.tmpl'
+	 Text_Delete_TRANS_Ok => 'lingua_text_delete_all_ok.tmpl',
+	 Text_Unicode_Info => 'lingua_text_unicode_info.tmpl'
 };
 
 1;
+
+
+
+
+
+
+
 
 
 

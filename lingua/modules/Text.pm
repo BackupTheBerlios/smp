@@ -13,9 +13,10 @@ package modules::Text;
 use Class::Singleton;
 use base 'Class::Singleton';
 use vars qw($VERSION);
+use Unicode::String qw(latin1 utf8 utf16);
 use strict;
 
-$VERSION = sprintf "%d.%03d", q$Revision: 1.14 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf "%d.%03d", q$Revision: 1.15 $ =~ /(\d+)\.(\d+)/;
 
 #################################################################
 #NAME: parameter($mgr).						#
@@ -64,8 +65,31 @@ elsif ($method eq 'text_show'){ $self->show_text_see($mgr);}
 
 elsif ($method eq 'delete_text'){ $self->delete_text($mgr);}
 
+elsif ($method eq 'text_unicode_info'){ $self->text_unicode_info($mgr);}
+
 return 1;
 }
+
+
+
+sub text_unicode_info{
+my ($self, $mgr)=@_;
+
+$mgr->{Template} = $mgr->{TmplFiles}->{Text_Unicode_Info};
+
+$mgr->{TmplData}{PAGE_LANG_003004} = $mgr->{Func}->get_text($mgr, 3004);
+$mgr->{TmplData}{PAGE_LANG_003005} = $mgr->{Func}->get_text($mgr, 3005);
+$mgr->{TmplData}{PAGE_LANG_003006} = $mgr->{Func}->get_text($mgr, 3006);
+$mgr->{TmplData}{PAGE_LANG_003007} = $mgr->{Func}->get_text($mgr, 3007);
+$mgr->{TmplData}{PAGE_LANG_003008} = $mgr->{Func}->get_text($mgr, 3008);
+$mgr->{TmplData}{PAGE_LANG_003009} = $mgr->{Func}->get_text($mgr, 3009);
+$mgr->{TmplData}{PAGE_LANG_003010} = $mgr->{Func}->get_text($mgr, 3010);
+$mgr->{TmplData}{PAGE_LANG_003011} = $mgr->{Func}->get_text($mgr, 3011);
+$mgr->{TmplData}{PAGE_LANG_003012} = $mgr->{Func}->get_text($mgr, 3012);
+$mgr->{TmplData}{PAGE_LANG_003013} = $mgr->{Func}->get_text($mgr, 3013);
+$mgr->{TmplData}{PAGE_LANG_003014} = $mgr->{Func}->get_text($mgr, 3014);
+}
+
 
 
 #########################################################################################################################
@@ -82,14 +106,14 @@ return 1;
 #########################################################################################################################
 
 sub show_text_new {
-my ($self, $mgr,$cat_mes, $lang_mes, $title_mes, $text_mes, $text_from_file , $text_length) = @_;
+my ($self, $mgr,$cat_mes, $lang_mes, $title_mes, $text_mes, $trans_mes, $same_mes, $text_from_file , $text_length ) = @_;
 
 my $title = $mgr->{CGI}->param('title') || "";
 my $text_desc = $mgr->{CGI}->param('text_desc') || "";
 
 my $text_cat_id = $mgr->{CGI}->param('text_cat_id') || undef;
 my $text_lang_id = $mgr->{CGI}->param('text_desc_lang_id') || undef;
-#my $file = $mgr->{CGI}->param('file') || undef;
+my $trans_lang_id = $mgr->{CGI}->param('trans_lang_id') || undef;
 my $mytext = $mgr->{CGI}->param('mytext') || undef;
 my $submit = $mgr->{CGI}->param('send') || undef;
 
@@ -104,6 +128,10 @@ if (defined $submit){
 		$mgr->{TmplData}{TEXT_TITLE_MES_002024}= $mgr->{Func}->get_text($mgr, 2024);}
 	if ((defined $text_mes) and ($text_mes==1)){
 		$mgr->{TmplData}{TEXT_MES_002031}=$mgr->{Func}->get_text($mgr, 2031);}
+	if ((defined $trans_mes) and ($trans_mes==1)){
+		$mgr->{TmplData}{TEXT_TRANS_MES_003500}=$mgr->{Func}->get_text($mgr, 3500);}
+	if ((defined $same_mes) and ($same_mes==1)){
+		$mgr->{TmplData}{TEXT_TRANS_MES_003502}=$mgr->{Func}->get_text($mgr, 3502);}
 }
 
 $mgr->{TmplData}{TEXT_TITLE}=$title;
@@ -120,10 +148,11 @@ $mgr->{TmplData}{PAGE_LANG_002027} = $mgr->{Func}->get_text($mgr, 2027);
 $mgr->{TmplData}{PAGE_LANG_002028} = $mgr->{Func}->get_text($mgr, 2028); 
 $mgr->{TmplData}{PAGE_LANG_002029} = $mgr->{Func}->get_text($mgr, 2029); 
 $mgr->{TmplData}{PAGE_LANG_002030} = $mgr->{Func}->get_text($mgr, 2030); 
-$mgr->{TmplData}{PAGE_LANG_002032} = $mgr->{Func}->get_text($mgr, 2032); 
+#$mgr->{TmplData}{PAGE_LANG_002032} = $mgr->{Func}->get_text($mgr, 2032); 
 $mgr->{TmplData}{PAGE_LANG_002033} = $mgr->{Func}->get_text($mgr, 2033); 
 $mgr->{TmplData}{PAGE_LANG_002034} = $mgr->{Func}->get_text($mgr, 2034); 
-
+$mgr->{TmplData}{PAGE_LANG_003501} = $mgr->{Func}->get_text($mgr, 3501); 
+$mgr->{TmplData}{PAGE_LANG_003503} = $mgr->{Func}->get_text($mgr, 3503);
 
 ###################### Category #######################################
 if (defined $text_cat_id){
@@ -178,28 +207,54 @@ push(@lang_loop_data,\%data);
 
 $mgr->{TmplData}{TEXT_LOOP_LANG}=\@lang_loop_data;
 
-###################### In Bearbeitung #######################################
-my $punkt;
-$mgr->{TmplData}{TEXT_MAX_VAL}= '-';
 
-my $act_val ;
+################ TRANS Language #####################################
+ 
 
+if (defined $trans_lang_id){
+	$mgr->{TmplData}{TEXT_TRANS_LANG_ID_SELECT}=$trans_lang_id ;
+	my $trans_nr = $self->get_lang_name_id($mgr,$trans_lang_id );
+	my $trans_lang_name = $mgr->{Func}->get_text($mgr, $trans_nr);
+	$mgr->{TmplData}{TEXT_TRANS_LANG_NAME_SELECT}= $trans_lang_name ; }
+
+else{ $mgr->{TmplData}{TEXT_TRANS_LANG_NAME_SELECT}= '-----------'; }
+
+my @trans_lang_loop_data=();
+my @trans_ray = $mgr->{Func}->get_langs($mgr,'all');
+my $trans_elem;
+foreach $trans_elem (@trans_ray){
+my %trans_data;
+$trans_data{TEXT_TRANS_LANG_ID}= $$trans_elem[0];
+$trans_data{TEXT_TRANS_LANG_NAME}= $$trans_elem[1];
+push(@trans_lang_loop_data,\%trans_data);
+}
+@trans_lang_loop_data = sort {$a->{TEXT_TRANS_LANG_NAME} cmp $b->{TEXT_TRANS_LANG_NAME}} @trans_lang_loop_data;#added by Hendrik, sort languages
+
+$mgr->{TmplData}{TEXT_LOOP_TRANS_LANG}=\@trans_lang_loop_data;
+
+
+
+###################### PUNKTE #######################################
+my $user_id = $mgr->{UserData}{UserId};
+my $punkt =$mgr->{Points}->get_activ_points($mgr, $user_id);
+$mgr->{TmplData}{TEXT_MAX_VAL}= $punkt;
 
 if (!defined $text_from_file) { 
-	if (defined $mytext) { $text_from_file=$mytext;}
-	else { $text_from_file=''; }
+	if (defined $mytext) { 
+		$text_from_file=$mytext;
+	}else { 
+		$text_from_file=''; 
+	}
 }
 
-if (defined $text_length) { 
-}else{ $text_length=0;}
-
-$act_val = $punkt - $text_length;
+$text_length = $self->get_words($text_from_file); #longueuer du texte
+my $punktekosten = $self->get_punktkosten($mgr,$text_length);
 
 $mgr->{TmplData}{TEXT}=  $text_from_file;
-$mgr->{TmplData}{TEXT_LENG}= '-';
-$mgr->{TmplData}{TEXT_ACT_VAL}= '-';
+$mgr->{TmplData}{TEXT_LENG}= $text_length;  #zur Zeit $punktekosten=$text_length
 
 }
+
 
 #################################################################################
 #CALL: $self->check_text_direction($mgr).					#						
@@ -218,6 +273,7 @@ my ($self, $mgr) = @_;
 my $title = $mgr->{CGI}->param('title') || undef;
 my $text_cat_id = $mgr->{CGI}->param('text_cat_id') || undef;
 my $text_lang_id = $mgr->{CGI}->param('text_desc_lang_id') || undef;
+my $trans_lang_id = $mgr->{CGI}->param('trans_lang_id') || undef;
 my $text = $mgr->{CGI}->param('mytext') || undef;
 
 my $upload = $mgr->{CGI}->param('upload') || undef;
@@ -227,7 +283,8 @@ my $cat_mes=0;
 my $lang_mes=0;
 my $title_mes=0;
 my $text_mes=0;
-
+my $trans_mes=0;
+my $same_mes=0;
 
 if (defined $upload) { $self->show_text_upload($mgr); }
 
@@ -237,8 +294,10 @@ elsif(defined $text_send ) {
 	if (!$text_cat_id){$cat_mes=1;}
 	if (!$text_lang_id){$lang_mes=1;}
 	if (!$text){$text_mes=1;}
+	if (!$trans_lang_id){$trans_mes=1;}
+	if ((($trans_lang_id) and ($text_lang_id)) and ($trans_lang_id eq $text_lang_id)){$same_mes=1;}
 
-	if ( ((($cat_mes==1) or ($lang_mes==1)) or ($title_mes==1)) or ($text_mes==1)){
+	if ( ( (((($cat_mes==1) or ($lang_mes==1)) or ($title_mes==1)) or ($text_mes==1)) or ($trans_mes==1)) or ($same_mes==1)){
 
 		#Hidden-Var des 2. Formular setzen.  
 		$mgr->{TmplData}{PAGE_ACTION}=$mgr->{Action};
@@ -246,13 +305,71 @@ elsif(defined $text_send ) {
 		my $lang = $mgr->{Language};
 		$mgr->{TmplData}{PAGE_LANG}= $mgr->{SystemLangs}->{$lang};
 
-		 $self->show_text_new($mgr,$cat_mes, $lang_mes, $title_mes, $text_mes);
+		 $self->show_text_new($mgr, $cat_mes, $lang_mes, $title_mes, $text_mes, $trans_mes, $same_mes);
+
 
 	} else { 
-		###check_length(text)#############
-		###check_Codierung(text)#############
+		### check_length & Kodierung erden in confirm_save geprüft.
 
-		$self->show_text_confirm_save($mgr);
+
+
+#---------------------------Kodierung prüfen----
+
+	my @bytes    = split //, $text;
+			my $lentgh   = @bytes;
+
+			my $index=0;
+			my $follower=0;
+			my $bstring;
+
+	#Kodierung prüfen		
+	while (($index < $lentgh) && ($follower<3)) {
+
+		$bstring = sprintf "%08b", ord($bytes[$index]);
+
+		if ($bstring =~ /^0/) {$follower = 0; }
+		elsif ($bstring =~ /^110/) {$follower = 1; }
+		elsif ($bstring =~ /^1110/){$follower = 2; }
+		else {$follower = 3;}
+	
+		if ($follower == 0){$index = $index +1;}
+		elsif ($follower == 1){
+			if ($index+1 < $lentgh){			
+				$index=$index+1;			
+				$bstring = sprintf "%08b", ord($bytes[$index]);
+
+				if ($bstring =~ /^10/ ){ $index = $index +1;}
+				else {$follower=3;}
+			}else {$follower=3;}
+		}
+					
+		elsif ($follower == 2){
+			if ($index+2 < $lentgh){
+				$index=$index+1;
+				$bstring = sprintf "%08b", ord($bytes[$index]);
+
+				if ($bstring =~ /^10/){
+					$index=$index+1;
+					$bstring = sprintf "%08b", ord($bytes[$index]);
+					
+					if ($bstring =~ /^10/){$index = $index +1;}
+					else {$follower=3;}
+				}else{ $follower=3;}
+		    	}else {$follower=3;}
+		}
+		
+
+	} #end while
+
+	my $meldung=0;
+	if ($follower==3) {$meldung =1;}
+	
+#--------------------------------------------------
+		$self->show_text_confirm_save($mgr, $meldung);
+
+
+
+
 	 }
 	
      }	
@@ -282,12 +399,17 @@ my ($self, $mgr) = @_;
 
 my $original_text = $mgr->{CGI}->param('mytext') || undef;
 my $lang_id = $mgr->{CGI}->param('text_desc_lang_id') || undef;
-my $original_text = $mgr->{CGI}->param('mytext') || undef;
 my $user_id =$mgr->{Session}->get("UserId");
 my $text_cat_id = $mgr->{CGI}->param('text_cat_id') || undef;
+my $trans_lang_id = $mgr->{CGI}->param('trans_lang_id') || undef;
 
-#$num_words=text_receive alexander
-my $num_words;
+my $num_words = $self->get_words($original_text);
+my $utf_text = utf8($original_text);
+
+#Punktzahl des Benutzers aktualisieren.
+#my $punktcost = $mgr->{Points}->receive_text($mgr, $user_id, $num_words);
+
+
 
 my $text_desc = $mgr->{CGI}->param('text_desc') || undef;
 
@@ -298,21 +420,21 @@ my $sth;
 $dbh->do("LOCK TABLES $table WRITE");
 $sth = $dbh->prepare(<<SQL);
 
-INSERT INTO $table (original_text, num_words, lang_id, user_id, category_id )
-VALUES (?, ?, ?, ?, ?)
+INSERT INTO $table (original_text, num_words, lang_id, trans_lang_id, user_id, category_id )
+VALUES (?, ?, ?, ?, ?, ?)
 
 SQL
 
-unless ($sth->execute($original_text, $num_words, $lang_id, $user_id, $text_cat_id ))
+unless ($sth->execute($utf_text, $num_words, $lang_id, $trans_lang_id, $user_id, $text_cat_id ))
     {
 	warn sprintf("[Error:] Trouble adding user to %s. " .
 		     "Reason: [%s].", $table, $dbh->errstr());
 	$dbh->do("UNLOCK TABLES");
 	$mgr->fatal_error("Database error.");
-    }
+   }
 
 $dbh->do("UNLOCK TABLES");
- $sth->finish();
+$sth->finish();
 
  
 # get text_id
@@ -340,6 +462,8 @@ my ($self, $mgr, $text_id, $lang_id) = @_;
 my $header_text = $mgr->{CGI}->param('title') || undef;
 my $user_id =$mgr->{Session}->get("UserId");
 
+my $utf_header_text = utf8($header_text);
+
 my $table = $mgr->{Tables}->{TEXT_TITLE};
 my $dbh   = $mgr->connect(); 
 my $sth;
@@ -352,7 +476,7 @@ VALUES (?, ?, ?, ?)
 
 SQL
 
-unless ($sth->execute($header_text, $lang_id, $text_id, $user_id )) 
+unless ($sth->execute($utf_header_text, $lang_id, $text_id, $user_id )) 
     {
 	warn sprintf("[Error:] Trouble adding user to %s. " .
 		     "Reason: [%s].", $table, $dbh->errstr());
@@ -381,6 +505,7 @@ my ($self, $mgr, $text_id, $lang_id) = @_;
 my $desc_text = $mgr->{CGI}->param('text_desc') || undef;
 my $user_id =$mgr->{Session}->get("UserId");
 
+my $utf_desc_text = utf8($desc_text);
 my $table = $mgr->{Tables}->{TEXT_DESC};
 my $dbh   = $mgr->connect(); 
 my $sth;
@@ -393,7 +518,7 @@ VALUES (?, ?, ?, ?)
 
 SQL
 
-unless ($sth->execute($desc_text, $lang_id, $text_id, $user_id )) 
+unless ($sth->execute($utf_desc_text, $lang_id, $text_id, $user_id )) 
     {
 	warn sprintf("[Error:] Trouble adding user to %s. " .
 		     "Reason: [%s].", $table, $dbh->errstr());
@@ -404,6 +529,60 @@ unless ($sth->execute($desc_text, $lang_id, $text_id, $user_id ))
 $dbh->do("UNLOCK TABLES");   
  $sth->finish();
 
+}
+
+#################################################################################################
+#CALL: $self->get_punktkosten($mgr,$words).								
+#
+#RETURN:  $counter
+#											
+#Author: Giovanni Ngapout(ngapout@cs.tu-berlin.de)					
+#################################################################################################
+sub get_punktkosten{
+my ($self, $mgr, $words) = @_;  
+
+my $pointscost = ($mgr->{TextPoints}) * $words;
+
+return $pointscost;
+
+}
+
+
+
+
+
+
+
+#################################################################################################
+#CALL: $self->get_words($text).								
+#
+#RETURN:  $counter
+#
+#utilisation du tabulateur et leerZeichen avant le mot -> probleme
+#											
+#Author: Giovanni Ngapout(ngapout@cs.tu-berlin.de)					
+#################################################################################################
+sub get_words{
+   my ($self,$text) = @_;
+
+my @zeiles = split(/\n/, $text);
+my $counter = 0;
+my @words;
+
+	foreach my $zeile (@zeiles){
+		if (length($zeile)==1) {
+			my $bstring = sprintf "%08b", ord($zeile);
+			if (!($bstring eq '00001101')){
+				@words= split(/ +/,$zeile);
+				$counter = $counter + @words;
+			}
+
+		}else{ 
+			@words= split(/ +/,$zeile);	
+			$counter = $counter + @words;
+		}
+	}	
+return $counter;
 }
 
 
@@ -421,75 +600,263 @@ sub show_text_upload{
 my $title = $mgr->{CGI}->param('title') || "";
 my $textcat = $mgr->{CGI}->param('text_cat_id') || "";
 my $textlang = $mgr->{CGI}->param('text_desc_lang_id') || "";
+my $trans_lang = $mgr->{CGI}->param('trans_lang_id') || "";
+
 my $description = $mgr->{CGI}->param('text_desc') || "";
 my $submit = $mgr->{CGI}->param('sendup') || undef;
 my $filename = $mgr->{CGI}->param('file') || undef;
+
 
 my $text_from_file;
 my $text_length;
 
 my $buff;
-#my $bytes_read;
-my $size;
+my $size=1000001; #File max size
 
 if (defined $submit){
 	
 	if (defined $filename){
-			
-#		while ($bytes_read = read($file_path, $buff, 2048)) {
-#                	$text_length += $bytes_read;
-#                	binmode $filename;
-#              		print $filename $buff;
-#	       	}
-
-#Fehlerbehandlung
-#check codierung
-
-		while(my $lign = <$filename> ){
-
-		     $text_from_file .= $lign ;
-		}; 
-
-
+#------------------------------------------------------------------------			
+		#Datei lesen
+		while (my $bytes_read = read($filename, my $buff, 2048)) {
+                	$text_length += $bytes_read;
+			$text_from_file .= $buff;
+	       	}
+	#size prüfen
+	if ($text_length < $size){
 #check points
+			my @bytes    = split //, $text_from_file;
+			my $lentgh   = @bytes;
+
+			my $index=0;
+			my $follower=0;
+			my $bstring;
+
+	#Kodierung prüfen		
+	while (($index < $lentgh) && ($follower<3)) {
+
+		$bstring = sprintf "%08b", ord($bytes[$index]);
+
+		if ($bstring =~ /^0/) {$follower = 0; }
+		elsif ($bstring =~ /^110/) {$follower = 1; }
+		elsif ($bstring =~ /^1110/){$follower = 2; }
+		else {$follower = 3;}
+	
+		if ($follower == 0){$index = $index +1;}
+		elsif ($follower == 1){
+			if ($index+1 < $lentgh){			
+				$index=$index+1;			
+				$bstring = sprintf "%08b", ord($bytes[$index]);
+
+				if ($bstring =~ /^10/ ){ $index = $index +1;}
+				else {$follower=3;}
+			}else {$follower=3;}
+		}
+					
+		elsif ($follower == 2){
+			if ($index+2 < $lentgh){
+				$index=$index+1;
+				$bstring = sprintf "%08b", ord($bytes[$index]);
+
+				if ($bstring =~ /^10/){
+					$index=$index+1;
+					$bstring = sprintf "%08b", ord($bytes[$index]);
+					
+					if ($bstring =~ /^10/){$index = $index +1;}
+					else {$follower=3;}
+				}else{ $follower=3;}
+		    	}else {$follower=3;}
+		}
 		
- 		$self->show_text_new($mgr, 0, 0, 0, 0, $text_from_file, $text_length);
 
-		#$mgr->{TmplData}{PAGE_LANG_002000} = $mgr->{Func}->get_text($mgr, 2000);
-		#$mgr->{TmplData}{PAGE_LANG_002001} = $mgr->{Func}->get_text($mgr, 2001);
-		#$mgr->{TmplData}{PAGE_LANG_002002} = $mgr->{Func}->get_text($mgr, 2002);
+	} #end while
 
-	}else{$self->show_text_new($mgr);}
+		
+		if ($follower==3) {
+			#Falsche Kodierung
+			#*** fell-upload-tmpl with ERROR1 *************************************
+			$mgr->{TmplData}{PAGE_LANG_002003} = $mgr->{Func}->get_text($mgr, 2003);
+			$mgr->{TmplData}{PAGE_LANG_002004} = $mgr->{Func}->get_text($mgr, 2004);
+	
+			$mgr->{Template} = $mgr->{TmplFiles}->{Text_Upload};
+
+			$mgr->{TmplData}{TEXT_TITLE}=$title;
+			$mgr->{TmplData}{TEXT_DESCRIPTION}=$description;
+			$mgr->{TmplData}{TEXT_LANG}=$textlang;
+			$mgr->{TmplData}{TEXT_CAT}=$textcat;
+			$mgr->{TmplData}{TEXT_TRANS_LANG}=$trans_lang;
+
+
+			#Hidden-Var des 2. Formular setzen.  
+			$mgr->{TmplData}{PAGE_ACTION}=$mgr->{Action};
+			$mgr->{TmplData}{PAGE_SID}= $mgr->{SessionId};
+			my $lang = $mgr->{Language};
+			$mgr->{TmplData}{PAGE_LANG}= $mgr->{SystemLangs}->{$lang};
+
+			$mgr->{TmplData}{ERROR_MESS}=$mgr->{Func}->get_text($mgr, 3000);
+			$index=$index +1;
+			my $error_mess=$mgr->{Func}->get_text($mgr, 3001);
+			$mgr->{TmplData}{ERROR_INDEX}=  "$error_mess"." $index";
+			#****************************************
+
+		}
+
+		else{ 
+			#Kodierung OK 
+# +++++++++++++++++++++ Wird später gelöscht.+++++++++++++++++++++
+	#------------------------ Datei up.html erstellen und Text in DB speichern -----------------------------------------
+open(MY, '>up.html');
+print MY "<html> <head>\n";
+print MY "<meta http-equiv='content-type' content='text/html; charset=utf-8'>\n";
+print MY "</head> <body>\n";
+print MY "<p> Upload OK\n";
+print MY "<p>Size: $text_length Byte\n";
+
+print MY "<br><font color
+='blue' size=4>Datei richtig Kodiert:</font><br>\n";
+print MY "$text_from_file <form>\n";
+print MY "<br>";
+print MY "<TEXTAREA NAME='mytext'rows=20 cols='80'>$text_from_file</TEXTAREA> \n";
+print MY "<br>\n";			
+print MY "</form>\n";
+close MY;
+
+
+my $T_num_words=10;
+my $T_lang_id=1;
+my $T_user_id=1;
+my $T_text_cat_id=12;
+
+my $T_table = $mgr->{Tables}->{TEXT_ORIG};
+my $T_dbh   = $mgr->connect(); 
+my $T_sth;
+
+$T_dbh->do("LOCK TABLES $T_table WRITE");
+$T_sth = $T_dbh->prepare(<<SQL);
+
+INSERT INTO $T_table (original_text, num_words, lang_id, user_id, category_id )
+VALUES (?, ?, ?, ?, ?)
+
+SQL
+
+unless ($T_sth->execute($text_from_file, $T_num_words, $T_lang_id, $T_user_id, $T_text_cat_id ))
+    {
+	warn sprintf("[Error:] Trouble adding user to %s. " .
+		     "Reason: [%s].", $T_table, $T_dbh->errstr());
+	$T_dbh->do("UNLOCK TABLES");
+	$mgr->fatal_error("Database error.");
+    }
+
+my $original_id_T= $T_sth->{mysql_insertid};
+
+$T_dbh->do("UNLOCK TABLES");
+ $T_sth->finish();
+
+	#-------------------- Text vom DB lesen -----------------------------------------
+
+my $table_T = $mgr->{Tables}->{TEXT_ORIG};
+
+
+  my $dbh_T = $mgr->connect();
+  my $sth_T = $dbh_T->prepare(<<SQL);
+
+SELECT original_text
+FROM   $table_T
+WHERE  original_id = ?
+
+SQL
+
+  unless ($sth_T->execute($original_id_T)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s].".
+                 "Reason: [%s].", $table_T, $dbh_T->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+  my $T_text = $sth_T->fetchrow_array();
+
+  $sth_T->finish();
+	#------------------------------ upDB.html erstellen ---------------------------------------
+
+open(TMY, '>upDB.html');
+print TMY "<html> <head>\n";
+print TMY "<meta http-equiv='content-type' content='text/html; charset=utf-8'>\n";
+print TMY "</head> <body>\n";
+print TMY "<p> Speicherung OK\n";
+print TMY "<p>Size: $text_length Byte\n";
+
+print TMY "<br><font color='blue' size=4>Lese Ergebniss:</font><br>\n";
+print TMY "$T_text <form>\n";
+print TMY "<br>";
+print TMY "<TEXTAREA NAME='mytext'rows=20 cols='80'>$T_text</TEXTAREA> \n";
+print TMY "<br>\n";			
+print TMY "</form>\n";
+close TMY;
+
+#+++++++++++++++++++++++++++++++++++++++ Bis hier +++++++++++++++++++++++++++++++++++++++++++++
+
+
+			$self->show_text_new($mgr, 0, 0, 0, 0, 0, 0, $text_from_file,$text_length);
+		}
+	 }else{
+		#$text_length >= $size (Datei zu groß)
+
+		#*** fell-upload-tmpl with Error *************************************
+		$mgr->{TmplData}{PAGE_LANG_002003} = $mgr->{Func}->get_text($mgr, 2003);
+		$mgr->{TmplData}{PAGE_LANG_002004} = $mgr->{Func}->get_text($mgr, 2004);
+
+		$mgr->{Template} = $mgr->{TmplFiles}->{Text_Upload};
+
+		$mgr->{TmplData}{TEXT_TITLE}=$title;
+		$mgr->{TmplData}{TEXT_DESCRIPTION}=$description;
+		$mgr->{TmplData}{TEXT_LANG}=$textlang;
+		$mgr->{TmplData}{TEXT_CAT}=$textcat;
+		$mgr->{TmplData}{TEXT_TRANS_LANG}=$trans_lang;
+
+		#Hidden-Var des 2. Formular setzen.  
+		$mgr->{TmplData}{PAGE_ACTION}=$mgr->{Action};
+		$mgr->{TmplData}{PAGE_SID}= $mgr->{SessionId};
+		my $lang = $mgr->{Language};
+		$mgr->{TmplData}{PAGE_LANG}= $mgr->{SystemLangs}->{$lang};
+	
+		$mgr->{TmplData}{ERROR_MESS}=$mgr->{Func}->get_text($mgr, 3002); 
+		my $error_mess1=$mgr->{Func}->get_text($mgr, 3003); 
+		$mgr->{TmplData}{ERROR_INDEX}="$error_mess1"." $text_length Byt";
+		#************************************************************************
+
+	}
+
+	}else{
+		#submit defined & filename not defined -> return to text_new
+		$self->show_text_new($mgr);}
 	
 
 }else{
+	#submit not defined
+	#*** fell-upload-tmpl *************************************
+	$mgr->{TmplData}{PAGE_LANG_002003} = $mgr->{Func}->get_text($mgr, 2003);
+	$mgr->{TmplData}{PAGE_LANG_002004} = $mgr->{Func}->get_text($mgr, 2004);
+	
+	$mgr->{Template} = $mgr->{TmplFiles}->{Text_Upload};
 
-$mgr->{TmplData}{PAGE_LANG_002003} = $mgr->{Func}->get_text($mgr, 2003);
-$mgr->{TmplData}{PAGE_LANG_002004} = $mgr->{Func}->get_text($mgr, 2004);
+	$mgr->{TmplData}{TEXT_TITLE}=$title;
+	$mgr->{TmplData}{TEXT_DESCRIPTION}=$description;
+	$mgr->{TmplData}{TEXT_LANG}=$textlang;
+	$mgr->{TmplData}{TEXT_CAT}=$textcat;
+	$mgr->{TmplData}{TEXT_TRANS_LANG}=$trans_lang;
 
-$mgr->{Template} = $mgr->{TmplFiles}->{Text_Upload};
-
-$mgr->{TmplData}{TEXT_TITLE}=$title;
-$mgr->{TmplData}{TEXT_DESCRIPTION}=$description;
-$mgr->{TmplData}{TEXT_LANG}=$textlang;
-$mgr->{TmplData}{TEXT_CAT}=$textcat;
-
-
-#Hidden-Var des 2. Formular setzen.  
-$mgr->{TmplData}{PAGE_ACTION}=$mgr->{Action};
-$mgr->{TmplData}{PAGE_SID}= $mgr->{SessionId};
-my $lang = $mgr->{Language};
-$mgr->{TmplData}{PAGE_LANG}= $mgr->{SystemLangs}->{$lang};
- 
+	#Hidden-Var des 2. Formular setzen.  
+	$mgr->{TmplData}{PAGE_ACTION}=$mgr->{Action};
+	$mgr->{TmplData}{PAGE_SID}= $mgr->{SessionId};
+	my $lang = $mgr->{Language};
+	$mgr->{TmplData}{PAGE_LANG}= $mgr->{SystemLangs}->{$lang};
+	#****************************************
 }
 	
-
-
 
 }
 
 #########################################################################################################################################
-#CALL: $self->show_text_upload($mgr).													#						
+#CALL: $self->show_text_description($mgr).													#						
 #
 #DESC: show the Template_Text_Description   ~~~~> (for new description[empty] or if param are missing[with message over missing param])	#
 #      			or														#
@@ -650,7 +1017,7 @@ if (defined $mes2){ $mgr->{TmplData}{TEXT_MESSAGE_2}= $mes2; }
 
 $mgr->{TmplData}{PAGE_LANG_002005} = $mgr->{Func}->get_text($mgr, 2005);
 $mgr->{TmplData}{PAGE_LANG_002006} = $mgr->{Func}->get_text($mgr, 2006);
-$mgr->{TmplData}{PAGE_LANG_002007} = $mgr->{Func}->get_text($mgr, 2007);
+#$mgr->{TmplData}{PAGE_LANG_002007} = $mgr->{Func}->get_text($mgr, 2007);
 
 
 $mgr->{Template} = $mgr->{TmplFiles}->{Text_Message};
@@ -686,7 +1053,7 @@ my $show_text = $mgr->{CGI}->param('show_text') || undef; #added by Hendrik
 if (defined $new_text){ $self->show_text_new($mgr); }
 elsif (defined $see_text){ $self->show_text_see($mgr); }
 elsif (defined $new_desc){ $self->show_text_description($mgr); }
-elsif (defined $text_trans_contents){ $self->show_trans_contents($mgr); } #added by Hendrik
+elsif (defined $text_trans_contents){ $self->show_trans_desc($mgr); } #added by Hendrik
 elsif (defined $delete_text){ $self->delete_text($mgr); } #added by Hendrik
 elsif (defined $show_text){ $self->show_text_see($mgr); } #added by Hendrik
 elsif ((defined $mes1_dico) && (defined $mes2_dico) ) {
@@ -707,7 +1074,7 @@ $self->show_text_message($mgr, $mes1, $mes2);
 }
 
 #########################################################################################################################################
-#CALL: $self->show_text_confirm_save($mgr).													#
+#CALL: $self->show_text_confirm_save($mgr, $message).													#
 #																	#
 #														#
 #DESC:  														#
@@ -717,12 +1084,12 @@ $self->show_text_message($mgr, $mes1, $mes2);
 
 sub show_text_confirm_save{
 
-	my ($self, $mgr) = @_;
-
+	my ($self, $mgr, $message) = @_;
 
 my $title = $mgr->{CGI}->param('title') || undef;
 my $text_cat_id = $mgr->{CGI}->param('text_cat_id') || undef;
 my $text_lang_id = $mgr->{CGI}->param('text_desc_lang_id') || undef;
+my $trans_lang_id = $mgr->{CGI}->param('trans_lang_id') || undef;
 my $text = $mgr->{CGI}->param('mytext') || undef;
 my $text_desc = $mgr->{CGI}->param('text_desc') || undef;
 
@@ -731,10 +1098,14 @@ my $text_save = $mgr->{CGI}->param('text_save') || undef;
 
 my $text_id;
 
-if (defined $text_change){$self->show_text_new($mgr);}
+if (defined $text_change){
+	#Änderungen vornehmen
+	$self->show_text_new($mgr);}
+
 elsif (defined $text_save){
-		
+		#Text wird in DB gespeichert		
 		$text_id = $self->text_save($mgr);
+
 		##### Confirmation###########
 		my $mes1_002035= $mgr->{Func}->get_text($mgr, 2035); 
 		my $mes2_002036= $mgr->{Func}->get_text($mgr, 2036); 
@@ -745,7 +1116,7 @@ elsif (defined $text_save){
 		$self->show_text_message($mgr, $mes1_002035, $mes2_002036);
  
 }else{
-
+		#Text_Confirm_Save anzeigen
 		my $title_mess_002039 	= $mgr->{Func}->get_text($mgr, 2039);
 		my $Code_mess2_002040 	= $mgr->{Func}->get_text($mgr, 2040); 
 		my $length_mess2_002041 = $mgr->{Func}->get_text($mgr, 2041); 
@@ -753,31 +1124,57 @@ elsif (defined $text_save){
 		my $act_punct_mess2_002043 = $mgr->{Func}->get_text($mgr, 2043); 
 		my $new_punct_mess2_002044 = $mgr->{Func}->get_text($mgr, 2044); 
 
-###########Provisoire#########
-my $textcounter = $mgr->{CGI}->param('textcounter') || 0;
-my $freicounter = $mgr->{CGI}->param('freicounter') || 0;
-my $punkt= $textcounter + $freicounter;
+############ Provisoire
+my $user_id = $mgr->{UserData}{UserId};
+my $punkt =$mgr->{Points}->get_activ_points($mgr, $user_id);
+my $text_length = $self->get_words($text); #longueuer du texte
+my $punktekosten = $self->get_punktkosten($mgr,$text_length);
+my $new_punktstand= $punkt -$punktekosten;
+my $unicode_mess='Unicode utf8';
+
+if ((defined $message) and ($message==1)){ 
+	$unicode_mess='????'; 
+	$mgr->{TmplData}{PAGE_LANG_002037} ='';
+	$mgr->{TmplData}{INPUT_TYPE}='hidden';
+	$mgr->{TmplData}{PAGE_LANG_003505} = $mgr->{Func}->get_text($mgr, 3505);
+
+}
+
+
 		my @array_data = (
 				{ TEXT_MESS  => $title_mess_002039 ,       TEXT_MESS_VAL  => $title} ,
-				{ TEXT_MESS  => $Code_mess2_002040 ,       TEXT_MESS_VAL  => 'Unicode (OK)'} ,
-				{ TEXT_MESS  => $length_mess2_002041 ,     TEXT_MESS_VAL  => $freicounter } ,
-				{ TEXT_MESS  => $punct_tomove_mess2_002042,TEXT_MESS_VAL  => $freicounter } ,
+				{ TEXT_MESS  => $Code_mess2_002040 ,       TEXT_MESS_VAL  => $unicode_mess} ,
+				{ TEXT_MESS  => $length_mess2_002041 ,     TEXT_MESS_VAL  => $text_length } ,
+				{ TEXT_MESS  => $punct_tomove_mess2_002042,TEXT_MESS_VAL  => $punktekosten } ,
 				{ TEXT_MESS  => $act_punct_mess2_002043  ,  TEXT_MESS_VAL => $punkt},
-				{ TEXT_MESS  => $new_punct_mess2_002044 ,  TEXT_MESS_VAL  =>  $textcounter }
+				{ TEXT_MESS  => $new_punct_mess2_002044 ,  TEXT_MESS_VAL  =>  $new_punktstand}
 			      );
 		
-		$mgr->{TmplData}{TEXT_LOOP_MES}=\@array_data;
-		$mgr->{TmplData}{PAGE_LANG_002037} = $mgr->{Func}->get_text($mgr, 2037);
-		$mgr->{TmplData}{PAGE_LANG_002038} = $mgr->{Func}->get_text($mgr, 2038);
+		$mgr->{TmplData}{TEXT_LOOP_MES}=\@array_data;			
 
+		if ($new_punktstand<0){
+			$mgr->{TmplData}{PAGE_LANG_002037} ='';
+			$mgr->{TmplData}{INPUT_TYPE}='hidden';
+			$mgr->{TmplData}{PAGE_LANG_003504} = $mgr->{Func}->get_text($mgr, 3504);
+		}else{
+			if ($message==1){
+			}else{
+				$mgr->{TmplData}{PAGE_LANG_002037} = $mgr->{Func}->get_text($mgr, 2037);
+				$mgr->{TmplData}{INPUT_TYPE}='submit';
+			}
+		}
+
+
+		$mgr->{TmplData}{PAGE_LANG_002038} = $mgr->{Func}->get_text($mgr, 2038);
 		$mgr->{TmplData}{TEXT_TITLE} = $title ;
 		$mgr->{TmplData}{TEXT_DESCRIPTION}= $text_desc;
 		$mgr->{TmplData}{TEXT_LANG}=$text_lang_id;
+		$mgr->{TmplData}{TEXT_TRANS_LANG}=$trans_lang_id;
 		$mgr->{TmplData}{TEXT_CAT}=$text_cat_id;
 		$mgr->{TmplData}{TEXT}=$text;
 
-		$mgr->{TmplData}{TEXT_COUNTER}=$textcounter;
-		$mgr->{TmplData}{FREI_COUNTER}=$freicounter;
+		#$mgr->{TmplData}{TEXT_COUNTER}=$textcounter;
+		#$mgr->{TmplData}{FREI_COUNTER}=$freicounter;
 
 		$mgr->{Template} = $mgr->{TmplFiles}->{Text_Conf_Save};
 
@@ -788,163 +1185,7 @@ my $punkt= $textcounter + $freicounter;
 
 
 
-#########################################################################################################################################
-#CALL: $self->show_trans_desc($mgr).													#
-#																	#
-#RETURN:
-#																	#
-#DESC:  														#
-#																	#
-#Author: # Guy Nokam
-#########################################################################################################################################
 
-sub show_trans_desc{
-  my ($self, $mgr) = @_;
-
-
-my $text_id = $mgr->{CGI}->param('text_id') || undef;
-
-my $send_desc = $mgr->{CGI}->param('send_desc') || undef;
-my $trans_desc_lang_id = $mgr->{CGI}->param('text_desc_lang_id') || undef;
-my $trans_title = $mgr->{CGI}->param('trans_title') || undef;
-my $trans_desc = $mgr->{CGI}->param('trans_desc') || undef;
-
-###Schnitstelle avec hendrick von text_ansehen 
-#my $new_trans = $mgr->{CGI}->param('text_id') || undef;
-# et nom de son button
-
-
-if (defined $send_desc){
-
-	if ((defined $trans_desc_lang_id ) && (defined  $trans_title) &(defined $trans_desc )) {
-
-		### Speichern Text_id trans_title trans_desc dans text_trans_contenns
-
-		$self->show_trans_contents($mgr);
-	}else{		
-	
-		if (defined $trans_desc_lang_id){
-			$mgr->{TmplData}{TEXT_LANG_ID_SELECT}=$trans_desc_lang_id;
-			my $nr = $self->get_lang_name_id($mgr,$trans_desc_lang_id);
-			my $lang_name = $mgr->{Func}->get_text($mgr, $nr);
-			$mgr->{TmplData}{TEXT_LANG_NAME_SELECT}= $lang_name ; }
-
-		else{ 
-			$mgr->{TmplData}{PAGE_LANG_002511} = $mgr->{Func}->get_text($mgr, 2511);
-			$mgr->{TmplData}{TEXT_LANG_NAME_SELECT}= '-----------'; }
-
-			my @lang_loop_data=();
-			my @ray = $mgr->{Func}->get_langs($mgr,'all');
-			my $elem;
-
-			foreach $elem (@ray){
-				my %data;
-				$data{TEXT_LANG_ID}= $$elem[0];
-				$data{TEXT_LANG_NAME}= $$elem[1];
-
-				push(@lang_loop_data,\%data);
-
-				}
-
-			$mgr->{TmplData}{TEXT_LOOP_LANG}=\@lang_loop_data;
-
-		if (!$trans_title){ $mgr->{TmplData}{PAGE_LANG_002514} = $mgr->{Func}->get_text($mgr, 2514);}
-
-		if (!$trans_desc ){ $mgr->{TmplData}{PAGE_LANG_002518} = $mgr->{Func}->get_text($mgr, 2518);}
-		
-		$mgr->{TmplData}{PAGE_LANG_002510} = $mgr->{Func}->get_text($mgr, 2510);
-		$mgr->{TmplData}{PAGE_LANG_002512} = $mgr->{Func}->get_text($mgr, 2512);
-		$mgr->{TmplData}{PAGE_LANG_002513} = $mgr->{Func}->get_text($mgr, 2513);
-		$mgr->{TmplData}{PAGE_LANG_002516} = $mgr->{Func}->get_text($mgr, 2516);
-		$mgr->{TmplData}{PAGE_LANG_002517} = $mgr->{Func}->get_text($mgr, 2517);
-		$mgr->{TmplData}{PAGE_LANG_002519} = $mgr->{Func}->get_text($mgr, 2519);
-		$mgr->{TmplData}{PAGE_LANG_002520} = $mgr->{Func}->get_text($mgr, 2520);
-		$mgr->{Template} = $mgr->{TmplFiles}->{Text_Trans_Desc};
-		}
-}else{
-
-	if (defined $trans_desc_lang_id){
-			$mgr->{TmplData}{TEXT_LANG_ID_SELECT}=$trans_desc_lang_id;
-			my $nr = $self->get_lang_name_id($mgr,$trans_desc_lang_id);
-			my $lang_name = $mgr->{Func}->get_text($mgr, $nr);
-			$mgr->{TmplData}{TEXT_LANG_NAME_SELECT}= $lang_name ; }
-
-		else{ 
-			$mgr->{TmplData}{TEXT_LANG_NAME_SELECT}= '-----------'; }
-
-			my @lang_loop_data=();
-			my @ray = $mgr->{Func}->get_langs($mgr,'all');
-			my $elem;
-
-			foreach $elem (@ray){
-				my %data;
-				$data{TEXT_LANG_ID}= $$elem[0];
-				$data{TEXT_LANG_NAME}= $$elem[1];
-
-				push(@lang_loop_data,\%data);
-
-				}
-
-			$mgr->{TmplData}{TEXT_LOOP_LANG}=\@lang_loop_data;
-
-		$mgr->{TmplData}{PAGE_LANG_002510} = $mgr->{Func}->get_text($mgr, 2510);
-		$mgr->{TmplData}{PAGE_LANG_002512} = $mgr->{Func}->get_text($mgr, 2512);
-		$mgr->{TmplData}{PAGE_LANG_002513} = $mgr->{Func}->get_text($mgr, 2513);
-		$mgr->{TmplData}{PAGE_LANG_002516} = $mgr->{Func}->get_text($mgr, 2516);
-		$mgr->{TmplData}{PAGE_LANG_002517} = $mgr->{Func}->get_text($mgr, 2517);
-		$mgr->{TmplData}{PAGE_LANG_002519} = $mgr->{Func}->get_text($mgr, 2519);
-		$mgr->{TmplData}{PAGE_LANG_002520} = $mgr->{Func}->get_text($mgr, 2520);
-		
-			$mgr->{Template} = $mgr->{TmplFiles}->{Text_Trans_Desc};
- 
-
-}
-
-
-}
-
-########################################################################################################################################
-#CALL: $self->show_trans_contents($mgr).													#
-#																	#
-#RETURN:
-#																	#
-#DESC:  														#
-#																	#
-#Author: # Guy Nokam
-#########################################################################################################################################
-
-sub show_trans_contents{
-  my ($self, $mgr) = @_;
-
-
-my $trans_desc_change = $mgr->{CGI}->param('trans_desc_change') || undef;
-my $trans_send = $mgr->{CGI}->param('trans_send') || undef;
-
-
-if (defined $trans_desc_change){}
-
-elsif(defined  $trans_send){
-
-my $mes1_2521 = $mgr->{Func}->get_text($mgr, 2521);
-my $mes2_2522 = $mgr->{Func}->get_text($mgr, 2522);
-$self->show_text_message($mgr,$mes1_2521, $mes2_2522);
-
-
-}
-
-else {
-# übernehmen les params
-
-$mgr->{Template} = $mgr->{TmplFiles}->{Text_Trans_contents};}
-
-$mgr->{TmplData}{PAGE_LANG_002500} = $mgr->{Func}->get_text($mgr, 2500);
-$mgr->{TmplData}{PAGE_LANG_002501} = $mgr->{Func}->get_text($mgr, 2501);
-$mgr->{TmplData}{PAGE_LANG_002503} = $mgr->{Func}->get_text($mgr, 2503);
-$mgr->{TmplData}{PAGE_LANG_002504} = $mgr->{Func}->get_text($mgr, 2504);
-$mgr->{TmplData}{PAGE_LANG_002505} = $mgr->{Func}->get_text($mgr, 2505);
-
-
-}
 
 
 #########################################################################################################################################
@@ -1074,6 +1315,266 @@ SQL
 
   return $langs_id;
 }
+
+
+
+
+#########################################################################################################################################
+#CALL: $self->get_text_title_desc($mgr, $text_id).													#
+#																	#
+#RETURN: 
+#																#
+#DESC: See SQL Statement. 														#
+#																	#
+#Author: Guy Nokam (floreguy@cs.tu-berlin.de)
+#########################################################################################################################################
+
+sub get_text_title_desc {
+  my ($self, $mgr, $text_id) = @_;
+
+
+  # Names for the categories and dictionary table.
+  my $table_text = $mgr->{Tables}->{TEXT_ORIG};
+  my $table_desc = $mgr->{Tables}->{TEXT_DESC};
+  my $table_header = $mgr->{Tables}->{TEXT_TITLE};
+
+  my $dbh = $mgr->connect();
+  my $sth = $dbh->prepare(<<SQL);
+
+SELECT t.original_text, d.desc_text, h.header_text 
+FROM $table_text t, $table_desc d, $table_header h
+WHERE t.original_id = ? AND d.text_id = t.original_id AND h.text_id = t.original_id AND d.user_id = t.user_id AND h.user_id = t.user_id 
+
+SQL
+
+  unless ($sth->execute($text_id)) {
+    warn sprintf("[Error:] Trouble selecting data from [%s] and [%s].".
+                 "Reason: [%s].", $table_text, $table_desc, $table_header, $dbh->errstr());
+    $mgr->fatal_error("Database error.");
+  }
+
+my %data;
+
+  # Push all the selected values into an array.
+ 
+ while (my $ref = $sth->fetchrow_hashref() ){
+$data{TEXT} = $ref->{'original_text'};
+$data{TITLE} = $ref->{'header_text'};
+$data{DESC} = $ref->{'desc_text'};
+  }
+
+  $sth->finish();
+
+  return %data;
+
+}
+
+
+
+
+
+
+#########################################################################################################################################
+#CALL: $self->show_trans_desc($mgr).													#
+#																	#
+#RETURN:
+#																	#
+#DESC:  														#
+#																	#
+#Author: # Guy Nokam
+#########################################################################################################################################
+
+sub show_trans_desc{
+  my ($self, $mgr) = @_;
+
+
+my $text_id = $mgr->{CGI}->param('text_id') || undef;
+
+my $send_desc = $mgr->{CGI}->param('send_desc') || undef;
+my $trans_desc_lang_id = $mgr->{CGI}->param('text_desc_lang_id') || undef;
+my $trans_title = $mgr->{CGI}->param('trans_title') || undef;
+my $trans_desc = $mgr->{CGI}->param('trans_desc') || undef;
+
+###Schnitstelle avec hendrick von text_ansehen 
+#my $new_trans = $mgr->{CGI}->param('text_id') || undef;
+# et nom de son button
+
+my %select_data = $self->get_text_title_desc($mgr, $text_id);
+
+
+if (defined $send_desc){
+
+	if ((defined $trans_desc_lang_id ) && (defined  $trans_title)) {
+
+		### Speichern Text_id trans_title trans_desc dans text_trans_contenns
+		$mgr->{TmplData}{TITLE} = $trans_title;
+		$mgr->{TmplData}{DESC} = $trans_desc;
+		$mgr->{TmplData}{TEXT_ID} = $text_id;
+		
+		$self->show_trans_contents($mgr, 1);
+	}else{		
+	
+		if (defined $trans_desc_lang_id){
+			$mgr->{TmplData}{TEXT_LANG_ID_SELECT}=$trans_desc_lang_id;
+			my $nr = $self->get_lang_name_id($mgr,$trans_desc_lang_id);
+			my $lang_name = $mgr->{Func}->get_text($mgr, $nr);
+			$mgr->{TmplData}{TEXT_LANG_NAME_SELECT}= $lang_name ; }
+
+		else{ 
+			$mgr->{TmplData}{PAGE_LANG_002511} = $mgr->{Func}->get_text($mgr, 2511);
+			$mgr->{TmplData}{TEXT_LANG_NAME_SELECT}= '-----------'; }
+
+			my @lang_loop_data=();
+			my @ray = $mgr->{Func}->get_langs($mgr,'all');
+			my $elem;
+
+			foreach $elem (@ray){
+				my %data;
+				$data{TEXT_LANG_ID}= $$elem[0];
+				$data{TEXT_LANG_NAME}= $$elem[1];
+
+				push(@lang_loop_data,\%data);
+
+				}
+
+			$mgr->{TmplData}{TEXT_LOOP_LANG}=\@lang_loop_data;
+
+		if (!$trans_title){ $mgr->{TmplData}{PAGE_LANG_002514} = $mgr->{Func}->get_text($mgr, 2514);}
+
+		#if (!$trans_desc ){ $mgr->{TmplData}{PAGE_LANG_002518} = $mgr->{Func}->get_text($mgr, 2518);}
+
+		######SETZEN LE CONTENU
+		$mgr->{TmplData}{TEXT_TITLE} = $select_data{TITLE};
+		$mgr->{TmplData}{TEXT_DESC} = $select_data{DESC};
+		$mgr->{TmplData}{TRANS_TITLE} = $trans_title;
+		$mgr->{TmplData}{TRANS_DESC} =$trans_desc;
+		$mgr->{TmplData}{TEXT_ID}=$text_id;
+		
+		$mgr->{TmplData}{PAGE_LANG_002510} = $mgr->{Func}->get_text($mgr, 2510);
+		$mgr->{TmplData}{PAGE_LANG_002512} = $mgr->{Func}->get_text($mgr, 2512);
+		$mgr->{TmplData}{PAGE_LANG_002513} = $mgr->{Func}->get_text($mgr, 2513);
+		$mgr->{TmplData}{PAGE_LANG_002516} = $mgr->{Func}->get_text($mgr, 2516);
+		$mgr->{TmplData}{PAGE_LANG_002517} = $mgr->{Func}->get_text($mgr, 2517);
+		$mgr->{TmplData}{PAGE_LANG_002520} = $mgr->{Func}->get_text($mgr, 2520);	
+
+		$mgr->{Template} = $mgr->{TmplFiles}->{Text_Trans_Desc};
+		}
+}else{
+	##########Language##################################
+	if (defined $trans_desc_lang_id){
+			$mgr->{TmplData}{TEXT_LANG_ID_SELECT}=$trans_desc_lang_id;
+			my $nr = $self->get_lang_name_id($mgr,$trans_desc_lang_id);
+			my $lang_name = $mgr->{Func}->get_text($mgr, $nr);
+			$mgr->{TmplData}{TEXT_LANG_NAME_SELECT}= $lang_name ; }
+
+		else{ 
+			$mgr->{TmplData}{TEXT_LANG_NAME_SELECT}= '-----------'; }
+
+			my @lang_loop_data=();
+			my @ray = $mgr->{Func}->get_langs($mgr,'all');
+			my $elem;
+
+			foreach $elem (@ray){
+				my %data;
+				$data{TEXT_LANG_ID}= $$elem[0];
+				$data{TEXT_LANG_NAME}= $$elem[1];
+
+				push(@lang_loop_data,\%data);
+
+				}
+
+			$mgr->{TmplData}{TEXT_LOOP_LANG}=\@lang_loop_data;
+		
+		###### LAS PAGES VARIABLES
+		$mgr->{TmplData}{PAGE_LANG_002510} = $mgr->{Func}->get_text($mgr, 2510);
+		$mgr->{TmplData}{PAGE_LANG_002512} = $mgr->{Func}->get_text($mgr, 2512);
+		$mgr->{TmplData}{PAGE_LANG_002513} = $mgr->{Func}->get_text($mgr, 2513);
+		$mgr->{TmplData}{PAGE_LANG_002516} = $mgr->{Func}->get_text($mgr, 2516);
+		$mgr->{TmplData}{PAGE_LANG_002517} = $mgr->{Func}->get_text($mgr, 2517);
+		$mgr->{TmplData}{PAGE_LANG_002520} = $mgr->{Func}->get_text($mgr, 2520);
+
+		
+		######SETZEN LE CONTENU
+		$mgr->{TmplData}{TEXT_TITLE} = $select_data{TITLE};
+		$mgr->{TmplData}{TEXT_DESC} = $select_data{DESC};
+		$mgr->{TmplData}{TRANS_TITLE} = $trans_title;
+		$mgr->{TmplData}{TRANS_DESC} =$trans_desc;
+		$mgr->{TmplData}{TEXT_ID}=$text_id;
+
+			$mgr->{Template} = $mgr->{TmplFiles}->{Text_Trans_Desc};
+ 
+
+}
+
+
+}
+
+########################################################################################################################################
+#CALL: $self->show_trans_contents($mgr).													#
+#																	#
+#RETURN:
+#																	#
+#DESC:  														#
+#																	#
+#Author: # Guy Nokam
+#########################################################################################################################################
+
+sub show_trans_contents{
+  my ($self, $mgr, $rel) = @_;
+
+#my $trans_desc_change = $mgr->{CGI}->param('trans_desc_change') || undef;
+my $trans_send = $mgr->{CGI}->param('trans_send') || undef;
+my $mytext = $mgr->{CGI}->param('mytext') || undef;
+my $text_id = $mgr->{CGI}->param('text_id') || undef;
+my $trans_title = $mgr->{CGI}->param('title') || undef;
+my $trans_desc = $mgr->{CGI}->param('text_desc') || undef;
+
+my %select_data = $self->get_text_title_desc($mgr, $text_id);
+
+if(defined  $trans_send){
+	
+	if(!(defined  $mytext)){
+		$mgr->{Template} = $mgr->{TmplFiles}->{Text_Trans_contents};
+		$mgr->{TmplData}{PAGE_LANG_002502} = $mgr->{Func}->get_text($mgr, 2502);
+
+		$mgr->{TmplData}{PAGE_LANG_002500} = $mgr->{Func}->get_text($mgr, 2500);
+		$mgr->{TmplData}{PAGE_LANG_002501} = $mgr->{Func}->get_text($mgr, 2501);
+		$mgr->{TmplData}{PAGE_LANG_002505} = $mgr->{Func}->get_text($mgr, 2505);
+
+		$mgr->{TmplData}{TITLE} = $trans_title;
+		$mgr->{TmplData}{DESC} = $trans_desc;
+		$mgr->{TmplData}{TEXT_ID} = $text_id;
+
+		$mgr->{TmplData}{OLD_TEXT} = $select_data{TEXT};
+
+	}else{
+		my $mes1_2521 = $mgr->{Func}->get_text($mgr, 2521);
+		my $mes2_2522 = $mgr->{Func}->get_text($mgr, 2522);
+		$self->show_text_message($mgr,$mes1_2521, $mes2_2522);
+	}
+
+}else{
+
+	$mgr->{Template} = $mgr->{TmplFiles}->{Text_Trans_contents};
+
+	$mgr->{TmplData}{PAGE_LANG_002500} = $mgr->{Func}->get_text($mgr, 2500);
+	$mgr->{TmplData}{PAGE_LANG_002501} = $mgr->{Func}->get_text($mgr, 2501);
+	$mgr->{TmplData}{PAGE_LANG_002505} = $mgr->{Func}->get_text($mgr, 2505);
+
+	if (!defined $rel){
+		$mgr->{TmplData}{TITLE} = $trans_title;
+		$mgr->{TmplData}{DESC} = $trans_desc;
+		$mgr->{TmplData}{TEXT_ID} = $text_id;
+	}
+
+	$mgr->{TmplData}{TEXT} = $mytext;
+	$mgr->{TmplData}{OLD_TEXT} = $select_data{TEXT};
+}
+
+}
+
+
+################# AB HIER ERLER############################
 
 
 
@@ -2216,7 +2717,18 @@ SQL
 }#end view_trans
 
 
+
 1;
+
+
+
+
+
+
+
+
+
+
 
 
 

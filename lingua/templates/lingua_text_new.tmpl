@@ -1,7 +1,5 @@
 <TMPL_INCLUDE lingua_header.tmpl>
-</form>
 
-<form name="textform" method="post">
 <input type="hidden" name="action" value="<TMPL_VAR PAGE_ACTION>">
 <input type="hidden" name="sid" value="<TMPL_VAR PAGE_SID>">
 <input type="hidden" name="lang" value="<TMPL_VAR PAGE_LANG>">
@@ -21,40 +19,39 @@
   		<td bgcolor="#ababab" width="600" valign="top">
     			
 			<script language="JavaScript">
-			<!--
-			var wert,max,longueur;
-			max = <TMPL_VAR TEXT_MAX_VAL> ;	
+
+			//var wert,max,laenge;
+			//max = <TMPL_VAR TEXT_MAX_VAL> ;	
 				
 			function CountMax()
 			{
 			
-				var mytable = document.textform.mytext.value.split(" ");
-								
-				longueur = mytable.length;
-				wert = max - longueur;
+				//var mytable = document.textform.mytext.value.split(" ");
+				//laenge = mytable.length -1;				
+				//wert = max - laenge;
 
-				if (wert < 0) {				
-					//alert("<TMPL_VAR PAGE_LANG_002017> " + max + " <TMPL_VAR PAGE_LANG_002018>");
-					//document.textform.mytext.value = document.textform.mytext.value.substring(0,max+mytable.length-1);													
-				        document.textform.textcounter.value = max - longueur;
-					document.textform.freicounter.value = longueur;
-
-					 }
-				else { 	
+				//if (wert == -1) {				
+				//	alert("<TMPL_VAR PAGE_LANG_002017> " + max + " <TMPL_VAR PAGE_LANG_002018>");
+				//document.textform.mytext.value = document.textform.mytext.value.substring(0,max+mytable.length-1);													
+				// 
+				//document.textform.freicounter.value = laenge;		//text-length
+		
+				//}
+				//else { 	
 										
-					document.textform.textcounter.value = max - longueur;
-					document.textform.freicounter.value = longueur;
+				//	
+				//	document.textform.freicounter.value = laenge;
 								
-				     }
+				 //   }
 			}
-			//-->
+
 			</SCRIPT>
-			<!----------------------BGCOLOR="#CCD4E6"--------BGCOLOR="#EDF0F6"----------------------->
+
 
 				<TABLE CELLPADDING="5" >
 
 					<TR> 
-						<TD align="right"> <TMPL_VAR PAGE_LANG_002019> &nbsp;&nbsp;<font color="red">*</font></td>
+						<TD align="right" > <br> <TMPL_VAR PAGE_LANG_002019> &nbsp;&nbsp;<font color="red">*</font></td>
 						<td colspan="2"> <font size=3 color=red><b><TMPL_VAR TEXT_CAT_MES_002020></b> <br></font>
 						<SELECT NAME="text_cat_id" size="1">
 
@@ -69,7 +66,7 @@
 					</TR>
 
 					<TR> 
-						<TD align="right"><TMPL_VAR PAGE_LANG_002021> &nbsp;&nbsp;<font color="red">*</font></td>
+						<TD align="right"> <br> <TMPL_VAR PAGE_LANG_002021> &nbsp;&nbsp;<font color="red">*</font></td>
 						<td colspan="2"> <font size=3 color=red><b><TMPL_VAR TEXT_LANG_MES_002022></b> <br></font>						
 						<SELECT NAME="text_desc_lang_id" size="1">
 						<OPTION value= "<TMPL_VAR TEXT_LANG_ID_SELECT>" selected><TMPL_VAR TEXT_LANG_NAME_SELECT></option>
@@ -82,40 +79,56 @@
 						</td>
 					</TR>
 
+
+					<TR> 
+						<TD align="right"> <br> <TMPL_VAR PAGE_LANG_003501> &nbsp;&nbsp;<font color="red">*</font></td>
+						<td colspan="2"> <font size=3 color=red><b><TMPL_VAR TEXT_TRANS_MES_003500> <TMPL_VAR TEXT_TRANS_MES_003502></b> <br></font>						
+						<SELECT NAME="trans_lang_id" size="1">
+						<OPTION value= "<TMPL_VAR TEXT_TRANS_LANG_ID_SELECT>" selected><TMPL_VAR TEXT_TRANS_LANG_NAME_SELECT></option>
+
+						<TMPL_LOOP TEXT_LOOP_TRANS_LANG>
+						<OPTION value= "<TMPL_VAR TEXT_TRANS_LANG_ID>"><TMPL_VAR TEXT_TRANS_LANG_NAME></option>
+					        </TMPL_LOOP>
+						
+					        </SELECT>
+						</td>
+					</TR>
+
+
 					<TR>
-						<TD align="right"><TMPL_VAR PAGE_LANG_002023>&nbsp;&nbsp;<font color="red">*</font></td> 
+						<TD align="right"> <br> <TMPL_VAR PAGE_LANG_002023>&nbsp;&nbsp;<font color="red">*</font></td> 
 						<td colspan="2"><font size=3 color=red><b><TMPL_VAR TEXT_TITLE_MES_002024></b> <br></font>
 						<input type="text"  name="title" value="<TMPL_VAR TEXT_TITLE>" size=30 maxlength=20></TD>
 					</TR>
 
 
 <br>					<TR>
-						<TD align="right" VALIGN="TOP"><TMPL_VAR PAGE_LANG_002025><br><TMPL_VAR PAGE_LANG_002026>-200-<TMPL_VAR PAGE_LANG_002027> </td> 
+						<TD align="right" VALIGN="TOP"> <TMPL_VAR PAGE_LANG_002025><br><TMPL_VAR PAGE_LANG_002026>-200-<TMPL_VAR PAGE_LANG_002027> </td> 
 						<td colspan="2"><TEXTAREA rows="3" cols="80" NAME="text_desc" maxlength="10"><TMPL_VAR TEXT_DESCRIPTION></TEXTAREA>
 					</TR>
 
 
 <br>
 					<TR>
-						<TD ALIGN="right" VALIGN="TOP"><br><TMPL_VAR PAGE_LANG_002028>&nbsp;&nbsp;<font color="red">*</font><BR> <TMPL_VAR PAGE_LANG_002026>-<TMPL_VAR TEXT_MAX_VAL>-<TMPL_VAR PAGE_LANG_002027>
+						<TD ALIGN="right" VALIGN="TOP"> <br>  <br> <TMPL_VAR PAGE_LANG_002028>&nbsp;&nbsp;<font color="red">*</font><BR> <TMPL_VAR PAGE_LANG_002026>-<TMPL_VAR TEXT_MAX_VAL>-<TMPL_VAR PAGE_LANG_003503>
 						<br> <br> 
 						<center><b><TMPL_VAR PAGE_LANG_002029></b></center>
 						<br> <br> 	
 						<input type="submit" name="upload" value="<TMPL_VAR PAGE_LANG_002030>">
 						
+						 <br> <br> <center> <a href="/cgi-bin/lingua/main.cgi?action=text&text_method=text_unicode_info&lang=de">Unicode-Info</a> </center>
+						
 						</TD>
 						<TD colspan="2"><font size=3 color=red><b><TMPL_VAR TEXT_MES_002031></b> <br></font>
-						<TEXTAREA NAME="mytext"rows="20" cols="80"> <TMPL_VAR TEXT></TEXTAREA></TD>
+						<TEXTAREA NAME="mytext"rows="20" cols="80" OnFocus="CountMax();" OnClick="CountMax();" ONCHANGE="CountMax();" onKeydown="CountMax();" onKeyup="CountMax();"><TMPL_VAR TEXT></TEXTAREA></TD>
 					</TR>
 					<TR>
 						<TD ALIGN="right">&nbsp;</TD>
 						<TD colspan="2">
-						<font color="green"> <TMPL_VAR PAGE_LANG_002032></font> &nbsp; 
+						
 
-						<INPUT TYPE="Text" NAME="textcounter" VALUE="<TMPL_VAR TEXT_ACT_VAL>" SIZE="3" >
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-						<font color="red"> <TMPL_VAR PAGE_LANG_002033></font> &nbsp;<INPUT TYPE="Text" NAME="freicounter" VALUE="<TMPL_VAR TEXT_LENG>"  SIZE="3" >
+						<font color="black"> <TMPL_VAR PAGE_LANG_002033></font> &nbsp;<INPUT TYPE="Text" NAME="freicounter" VALUE="<TMPL_VAR TEXT_LENG>"  SIZE="5" >
 					</TR>
 					<TR>
 					<TD ALIGN="right">&nbsp;</TD>	
@@ -132,7 +145,16 @@
   		</td>
 	</tr>
 </table>
+
 <TMPL_INCLUDE lingua_footer.tmpl>
+
+
+
+
+
+
+
+
 
 
 

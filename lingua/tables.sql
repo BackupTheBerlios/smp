@@ -38,7 +38,7 @@ INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Change', 'Wechseln','Changer
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Login', 'Anmelden','Entrer');
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Points existence','Punkte vorhanden', 'Points existants');
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Points in work','Punkte in arbeit', 'Points en travail');
-INSERT INTO lingua_dictionary (en, de, fr) VALUES ('personal page','persöhnliche Seite', 'Page personnelle');
+INSERT INTO lingua_dictionary (en, de, fr) VALUES ('personal page','persönliche Seite', 'Page personnelle');
 INSERT INTO lingua_dictionary (en, de, fr) VALUES ('Logout', 'Abmelden','Sortir');
 INSERT INTO lingua_dictionary (en, de, fr) VALUES 
 	('Wrong username or password.', 'Falscher Benutzername oder Passwort.', 'Mot de passe ou Nom Utilisateur incorrect');
@@ -94,7 +94,7 @@ INSERT INTO lingua_dictionary (de, fr) VALUES ('Software', 'Software');
 #
 
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
-       ('1001', 'Personal Page', 'Pers&ouml;liche Seite', 'Page personnelle');
+       ('1001', 'Personal Page', 'Pers&ouml;nliche Seite', 'Page personnelle');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
        ('1002', 'This is not a valid email address', 'Das ist keine korrekte email-Adresse', 'email incorrecte');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
@@ -129,6 +129,36 @@ INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES
        ('1017', 'Mediocre', 'Mittelm&auml;&szlig;ig', 'Mediocre');
 INSERT INTO lingua_dictionary (dict_id, en, de, fr) VALUES 
        ('1018', 'Base Knowledge', 'Grundkenntnisse', 'Connaissance de base');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1019', 'Not at all', '&Uuml;berhaupt nicht');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1020', 'System Language', 'Systemsprache');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1021', 'Registration - Step 1', 'Registrierung - Schritt 1');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1022', 'Thru this form you become a member of LINGUA.', 'Hier werden Sie Mitglied bei LINGUA.');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1023', 'Please enter the following data.', 'Bitte geben Sie Ihre Daten ein!');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1024', 'All fields must be filled out.', 'Alle Felder m&uuml;ssen ausgef&uuml;llt werden.');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1025', 'You will receive your password by email.', 'Ihr Password erhalten Sie an Ihre mail-Adresse.');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1026', 'Password', 'Passwort');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1027', 'Password (please retype)', 'Passwort (bitte best&auml;tigen)');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1028', 'Next', 'Weiter');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1029', 'Languages', 'Sprachen');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1030', 'Registration - Step 2', 'Registrierung - Schritt 2');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1031', 'Please verify that your input is correct.', 'Bitte &uuml;berpr&uuml;fen Sie kurz Ihre Eingaben!');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1032', 'Upon the next step you will be a member of LINGUA', 'Im n&auml;chsten Schritt werden Sie Mitglied von LINUGA.');
+INSERT INTO lingua_dictionary (dict_id, en, de) VALUES 
+       ('1033', 'Please press this button only once.', 'Bitte dr&uuml;cken Sie diesen Knopf nur einmal.');
 
 
 ##############################################
